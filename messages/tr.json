@@ -1,0 +1,60 @@
+{
+  "HomePage": {
+    "title": "Linen Line Butik",
+    "description": "Özellik geliştirmeye hazır boş ana sayfa.",
+    "switchLocale": "English"
+  },
+  "Categories": {
+    "title": "Kategoriye Göre Alışveriş",
+    "subtitle": "Günlük ketenden özel gün silüetlerine kadar özenle seçilmiş abaya ve temel parçaları keşfedin.",
+    "linen": "Keten Koleksiyonu",
+    "casual": "Günlük Abayalar",
+    "formal": "Özel Gün & Abiye",
+    "travel": "Seyahat Abayaları",
+    "inners": "İçlik & Elbiseler",
+    "accessories": "Şal & Aksesuarlar"
+  },
+  "Hero": {
+    "slide1Tag": "Saf Doğal Keten",
+    "slide1Title": "Doğal Ketende Kusursuz Zarafet",
+    "slide1Description": "Hafif, nefes alabilen keten dokuları ve çağdaş mütevazı lüks için tasarlanmış mimari kesimler.",
+    "slide1Cta": "Koleksiyonu Keşfet",
+    "slide2Tag": "Usta İşi Nakış",
+    "slide2Title": "Zeytin Yeşili Miras Serisi",
+    "slide2Description": "Akdeniz renklerinden ilham alan ve rafine minimalist kesimlerle birleşen el işçiliği nakış detayları.",
+    "slide2Cta": "Seriyi İncele",
+    "slide3Tag": "Özel Gün Şıklığı",
+    "slide3Title": "İpek & Keten Gece Işıltısı",
+    "slide3Description": "Özel davetleriniz için tasarlanmış, zarif altın işlemeli dökümlü asil abaya tasarımı.",
+    "slide3Cta": "Abiyeleri Keşfet"
+  },
+  "Navigation": {
+    "home": "Ana Sayfa",
+    "newArrivals": "Yeni Gelenler",
+    "allAbayas": "Tüm Abayalar",
+    "linenCollection": "Keten Koleksiyonu",
+    "casualAbayas": "Günlük Abayalar",
+    "formalAbayas": "Özel Gün & Abiye",
+    "travelAbayas": "Seyahat Abayaları",
+    "dressesAndInners": "İçlik & Elbiseler",
+    "accessories": "Şal & Aksesuarlar",
+    "sale": "İndirim",
+    "searchPlaceholder": "Abaya, kumaş veya kesim arayın...",
+    "searchButton": "Ara",
+    "cart": "Alışveriş Çantası",
+    "favorites": "Favorilerim",
+    "account": "Hesabım",
+    "currency": "Para Birimi",
+    "language": "Dil",
+    "menu": "Menü",
+    "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf Keten Koleksiyonumuzu Keşfedin"
+  },
+  "Currencies": {
+    "TRY": "Türk Lirası (₺)",
+    "SAR": "Suudi Arabistan Riyali (SAR)",
+    "AED": "BAE Dirhemi (AED)",
+    "USD": "ABD Doları ($)",
+    "QAR": "Katar Riyali (QAR)",
+    "KWD": "Kuveyt Dinarı (KWD)"
+  }
+}

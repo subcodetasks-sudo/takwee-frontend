@@ -1,0 +1,60 @@
+{
+  "HomePage": {
+    "title": "Linen Line Store",
+    "description": "Blank home page ready for feature development.",
+    "switchLocale": "العربية"
+  },
+  "Categories": {
+    "title": "Shop by Category",
+    "subtitle": "Explore curated abayas and essentials, from everyday linen to occasion-ready silhouettes.",
+    "linen": "Linen Collection",
+    "casual": "Casual Abayas",
+    "formal": "Occasion & Formal",
+    "travel": "Travel Abayas",
+    "inners": "Inners & Slips",
+    "accessories": "Sheilas & Accessories"
+  },
+  "Hero": {
+    "slide1Tag": "Pure Organic Linen",
+    "slide1Title": "Bespoke Elegance in Natural Linen",
+    "slide1Description": "Crafted with lightweight breathable linen textures and architectural silhouettes tailored for contemporary modest luxury.",
+    "slide1Cta": "Shop Collection",
+    "slide2Tag": "Artisanal Embroidery",
+    "slide2Title": "The Olive Heritage Series",
+    "slide2Description": "Subtle hand-finished embroidery inspired by earthy Mediterranean palettes and refined minimalist cuts.",
+    "slide2Cta": "Explore Series",
+    "slide3Tag": "Evening Modesty",
+    "slide3Title": "Silk & Linen Midnight Radiance",
+    "slide3Description": "Flowing evening elegance adorned with subtle gold accents, designed for prestigious formal occasions.",
+    "slide3Cta": "Discover Eveningwear"
+  },
+  "Navigation": {
+    "home": "Home",
+    "newArrivals": "New Arrivals",
+    "allAbayas": "All Abayas",
+    "linenCollection": "Linen Collection",
+    "casualAbayas": "Casual Abayas",
+    "formalAbayas": "Occasion & Formal",
+    "travelAbayas": "Travel Abayas",
+    "dressesAndInners": "Inners & Slips",
+    "accessories": "Sheilas & Accessories",
+    "sale": "Sale",
+    "searchPlaceholder": "Search abayas, fabrics, or cuts...",
+    "searchButton": "Search",
+    "cart": "Shopping Bag",
+    "favorites": "Wishlist",
+    "account": "My Account",
+    "currency": "Currency",
+    "language": "Language",
+    "menu": "Menu",
+    "announcement": "Worldwide & Regional Express Shipping | Discover Our Pure Linen Collection"
+  },
+  "Currencies": {
+    "TRY": "Turkish Lira (₺)",
+    "SAR": "Saudi Riyal (SAR)",
+    "AED": "UAE Dirham (AED)",
+    "USD": "US Dollar ($)",
+    "QAR": "Qatari Riyal (QAR)",
+    "KWD": "Kuwaiti Dinar (KWD)"
+  }
+}
