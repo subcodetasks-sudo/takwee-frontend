@@ -4,6 +4,84 @@
     "description": "Özellik geliştirmeye hazır boş ana sayfa.",
     "switchLocale": "English"
   },
+  "ProfilePage": {
+    "title": "Hesabım",
+    "description": "Kullanıcı profili ve hesap ayarları.",
+    "authNote": "Hesap kimlik doğrulaması hazır olduğunda giriş ve çıkış burada görünecek.",
+    "sections": {
+      "account": "Hesabınız"
+    },
+    "hero": {
+      "eyebrow": "Hesabım",
+      "memberSince": "{date} tarihinden beri üye"
+    },
+    "quickLinks": {
+      "orders": {
+        "label": "Siparişlerim",
+        "description": "Alışverişlerinizi takip edin ve inceleyin"
+      },
+      "wishlist": {
+        "label": "Favoriler",
+        "description": "Sonraya kaydedilen parçalar",
+        "comingSoon": "Yakında"
+      },
+      "addresses": {
+        "label": "Adresler",
+        "description": "Teslimat ve fatura bilgileri"
+      },
+      "settings": {
+        "label": "Ayarlar",
+        "description": "Tercihler ve hesap seçenekleri"
+      }
+    },
+    "preferences": {
+      "title": "Dil ve para birimi",
+      "subtitle": "Gezinme ve alışveriş tercihlerinizi seçin"
+    },
+    "orders": {
+      "metaTitle": "Siparişlerim",
+      "metaDescription": "Linen Line siparişlerinizi görüntüleyin ve takip edin.",
+      "title": "Siparişlerim",
+      "subtitle": "Son alışverişlerinizin sakin bir kaydı.",
+      "backToAccount": "Hesaba dön",
+      "orderNumber": "Sipariş {number}",
+      "placedOn": "{date} tarihinde verildi",
+      "itemCount": "{count, plural, one {# ürün} other {# ürün}}",
+      "status": {
+        "delivered": "Teslim edildi",
+        "shipped": "Kargoda",
+        "processing": "Hazırlanıyor",
+        "cancelled": "İptal edildi"
+      },
+      "empty": {
+        "title": "Henüz sipariş yok",
+        "description": "Sipariş verdiğinizde burada görünecek.",
+        "cta": "Mağazayı keşfedin"
+      }
+    },
+    "addresses": {
+      "metaTitle": "Adresler",
+      "metaDescription": "Teslimat ve fatura adreslerinizi yönetin.",
+      "title": "Adresler",
+      "subtitle": "Siparişlerinizi nereye gönderelim.",
+      "backToAccount": "Hesaba dön",
+      "comingSoon": {
+        "title": "Adres defteri yakında",
+        "description": "Teslimat adreslerini burada kaydedip düzenleyebileceksiniz."
+      }
+    },
+    "settings": {
+      "metaTitle": "Ayarlar",
+      "metaDescription": "Hesap tercihleri ve ayarlar.",
+      "title": "Ayarlar",
+      "subtitle": "Hesap deneyiminizi ince ayarlayın.",
+      "backToAccount": "Hesaba dön",
+      "comingSoon": {
+        "title": "Daha fazla ayar yakında",
+        "description": "Profil detayları ve bildirimler burada olacak. Dil ve para birimi aşağıda."
+      }
+    }
+  },
   "Categories": {
     "title": "Kategoriye Göre Alışveriş",
     "subtitle": "Günlük ketenden özel gün silüetlerine kadar özenle seçilmiş abaya ve temel parçaları keşfedin.",
@@ -44,10 +122,446 @@
     "cart": "Alışveriş Çantası",
     "favorites": "Favorilerim",
     "account": "Hesabım",
+    "myOrders": "Siparişlerim",
+    "closeMenu": "Menüyü kapat",
+    "navExplore": "Keşfet",
+    "navCategories": "Kategoriler",
     "currency": "Para Birimi",
     "language": "Dil",
     "menu": "Menü",
     "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf Keten Koleksiyonumuzu Keşfedin"
+  },
+  "AdditionalSections": {
+    "viewMore": "Daha fazla gör",
+    "shopCollection": "Koleksiyonu keşfet",
+    "sections": {
+      "newArrivals": {
+        "title": "Yeni Gelenler",
+        "description": "Günlük rahatlık ve özel günler için özenle kesilmiş, toprak tonlarında keten abayalar.",
+        "bannerAlt": "Yeni gelenler koleksiyonu afişi"
+      },
+      "linenEdit": {
+        "title": "Keten Seçkisi",
+        "description": "Sıcak günler için nefes alan saf keten kesimler — sade, hafif ve her güne uygun.",
+        "bannerAlt": "Keten seçkisi afişi"
+      },
+      "eveningEdit": {
+        "title": "Akşam & Özel Gün",
+        "description": "Sakin bir lüks arayan akşamlar için, ince detaylı akışkan ipek-keten silüetler.",
+        "bannerAlt": "Akşam ve özel gün koleksiyonu afişi"
+      }
+    }
+  },
+  "ProductCard": {
+    "previousImage": "Önceki görsel",
+    "nextImage": "Sonraki görsel",
+    "goToImage": "Görsel {index}",
+    "imageIndex": "Görsel {current} / {total}",
+    "selectColor": "{color} rengini seç",
+    "addToCart": "Sepete Ekle",
+    "addedToCart": "Sepete Eklendi",
+    "sale": "İndirim",
+    "new": "Yeni",
+    "discount": "%{percent} İndirim",
+    "ratingAria": "5 üzerinden {rating} yıldız",
+    "colors": {
+      "black": "Siyah",
+      "olive": "Zeytin yeşili",
+      "sand": "Kum",
+      "ivory": "Fildişi",
+      "charcoal": "Antrasit",
+      "taupe": "Toprak beji"
+    }
+  },
+  "Products": {
+    "turkishJacquardPinkCord": "Pembe Kordonlu Türk Jakar Siyah Abaya",
+    "linenAline": "Klasik Keten A Kesim Abaya",
+    "oliveHeritage": "Zeytin Yeşili Nakışlı Miras Abaya",
+    "midnightSilk": "Gece İpek & Keten Abaya",
+    "travelKimono": "Seyahat Kimono Abaya"
+  },
+  "ProductDetails": {
+    "modelNumber": "Model No.",
+    "weight": "Ağırlık",
+    "weightValue": "{value} kg",
+    "sizeGuideLabel": "Beden rehberi",
+    "quantity": "Adet",
+    "addToCart": "Sepete Ekle",
+    "addedToCart": "Sepete Eklendi",
+    "inStock": "Stokta",
+    "outOfStock": "Stokta yok",
+    "save": "Kazanç",
+    "discount": "%{percent} İndirim",
+    "inclusiveVat": "Vergiler dahil",
+    "reviewCount": "({count} değerlendirme)",
+    "new": "Yeni",
+    "color": "Renk",
+    "selectColor": "{color} rengini seç",
+    "selectSize": "Beden seçin",
+    "increaseQuantity": "Adedi artır",
+    "decreaseQuantity": "Adedi azalt",
+    "goToImage": "Görsel {index}",
+    "imageIndex": "Görsel {current} / {total}",
+    "hoverToZoom": "Yakınlaştırmak için üzerine gelin",
+    "detailsHeading": "Detaylar",
+    "reviewsEmpty": "Henüz yorum yok. Bu abayanın dokusunu ve kalıbını ilk siz paylaşın.",
+    "related": {
+      "title": "Bunları da beğenebilirsiniz",
+      "subtitle": "Bu görünümü tamamlayan seçilmiş parçalar.",
+      "previous": "Önceki ürünler",
+      "next": "Sonraki ürünler"
+    },
+    "tabs": {
+      "details": "Ürün detayları",
+      "reviews": "Müşteri Değerlendirmeleri"
+    },
+    "reviewsSection": {
+      "overallScore": "4.9",
+      "outOf": "/ 5",
+      "basedOn": "{count} doğrulanmış değerlendirmeye göre",
+      "recommendation": "Müşterilerin %98'i bu modeli tavsiye ediyor",
+      "writeReview": "Değerlendirme Yaz",
+      "cancel": "İptal",
+      "submit": "Değerlendirmeyi Gönder",
+      "nameLabel": "Adınız",
+      "namePlaceholder": "Örn. Zeynep K.",
+      "ratingLabel": "Puanınız",
+      "titleLabel": "Başlık",
+      "titlePlaceholder": "Örn. Kumaş kalitesi ve dökümü mükemmel",
+      "commentLabel": "Yorumunuz",
+      "commentPlaceholder": "Kumaş dokusu, kalıp ve döküm hakkındaki deneyimlerinizi paylaşın...",
+      "sizeLabel": "Satın Alınan Beden (isteğe bağlı)",
+      "sizePurchased": "Beden: {size}",
+      "successMessage": "Teşekkürler! Değerlendirmeniz yayınlandı.",
+      "verifiedBuyer": "Doğrulanmış Alıcı",
+      "helpful": "Faydalı",
+      "filterAll": "Tüm Değerlendirmeler ({count})",
+      "starsLabel": "{stars} Yıldız"
+    },
+    "heightCalculator": {
+      "title": "Boyunuza Göre Beden Hesaplayın",
+      "subtitle": "İdeal abaya boyunuzu bulmak için boyunuzu girin",
+      "placeholder": "Örn. 165",
+      "unit": "cm",
+      "recommended": "Önerilen beden:",
+      "garmentLength": "Abaya boyu: {length} cm",
+      "apply": "{size} bedenini seç",
+      "applied": "Seçildi",
+      "heelsTip": "Topuklu ayakkabı tercih ediyorsanız bir beden büyüğünü seçebilirsiniz.",
+      "outOfRange": "Lütfen 140 ile 195 cm arasında bir boy girin"
+    },
+    "sizeGuide": {
+      "view": "Beden rehberi",
+      "title": "Abaya Beden ve Kalıp Rehberi",
+      "description": "Boyunuza en uygun abaya uzunluğunu seçin. Göğüs genişliği zarif ve rahat bir döküm sağlayacak şekilde tasarlanmıştır.",
+      "size": "Beden",
+      "length": "Abaya Boyu",
+      "bust": "Göğüs Genişliği",
+      "height": "Önerilen Boy",
+      "cm": "{value} cm",
+      "inch": "{value} inç",
+      "note": "Özel uzunluk mu istiyorsunuz? Stil danışmanımızla iletişime geçin.",
+      "tabChart": "Beden Tablosu",
+      "tabHowToMeasure": "Nasıl Ölçülür",
+      "unitCm": "CM",
+      "unitInch": "İnç",
+      "selected": "Seçili",
+      "selectThisSize": "{size} bedenini seç",
+      "measureLengthTitle": "Abaya Uzunluğu",
+      "measureLengthDesc": "Omuzun en yüksek noktasından ayak bileğinize veya dilediğiniz etek hizasına kadar ölçün.",
+      "measureBustTitle": "Göğüs ve Kalıp",
+      "measureBustDesc": "Kolların altından göğsün en geniş yerini ölçün. Abayalar rahat ve dökümlü bir siluete sahiptir.",
+      "measureSleeveTitle": "Kol Boyu",
+      "measureSleeveDesc": "Omuz kemiğinin dış ucundan el bileği kemiğine kadar ölçün.",
+      "conciergeTitle": "Özel Boy ve Kalıp Danışmanlığı",
+      "conciergeDesc": "Beden konusunda kararsız mısınız ya da özel dikim mi istiyorsunuz? Stil danışmanlarımız yardıma hazır."
+    },
+    "products": {
+      "turkishJacquardPinkCord": {
+        "description": "Hafif Türk yıkanmış jakardan mat siyah A kesim abaya; ön kenarlarda ve kare kol manşetlerinde yumuşak pembe kordon detayı, uyumlu şalla birlikte.",
+        "specs": {
+          "design": {
+            "title": "Tasarım",
+            "body": "Mat siyah sadelikle pembe kordon dokunuşunu birleştiren açık ön abaya."
+          },
+          "silhouette": {
+            "title": "Kesim",
+            "body": "Yumuşak dökümlü A kesim; düzenli ve zarif bir silüet."
+          },
+          "fabric": {
+            "title": "Kumaş",
+            "body": "Türk yıkanmış jakar — hafif, yumuşak ve güzel dökümlü."
+          },
+          "color": {
+            "title": "Renk",
+            "body": "Mat siyah; pembe kordon zarif bir kontrast katar."
+          },
+          "finishes": {
+            "title": "Detaylar & bitişler",
+            "body": "Minimal ama karakteristik dokunuşlar.",
+            "bullets": [
+              "Ön kenarlarda pembe kordon",
+              "Kare kol manşetlerinde pembe kordon",
+              "Pratik ve zarif açık ön tasarım"
+            ]
+          },
+          "sleeves": {
+            "title": "Kollar",
+            "body": "Pembe kordonlu manşetli kare kollar."
+          },
+          "closure": {
+            "title": "Kapama",
+            "body": "Önden açık — pratik ve kolay kombinlenir."
+          },
+          "sheila": {
+            "title": "Şal",
+            "body": "Görünümü tamamlayan uyumlu şal dahildir."
+          }
+        }
+      },
+      "linenAline": {
+        "description": "Nefes alabilir saf ketenden klasik A kesim abaya; günlük zarafet ve uyumlu şal ile.",
+        "specs": {
+          "design": {
+            "title": "Tasarım",
+            "body": "Zamansız açık ön keten abaya; mimari ama yumuşak duruş."
+          },
+          "silhouette": {
+            "title": "Kesim",
+            "body": "Hafif hacimli A kesim; rahat hareket."
+          },
+          "fabric": {
+            "title": "Kumaş",
+            "body": "%100 saf organik keten — nefes alan, dokulu ve doğal zarif."
+          },
+          "color": {
+            "title": "Renk",
+            "body": "Kum, zeytin yeşili ve siyah tonlarında."
+          },
+          "finishes": {
+            "title": "Detaylar & bitişler",
+            "body": "Sade butik bitişler.",
+            "bullets": [
+              "Temiz kenar işçiliği",
+              "Hafif yapılı omuz",
+              "Açık ön kullanım kolaylığı"
+            ]
+          },
+          "sleeves": {
+            "title": "Kollar",
+            "body": "Yumuşak manşetli düz kollar."
+          },
+          "closure": {
+            "title": "Kapama",
+            "body": "Günlük kombin için önden açık."
+          },
+          "sheila": {
+            "title": "Şal",
+            "body": "Uyumlu şal dahildir."
+          }
+        }
+      },
+      "oliveHeritage": {
+        "description": "İnce nakışlı zeytin yeşili miras abaya; özel günler için zarif kesim ve uyumlu şal.",
+        "specs": {
+          "design": {
+            "title": "Tasarım",
+            "body": "Modern mütevazı temel üzerinde miras nakış ilhamı."
+          },
+          "silhouette": {
+            "title": "Kesim",
+            "body": "Aşırı hacim olmadan hafif genişleyen kesim."
+          },
+          "fabric": {
+            "title": "Kumaş",
+            "body": "Yumuşak dokunuşlu premium krep-keten karışımı."
+          },
+          "color": {
+            "title": "Renk",
+            "body": "Derin zeytin ve antrasit."
+          },
+          "finishes": {
+            "title": "Detaylar & bitişler",
+            "body": "Sanatsal nakış parçayı yükseltir.",
+            "bullets": [
+              "El rehberli nakış dokunuşları",
+              "Özenli yaka bitişi",
+              "Özel gün detayları"
+            ]
+          },
+          "sleeves": {
+            "title": "Kollar",
+            "body": "Nakışlı manşetli klasik uzun kollar."
+          },
+          "closure": {
+            "title": "Kapama",
+            "body": "İçten gizli sabitlemeli ön bindirme."
+          },
+          "sheila": {
+            "title": "Şal",
+            "body": "Nakış kenarlı uyumlu şal dahildir."
+          }
+        }
+      },
+      "midnightSilk": {
+        "description": "İpek-keten karışımı gece abayası — akışkan döküm, derin siyah ve akşam zarafeti.",
+        "specs": {
+          "design": {
+            "title": "Tasarım",
+            "body": "İpek-keten derinliğiyle rafine bir akşam abayası."
+          },
+          "silhouette": {
+            "title": "Kesim",
+            "body": "Uzun sürekli düşüşlü, sütuna yakın A kesim."
+          },
+          "fabric": {
+            "title": "Kumaş",
+            "body": "Serin konfor ve hafif ışıltı için ipek-keten karışımı."
+          },
+          "color": {
+            "title": "Renk",
+            "body": "Gece siyahı ve antrasit."
+          },
+          "finishes": {
+            "title": "Detaylar & bitişler",
+            "body": "Temiz işçiliğin sessiz lüksü.",
+            "bullets": [
+              "Hassas dikişler",
+              "Yumuşak yapılı yaka",
+              "Akşam ağırlığında döküm"
+            ]
+          },
+          "sleeves": {
+            "title": "Kollar",
+            "body": "Temiz kenarlı uzun kollar."
+          },
+          "closure": {
+            "title": "Kapama",
+            "body": "İsteğe bağlı iç bağcıklı açık ön."
+          },
+          "sheila": {
+            "title": "Şal",
+            "body": "Uyumlu ipek-keten şal dahildir."
+          }
+        }
+      },
+      "travelKimono": {
+        "description": "Hareket için tasarlanmış hafif seyahat kimono abayası — kolay katmanlar, nötr tonlar, paketlenir konfor.",
+        "specs": {
+          "design": {
+            "title": "Tasarım",
+            "body": "Seyahat günleri ve şehir yürüyüşleri için kimono ilhamlı açık abaya."
+          },
+          "silhouette": {
+            "title": "Kesim",
+            "body": "Yumuşak omuz düşüşlü rahat kimono kesim."
+          },
+          "fabric": {
+            "title": "Kumaş",
+            "body": "Yolda buruşmaya dirençli hafif keten karışımı."
+          },
+          "color": {
+            "title": "Renk",
+            "body": "Toprak beji, kum ve fildişi nötrler."
+          },
+          "finishes": {
+            "title": "Detaylar & bitişler",
+            "body": "Seyahat kolaylığı için pratik detaylar.",
+            "bullets": [
+              "Geniş kimono kollar",
+              "Hareket için yan yırtmaç",
+              "Paketlenir hafif yapı"
+            ]
+          },
+          "sleeves": {
+            "title": "Kollar",
+            "body": "Yumuşak kıvrılabilir manşetli geniş kimono kollar."
+          },
+          "closure": {
+            "title": "Kapama",
+            "body": "Tamamen açık kimono ön."
+          }
+        }
+      }
+    }
+  },
+  "ShopPage": {
+    "meta": {
+      "title": "Mağaza",
+      "description": "Linen Line’ın premium abaye, keten silüet ve mütevazı temel parçalar koleksiyonunu keşfedin."
+    },
+    "hero": {
+      "title": "Koleksiyon",
+      "subtitle": "Saf keten ve zarif kumaşlardan seçilmiş abayeler — günlük zarafet için beden, renk ve bitiş seçenekleriyle."
+    },
+    "filters": {
+      "new-in": {
+        "title": "Yeni Gelenler",
+        "subtitle": "Atölyeden yeni silüetler ve taze keten parçalar."
+      },
+      "abayas": {
+        "title": "Tüm Abayeler",
+        "subtitle": "Modern, mütevazı ve özel gün abayelerinin tamamını keşfedin."
+      },
+      "linen": {
+        "title": "Keten Koleksiyonu",
+        "subtitle": "Nefes alan saf keten ve keten karışımı abayeler."
+      },
+      "casual": {
+        "title": "Günlük Abayeler",
+        "subtitle": "Konfor, hareket ve günlük zarafet için zahmetsiz kesimler."
+      },
+      "formal": {
+        "title": "Özel Gün & Resmi",
+        "subtitle": "Sanatsal detaylarla akşam ve etkinlik silüetleri."
+      },
+      "travel": {
+        "title": "Seyahat Abayeleri",
+        "subtitle": "Kolay paketlenir hafif kimono ve seyahat katmanları."
+      },
+      "inners": {
+        "title": "İçlikler",
+        "subtitle": "Abayenizin altında kusursuz oturan temel katmanlar."
+      },
+      "accessories": {
+        "title": "Şal & Aksesuar",
+        "subtitle": "Uyumlu şal, başörtüsü ve tamamlayıcı parçalar."
+      },
+      "sale": {
+        "title": "İndirim",
+        "subtitle": "Seçili parçalar özel fiyatlarla — stoklarla sınırlı."
+      }
+    },
+    "catalog": {
+      "ariaLabel": "Ürün kataloğu",
+      "results": "{count, plural, =0 {Parça yok} one {# parça} other {# parça}}",
+      "filters": "Filtreler",
+      "clearAll": "Tümünü temizle",
+      "apply": "{count, plural, one {# parça göster} other {# parça göster}}",
+      "emptyTitle": "Eşleşen parça yok",
+      "emptyDescription": "Seçiminizi genişletmek için beden, renk veya fiyatı ayarlayın."
+    },
+    "sort": {
+      "label": "Sırala",
+      "featured": "Öne çıkan",
+      "priceAsc": "Fiyat: Düşükten yükseğe",
+      "priceDesc": "Fiyat: Yüksekten düşüğe",
+      "newest": "En yeni"
+    },
+    "panel": {
+      "title": "Daralt",
+      "size": "Beden",
+      "color": "Renk",
+      "selectColor": "{color} ile filtrele",
+      "badge": "Teklifler",
+      "sale": "İndirim",
+      "new": "Yeni gelenler",
+      "price": "Fiyat",
+      "priceMin": "Minimum fiyat",
+      "priceMax": "Maksimum fiyat",
+      "inStock": "Yalnızca stoktakiler",
+      "includesSheila": "Şal dahil"
+    }
   },
   "Currencies": {
     "TRY": "Türk Lirası (₺)",
@@ -56,5 +570,76 @@
     "USD": "ABD Doları ($)",
     "QAR": "Katar Riyali (QAR)",
     "KWD": "Kuveyt Dinarı (KWD)"
+  },
+  "Footer": {
+    "brandTagline": "Saf ketenin zarafetini kutlayan seçkin mütevazı moda.",
+    "brandDescription": "Zahmetsiz bir duruş, mimari kesimler ve zamansız doğal lüks arayan modern kadınlar için tasarlandı.",
+    "newsletter": {
+      "badge": "Özel Ayrıcalıklar",
+      "title": "Keten Çemberine Katılın",
+      "description": "Yeni sezon koleksiyonlarına, özel stil önerilerine ve sınırlı sayıda üretilen abayalara öncelikli erişim sağlayın.",
+      "placeholder": "E-posta adresinizi girin...",
+      "button": "Abone Ol",
+      "subscribing": "Kaydediliyor...",
+      "success": "Keten Çemberine hoş geldiniz. E-postanızı kontrol edin.",
+      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin.",
+      "privacyNote": "Abone olarak Gizlilik Politikamızı kabul etmiş olursunuz. İstediğiniz zaman ayrılabilirsiniz."
+    },
+    "perks": {
+      "organicLinen": {
+        "title": "%100 Saf Doğal Keten",
+        "desc": "Özenle dokunmuş nefes alabilir ve etik kumaşlar"
+      },
+      "shipping": {
+        "title": "Hızlı ve Güvenilir Teslimat",
+        "desc": "Belirli siparişlerde ücretsiz kargo avantajı"
+      },
+      "exchanges": {
+        "title": "14 Gün Kolay Değişim & İade",
+        "desc": "Zahmetsiz beden değişimi ve iade süreci"
+      },
+      "concierge": {
+        "title": "Özel Stil Danışmanlığı",
+        "desc": "Abaya boy ve beden seçiminde uzman desteği"
+      }
+    },
+    "columns": {
+      "collections": "Koleksiyonlar",
+      "services": "Müşteri Hizmetleri",
+      "atelier": "Hakkımızda",
+      "connect": "İletişim & Butik"
+    },
+    "links": {
+      "newArrivals": "Yeni Gelenler",
+      "linenCollection": "Saf Keten Serisi",
+      "formal": "Özel Gün & Davet",
+      "casual": "Günlük Abayalar",
+      "travel": "Seyahat & Kimono Abayalar",
+      "inners": "İç Elbiseler",
+      "sheilas": "Şallar & Aksesuarlar",
+      "sizeGuide": "Beden & Boy Kılavuzu",
+      "fabricCare": "Keten Bakım Rehberi",
+      "orderTracking": "Sipariş Takibi",
+      "shippingInfo": "Teslimat & Kargo",
+      "returns": "İade ve Değişim",
+      "faq": "Sıkça Sorulan Sorular",
+      "aboutUs": "Hikayemiz & Mirasımız",
+      "linenPhilosophy": "Keten Felsefesi",
+      "sustainability": "Zanaatkarlık & Sürdürülebilirlik",
+      "boutiques": "Mağazalarımız",
+      "contact": "Bize Ulaşın",
+      "privacyPolicy": "Gizlilik Politikası",
+      "termsOfService": "Kullanım Koşulları",
+      "cookiePolicy": "Çerez Ayarları"
+    },
+    "concierge": {
+      "title": "Doğrudan Danışmanlık",
+      "hours": "Pzt - Cmt: 09:00 - 21:00 (TSİ)",
+      "whatsapp": "WhatsApp ile İletişime Geçin",
+      "email": "concierge@linenlinestore.com"
+    },
+    "backToTop": "Yukarı Çık",
+    "allRightsReserved": "Tüm hakları saklıdır.",
+    "paymentSecure": "Güvenli ve Şifreli Ödeme"
   }
 }

@@ -35,7 +35,13 @@ const CURRENCIES: CurrencyOption[] = [
   { code: "KWD", icon: TbCurrencyDinar },
 ];
 
-export function CurrencyDropdown({ className }: { className?: string }) {
+export function CurrencyDropdown({
+  className,
+  contentClassName,
+}: {
+  className?: string;
+  contentClassName?: string;
+}) {
   const t = useTranslations("Currencies");
   const { currency, setCurrency } = useCurrency();
 
@@ -63,7 +69,10 @@ export function CurrencyDropdown({ className }: { className?: string }) {
         <ChevronDown className="size-3 text-muted-foreground transition-transform duration-200" />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-48 p-1">
+      <DropdownMenuContent
+        align="end"
+        className={cn("w-48 p-1", contentClassName)}
+      >
         {CURRENCIES.map(({ code, icon: IconComponent }) => {
           const isSelected = currency === code;
           return (

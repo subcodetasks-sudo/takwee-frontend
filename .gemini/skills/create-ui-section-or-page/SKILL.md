@@ -1,6 +1,6 @@
 ---
 name: create-ui-section-or-page
-description: Guide and standard workflow for creating UI pages or sections using the page-shell utility class, global animation wrappers, and preserving Server Component (RSC) architecture for optimal SEO.
+description: Guide and standard workflow for creating UI pages or sections using the page-shell utility class, global animation wrappers, shadcn tooltips on UI icons, and preserving Server Component (RSC) architecture for optimal SEO.
 ---
 
 # Create UI Section or Page Skill
@@ -24,6 +24,11 @@ This skill provides step-by-step instructions and architectural patterns for cre
    - Update message keys across `messages/ar.json`, `messages/en.json`, and `messages/tr.json`.
 5. **Color & Design Tokens**:
    - Strictly use semantic color tokens (`bg-background`, `text-foreground`, `bg-card`, `bg-primary`, `text-primary-foreground`, `border-border`, `text-muted-foreground`, etc.).
+6. **Tooltips on Small UI Icons & Icon Actions (Accessibility & Clarity)**:
+   - Whenever a small icon, icon-only button, badge, or interactive control appears in the UI (e.g., favorite/wishlist, add-to-cart, filter, share, info, quick action):
+     - Always wrap it with shadcn **Tooltip** components from `@/components/ui/tooltip` (`<TooltipProvider delay={100}>`, `<Tooltip>`, `<TooltipTrigger>`, `<TooltipContent>`).
+     - Always provide localized text inside `<TooltipContent>` and an accessible `aria-label` on the trigger or interactive element.
+     - Specify appropriate placement (`side="top" | "bottom" | "inline-start" | "inline-end"`) and `sideOffset={6}`.
 
 ---
 
@@ -106,6 +111,58 @@ export default async function CustomPage({ params }: Props) {
 }
 ```
 
+### 3. Small Icon Tooltip Pattern (shadcn Tooltip)
+
+Whenever an icon-only button, small icon, or quick action appears in UI cards, headers, or interactive toolbars:
+
+```tsx
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Heart } from "lucide-react"
+
+// Inside client component or interactive card:
+<TooltipProvider delay={100}>
+  <Tooltip>
+    <TooltipTrigger
+      type="button"
+      aria-label={t("favorites")}
+      className="flex size-8 sm:size-9 items-center justify-center rounded-lg border border-border text-foreground hover:bg-muted transition-colors"
+      onClick={handleToggleFavorite}
+    >
+      <Heart className="size-4 sm:size-5" />
+    </TooltipTrigger>
+    <TooltipContent side="top" sideOffset={6} className="text-xs font-medium">
+      {t("favorites")}
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+```
+
+When rendering an existing interactive link or button primitive, use the `render` prop on `TooltipTrigger`:
+
+```tsx
+<Tooltip>
+  <TooltipTrigger
+    render={
+      <Link
+        href="/cart"
+        aria-label={t("cart")}
+        className="flex size-9 items-center justify-center rounded-lg hover:bg-muted"
+      />
+    }
+  >
+    <ShoppingBasket className="size-5" />
+  </TooltipTrigger>
+  <TooltipContent side="bottom" sideOffset={6} className="text-xs font-medium">
+    {t("cart")}
+  </TooltipContent>
+</Tooltip>
+```
+
 ---
 
 ## Summary of Global Utilities & Helpers
@@ -113,3 +170,4 @@ export default async function CustomPage({ params }: Props) {
 - **CSS Utility**: `page-shell` (in `app/globals.css`)
 - **Full Bleed Utility**: `full-bleed` (in `app/globals.css`)
 - **Animation Wrappers**: `@/components/animations` (`<FadeIn />`, `<StaggerContainer />`, `<StaggerItem />`)
+- **Icon Tooltips**: `@/components/ui/tooltip` (`<TooltipProvider />`, `<Tooltip />`, `<TooltipTrigger />`, `<TooltipContent />`)

@@ -3,16 +3,23 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { Heart, ShoppingBag, Search, X } from "lucide-react";
+import { Heart, ShoppingBasket, Search, X, User } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/routing";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchBar } from "./SearchBar";
-import { MobileNav } from "./MobileNav";
+import CardNav, { type CardNavItem } from "@/components/CardNav";
 import { CurrencyDropdown } from "./CurrencyDropdown";
 import { LanguageDropdown } from "./LanguageDropdown";
 import TextLoop from "@/components/TextLoop";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const slideTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
@@ -31,16 +38,43 @@ export function Header() {
   const favoriteItemCount = 3;
 
   const navLinks = [
-    { href: "/new-in", label: t("newArrivals"), badge: "New", highlight: true },
-    { href: "/abayas", label: t("allAbayas") },
-    { href: "/linen-collection", label: t("linenCollection") },
-    { href: "/casual", label: t("casualAbayas") },
-    { href: "/formal", label: t("formalAbayas") },
-    { href: "/travel", label: t("travelAbayas") },
-    { href: "/inners", label: t("dressesAndInners") },
-    { href: "/accessories", label: t("accessories") },
-    { href: "/sale", label: t("sale"), highlight: true },
+    { href: "/shop/new-in", label: t("newArrivals"), badge: "New", highlight: true },
+    { href: "/shop", label: t("allAbayas") },
+    { href: "/shop/linen", label: t("linenCollection") },
+    { href: "/shop/casual", label: t("casualAbayas") },
+    { href: "/shop/formal", label: t("formalAbayas") },
+    { href: "/shop/travel", label: t("travelAbayas") },
+    { href: "/shop/inners", label: t("dressesAndInners") },
+    { href: "/shop/accessories", label: t("accessories") },
+    { href: "/shop/sale", label: t("sale"), highlight: true },
   ];
+
+  const mobileNavCards = React.useMemo<CardNavItem[]>(
+    () => [
+      {
+        label: t("navExplore"),
+        className: "bg-primary text-primary-foreground",
+        links: [
+          { label: t("newArrivals"), href: "/shop/new-in", ariaLabel: t("newArrivals") },
+          { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
+          { label: t("linenCollection"), href: "/shop/linen", ariaLabel: t("linenCollection") },
+          { label: t("sale"), href: "/shop/sale", ariaLabel: t("sale") },
+        ],
+      },
+      {
+        label: t("navCategories"),
+        className: "bg-secondary text-secondary-foreground",
+        links: [
+          { label: t("casualAbayas"), href: "/shop/casual", ariaLabel: t("casualAbayas") },
+          { label: t("formalAbayas"), href: "/shop/formal", ariaLabel: t("formalAbayas") },
+          { label: t("travelAbayas"), href: "/shop/travel", ariaLabel: t("travelAbayas") },
+          { label: t("dressesAndInners"), href: "/shop/inners", ariaLabel: t("dressesAndInners") },
+          { label: t("accessories"), href: "/shop/accessories", ariaLabel: t("accessories") },
+        ],
+      },
+    ],
+    [t],
+  );
 
   useLayoutEffect(() => {
     const el = mainBarRef.current;
@@ -58,8 +92,12 @@ export function Header() {
     let previousScrollY = window.scrollY;
 
     const handleScroll = () => {
-      if (isMenuOpen) {
+      // Keep the main bar pinned while menu or mobile search is open —
+      // focusing/expanding search often nudges scrollY on mobile and would
+      // otherwise trigger the hide/show animation.
+      if (isMenuOpen || isMobileSearchOpen) {
         setHidden(false);
+        previousScrollY = window.scrollY;
         return;
       }
 
@@ -68,7 +106,6 @@ export function Header() {
 
       if (currentScrollY > 80 && diff > 5) {
         setHidden(true);
-        setIsMobileSearchOpen(false);
       } else if (diff < -5 || currentScrollY <= 80) {
         setHidden(false);
       }
@@ -78,10 +115,10 @@ export function Header() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isMobileSearchOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full">
+    <header className={cn("sticky top-0 z-40 w-full", isMenuOpen && "z-[70]")}>
       {/* Always pinned */}
       <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary">
         <TextLoop
@@ -112,11 +149,9 @@ export function Header() {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 sm:h-20 gap-3 sm:gap-6">
             <div className="flex items-center min-[1117px]:hidden">
-              <MobileNav
-                navLinks={navLinks}
-                cartCount={cartItemCount}
-                favCount={favoriteItemCount}
-                onMenuOpenChange={(open) => {
+              <CardNav
+                items={mobileNavCards}
+                onOpenChange={(open) => {
                   setIsMenuOpen(open);
                   if (open) setHidden(false);
                 }}
@@ -161,7 +196,13 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                onClick={() => {
+                  setIsMobileSearchOpen((open) => {
+                    const next = !open;
+                    if (next) setHidden(false);
+                    return next;
+                  });
+                }}
                 className="min-[1117px]:hidden size-9 text-foreground hover:bg-muted"
                 aria-label={t("searchButton")}
               >
@@ -172,31 +213,86 @@ export function Header() {
                 )}
               </Button>
 
-              <Link
-                href="/favorites"
-                className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg hover:bg-muted text-foreground hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
-                aria-label={t("favorites")}
-              >
-                <Heart className="size-5 transition-transform group-hover:scale-110" />
-                {favoriteItemCount > 0 && (
-                  <span className="absolute -top-1 -end-1 flex items-center justify-center size-4 sm:size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold shadow-xs">
-                    {favoriteItemCount}
-                  </span>
-                )}
-              </Link>
+              <TooltipProvider delay={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        type="button"
+                        disabled
+                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg text-foreground opacity-70 cursor-not-allowed"
+                        aria-label={t("favorites")}
+                      />
+                    }
+                  >
+                    <Heart className="size-5" />
+                    {favoriteItemCount > 0 && (
+                      <span className="absolute -top-1 -end-1 flex items-center justify-center size-4 sm:size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold shadow-xs">
+                        {favoriteItemCount}
+                      </span>
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {t("favorites")}
+                  </TooltipContent>
+                </Tooltip>
 
-              <Link
-                href="/cart"
-                className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg bg-primary-50 dark:bg-primary-950/50 hover:bg-primary-100 dark:hover:bg-primary-900/60 text-primary-900 dark:text-primary-100 border border-primary-200/60 dark:border-primary-800/40 transition-all hover:shadow-xs"
-                aria-label={t("cart")}
-              >
-                <ShoppingBag className="size-5 text-primary-800 dark:text-primary-200" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1.5 -end-1.5 flex items-center justify-center min-w-4 h-4 sm:min-w-4.5 sm:h-4.5 px-1 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold shadow-xs">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Link
+                        href="/cart"
+                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg bg-primary-50 dark:bg-primary-950/50 hover:bg-primary-100 dark:hover:bg-primary-900/60 text-primary-900 dark:text-primary-100 border border-primary-200/60 dark:border-primary-800/40 transition-all hover:shadow-xs"
+                        aria-label={t("cart")}
+                      />
+                    }
+                  >
+                    <ShoppingBasket className="size-5 text-primary-800 dark:text-primary-200" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1.5 -end-1.5 flex items-center justify-center min-w-4 h-4 sm:min-w-4.5 sm:h-4.5 px-1 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold shadow-xs">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {t("cart")}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Link
+                        href="/me"
+                        className="relative hidden min-[1117px]:flex items-center justify-center rounded-full hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-transform active:scale-95"
+                        aria-label={t("account")}
+                      />
+                    }
+                  >
+                    <Avatar className="size-10 sm:size-11 border border-border/80 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+                      <AvatarImage src="" alt={t("account")} />
+                      <AvatarFallback className="bg-primary-50 dark:bg-primary-950/60 text-primary-800 dark:text-primary-200 font-medium">
+                        <User className="size-5 sm:size-5.5" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {t("account")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
 

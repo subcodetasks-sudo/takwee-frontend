@@ -4,6 +4,84 @@
     "description": "Blank home page ready for feature development.",
     "switchLocale": "العربية"
   },
+  "ProfilePage": {
+    "title": "My Account",
+    "description": "User profile and account settings.",
+    "authNote": "Sign in and sign out will appear here when account authentication is available.",
+    "sections": {
+      "account": "Your account"
+    },
+    "hero": {
+      "eyebrow": "My account",
+      "memberSince": "Member since {date}"
+    },
+    "quickLinks": {
+      "orders": {
+        "label": "My orders",
+        "description": "Track and review your purchases"
+      },
+      "wishlist": {
+        "label": "Wishlist",
+        "description": "Saved pieces for later",
+        "comingSoon": "Soon"
+      },
+      "addresses": {
+        "label": "Addresses",
+        "description": "Delivery and billing details"
+      },
+      "settings": {
+        "label": "Settings",
+        "description": "Preferences and account options"
+      }
+    },
+    "preferences": {
+      "title": "Language & currency",
+      "subtitle": "Choose how you browse and shop"
+    },
+    "orders": {
+      "metaTitle": "My Orders",
+      "metaDescription": "View and track your Linen Line orders.",
+      "title": "My orders",
+      "subtitle": "A quiet record of your recent purchases.",
+      "backToAccount": "Back to account",
+      "orderNumber": "Order {number}",
+      "placedOn": "Placed {date}",
+      "itemCount": "{count, plural, one {# item} other {# items}}",
+      "status": {
+        "delivered": "Delivered",
+        "shipped": "Shipped",
+        "processing": "Processing",
+        "cancelled": "Cancelled"
+      },
+      "empty": {
+        "title": "No orders yet",
+        "description": "When you place an order, it will appear here.",
+        "cta": "Browse the shop"
+      }
+    },
+    "addresses": {
+      "metaTitle": "Addresses",
+      "metaDescription": "Manage your delivery and billing addresses.",
+      "title": "Addresses",
+      "subtitle": "Where we send your orders.",
+      "backToAccount": "Back to account",
+      "comingSoon": {
+        "title": "Address book coming soon",
+        "description": "You will be able to save and edit delivery addresses here."
+      }
+    },
+    "settings": {
+      "metaTitle": "Settings",
+      "metaDescription": "Account preferences and settings.",
+      "title": "Settings",
+      "subtitle": "Fine-tune how your account feels.",
+      "backToAccount": "Back to account",
+      "comingSoon": {
+        "title": "More settings coming soon",
+        "description": "Profile details and notifications will live here. Language and currency are available below."
+      }
+    }
+  },
   "Categories": {
     "title": "Shop by Category",
     "subtitle": "Explore curated abayas and essentials, from everyday linen to occasion-ready silhouettes.",
@@ -44,10 +122,446 @@
     "cart": "Shopping Bag",
     "favorites": "Wishlist",
     "account": "My Account",
+    "myOrders": "My Orders",
+    "closeMenu": "Close menu",
+    "navExplore": "Explore",
+    "navCategories": "Categories",
     "currency": "Currency",
     "language": "Language",
     "menu": "Menu",
     "announcement": "Worldwide & Regional Express Shipping | Discover Our Pure Linen Collection"
+  },
+  "AdditionalSections": {
+    "viewMore": "View more",
+    "shopCollection": "Shop collection",
+    "sections": {
+      "newArrivals": {
+        "title": "New Arrivals",
+        "description": "Refined linen abayas in earthy palettes, tailored for everyday ease and occasion.",
+        "bannerAlt": "New arrivals collection banner"
+      },
+      "linenEdit": {
+        "title": "The Linen Edit",
+        "description": "Breathable pure linen cuts for warm days — minimal, light, and endlessly wearable.",
+        "bannerAlt": "Linen edit collection banner"
+      },
+      "eveningEdit": {
+        "title": "Evening & Occasion",
+        "description": "Fluid silk-linen silhouettes with subtle detail, made for evenings that call for quiet luxury.",
+        "bannerAlt": "Evening and occasion collection banner"
+      }
+    }
+  },
+  "ProductCard": {
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "goToImage": "View image {index}",
+    "imageIndex": "Image {current} of {total}",
+    "selectColor": "Select {color}",
+    "addToCart": "Add to Cart",
+    "addedToCart": "Added to Cart",
+    "sale": "Sale",
+    "new": "New",
+    "discount": "-{percent}%",
+    "ratingAria": "{rating} out of 5 stars",
+    "colors": {
+      "black": "Black",
+      "olive": "Olive",
+      "sand": "Sand",
+      "ivory": "Ivory",
+      "charcoal": "Charcoal",
+      "taupe": "Taupe"
+    }
+  },
+  "Products": {
+    "turkishJacquardPinkCord": "Turkish Jacquard Black Abaya with Pink Cord",
+    "linenAline": "Classic Linen A-Line Abaya",
+    "oliveHeritage": "Olive Heritage Embroidered Abaya",
+    "midnightSilk": "Midnight Silk & Linen Abaya",
+    "travelKimono": "Travel Kimono Abaya"
+  },
+  "ProductDetails": {
+    "modelNumber": "Model No.",
+    "weight": "Weight",
+    "weightValue": "{value} kg",
+    "sizeGuideLabel": "Size guide",
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "addedToCart": "Added to Cart",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "save": "Save",
+    "discount": "-{percent}%",
+    "inclusiveVat": "Taxes included",
+    "reviewCount": "({count} reviews)",
+    "new": "New",
+    "color": "Color",
+    "selectColor": "Select {color}",
+    "selectSize": "Select size",
+    "increaseQuantity": "Increase quantity",
+    "decreaseQuantity": "Decrease quantity",
+    "goToImage": "View image {index}",
+    "imageIndex": "Image {current} of {total}",
+    "hoverToZoom": "Hover to zoom",
+    "detailsHeading": "Details",
+    "reviewsEmpty": "No reviews yet. Be the first to share how this abaya feels and fits.",
+    "related": {
+      "title": "You may also like",
+      "subtitle": "Complementary pieces chosen to pair with this look.",
+      "previous": "Previous products",
+      "next": "Next products"
+    },
+    "tabs": {
+      "details": "Product details",
+      "reviews": "Reviews"
+    },
+    "reviewsSection": {
+      "overallScore": "4.9",
+      "outOf": "out of 5",
+      "basedOn": "Based on {count} verified reviews",
+      "recommendation": "98% of customers recommend this abaya",
+      "writeReview": "Write a Review",
+      "cancel": "Cancel",
+      "submit": "Submit Review",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "e.g. Layla M.",
+      "ratingLabel": "Overall Rating",
+      "titleLabel": "Review Headline",
+      "titlePlaceholder": "e.g., Exquisite drape & perfect length",
+      "commentLabel": "Review Comment",
+      "commentPlaceholder": "Share details about the fabric feel, drape, and sizing...",
+      "sizeLabel": "Size Purchased (optional)",
+      "sizePurchased": "Size: {size}",
+      "successMessage": "Thank you! Your review has been published.",
+      "verifiedBuyer": "Verified Buyer",
+      "helpful": "Helpful",
+      "filterAll": "All Reviews ({count})",
+      "starsLabel": "{stars} Stars"
+    },
+    "heightCalculator": {
+      "title": "Calculate Size by Height",
+      "subtitle": "Enter your height to find your ideal abaya length",
+      "placeholder": "e.g. 165",
+      "unit": "cm",
+      "recommended": "Recommended size:",
+      "garmentLength": "Garment length: {length} cm",
+      "apply": "Select size {size}",
+      "applied": "Selected",
+      "heelsTip": "If wearing heels or prefer floor-length drape, consider sizing up.",
+      "outOfRange": "Enter a height between 140 and 195 cm"
+    },
+    "sizeGuide": {
+      "view": "Size guide",
+      "title": "Abaya Sizing & Fit Guide",
+      "description": "Choose your abaya length based on your overall height. Bust width is tailored for an effortless, modest drape.",
+      "size": "Size",
+      "length": "Garment Length",
+      "bust": "Bust Width",
+      "height": "Recommended Height",
+      "cm": "{value} cm",
+      "inch": "{value} in",
+      "note": "Need a custom length? Contact our styling concierge for bespoke adjustments.",
+      "tabChart": "Size Chart",
+      "tabHowToMeasure": "How to Measure",
+      "unitCm": "CM",
+      "unitInch": "Inches",
+      "selected": "Selected",
+      "selectThisSize": "Select size {size}",
+      "measureLengthTitle": "Garment Length",
+      "measureLengthDesc": "Measure from the highest point of the shoulder straight down to your ankle or preferred hemline.",
+      "measureBustTitle": "Bust & Drape",
+      "measureBustDesc": "Measure under arms across the fullest part of the bust. Modest cuts allow graceful flow and ease.",
+      "measureSleeveTitle": "Sleeve Length",
+      "measureSleeveDesc": "Measure from the outer edge of your shoulder bone down past your wrist bone.",
+      "conciergeTitle": "Bespoke Sizing & Styling Advice",
+      "conciergeDesc": "Unsure between two sizes or desire a custom alteration? Our boutique stylists are at your service."
+    },
+    "products": {
+      "turkishJacquardPinkCord": {
+        "description": "A matte black A-line abaya in lightweight Turkish washed jacquard, finished with soft pink cord on the front edges and square sleeve cuffs, with a matching sheila.",
+        "specs": {
+          "design": {
+            "title": "Design",
+            "body": "An open-front black abaya that pairs matte black simplicity with delicate pink cord accents along the edges."
+          },
+          "silhouette": {
+            "title": "Silhouette",
+            "body": "A fluid A-line cut with soft drape for a polished, elegant line."
+          },
+          "fabric": {
+            "title": "Fabric",
+            "body": "Turkish washed jacquard — light, soft, and beautifully draping for everyday comfort."
+          },
+          "color": {
+            "title": "Color",
+            "body": "Matte black with pink cord that adds a refined, feminine contrast."
+          },
+          "finishes": {
+            "title": "Finishes & detailing",
+            "body": "Thoughtful accents keep the look minimal yet distinctive.",
+            "bullets": [
+              "Pink cord along the front edges",
+              "Pink cord on the square sleeve cuffs",
+              "Open-front design for easy styling"
+            ]
+          },
+          "sleeves": {
+            "title": "Sleeves",
+            "body": "Square sleeves with cord-trimmed cuffs."
+          },
+          "closure": {
+            "title": "Closure",
+            "body": "Open front — practical and easy to layer."
+          },
+          "sheila": {
+            "title": "Sheila",
+            "body": "Includes a matching sheila to complete the look."
+          }
+        }
+      },
+      "linenAline": {
+        "description": "A classic A-line abaya in pure breathable linen, cut for everyday ease with a clean modest silhouette and matching sheila.",
+        "specs": {
+          "design": {
+            "title": "Design",
+            "body": "A timeless open-front linen abaya with an architectural yet soft presence."
+          },
+          "silhouette": {
+            "title": "Silhouette",
+            "body": "A-line cut with gentle volume through the hem for effortless movement."
+          },
+          "fabric": {
+            "title": "Fabric",
+            "body": "100% pure organic linen — breathable, textured, and naturally elegant."
+          },
+          "color": {
+            "title": "Color",
+            "body": "Available in sand, olive, and black earth-toned colorways."
+          },
+          "finishes": {
+            "title": "Finishes & detailing",
+            "body": "Minimal finishing for a refined boutique look.",
+            "bullets": [
+              "Clean edge finishing",
+              "Subtle structured shoulders",
+              "Open-front wearability"
+            ]
+          },
+          "sleeves": {
+            "title": "Sleeves",
+            "body": "Straight sleeves with a soft cuff finish."
+          },
+          "closure": {
+            "title": "Closure",
+            "body": "Open front for versatile everyday styling."
+          },
+          "sheila": {
+            "title": "Sheila",
+            "body": "Includes a matching sheila."
+          }
+        }
+      },
+      "oliveHeritage": {
+        "description": "An olive heritage abaya with delicate embroidery, crafted for occasion wear with a graceful silhouette and coordinating sheila.",
+        "specs": {
+          "design": {
+            "title": "Design",
+            "body": "Heritage-inspired embroidery on a modern modest foundation."
+          },
+          "silhouette": {
+            "title": "Silhouette",
+            "body": "Slightly flared cut that flatters without excess volume."
+          },
+          "fabric": {
+            "title": "Fabric",
+            "body": "Premium crepe-linen blend with a soft hand feel."
+          },
+          "color": {
+            "title": "Color",
+            "body": "Deep olive and charcoal colorways."
+          },
+          "finishes": {
+            "title": "Finishes & detailing",
+            "body": "Artisanal embroidery elevates the piece.",
+            "bullets": [
+              "Hand-guided embroidery accents",
+              "Refined neckline finish",
+              "Occasion-ready detailing"
+            ]
+          },
+          "sleeves": {
+            "title": "Sleeves",
+            "body": "Classic long sleeves with embroidered cuff detail."
+          },
+          "closure": {
+            "title": "Closure",
+            "body": "Front overlap with discreet inner fastening."
+          },
+          "sheila": {
+            "title": "Sheila",
+            "body": "Includes a matching embroidered-edge sheila."
+          }
+        }
+      },
+      "midnightSilk": {
+        "description": "A luxurious midnight abaya in silk-linen blend — fluid drape, deep black presence, and evening-ready polish.",
+        "specs": {
+          "design": {
+            "title": "Design",
+            "body": "A refined evening abaya with luminous silk-linen depth."
+          },
+          "silhouette": {
+            "title": "Silhouette",
+            "body": "Column-leaning A-line with a long, continuous fall."
+          },
+          "fabric": {
+            "title": "Fabric",
+            "body": "Silk and linen blend for cool comfort with subtle sheen."
+          },
+          "color": {
+            "title": "Color",
+            "body": "Midnight black and charcoal."
+          },
+          "finishes": {
+            "title": "Finishes & detailing",
+            "body": "Quiet luxury through clean construction.",
+            "bullets": [
+              "Precision seams",
+              "Soft structured collar",
+              "Evening-weight drape"
+            ]
+          },
+          "sleeves": {
+            "title": "Sleeves",
+            "body": "Elongated sleeves with a clean hem."
+          },
+          "closure": {
+            "title": "Closure",
+            "body": "Open front with optional inner ties."
+          },
+          "sheila": {
+            "title": "Sheila",
+            "body": "Includes a matching silk-linen sheila."
+          }
+        }
+      },
+      "travelKimono": {
+        "description": "A lightweight travel kimono abaya designed for movement — easy layers, soft neutrals, and packable comfort.",
+        "specs": {
+          "design": {
+            "title": "Design",
+            "body": "Kimono-inspired open abaya built for travel days and city walks."
+          },
+          "silhouette": {
+            "title": "Silhouette",
+            "body": "Relaxed kimono cut with soft shoulder drop."
+          },
+          "fabric": {
+            "title": "Fabric",
+            "body": "Light linen blend that resists creasing on the go."
+          },
+          "color": {
+            "title": "Color",
+            "body": "Taupe, sand, and ivory neutrals."
+          },
+          "finishes": {
+            "title": "Finishes & detailing",
+            "body": "Practical details for travel ease.",
+            "bullets": [
+              "Wide kimono sleeves",
+              "Side slit mobility",
+              "Packable lightweight construction"
+            ]
+          },
+          "sleeves": {
+            "title": "Sleeves",
+            "body": "Wide kimono sleeves with a soft roll cuff."
+          },
+          "closure": {
+            "title": "Closure",
+            "body": "Fully open kimono front."
+          }
+        }
+      }
+    }
+  },
+  "ShopPage": {
+    "meta": {
+      "title": "Shop",
+      "description": "Browse the Linen Line collection of premium abayas, linen silhouettes, and modest essentials."
+    },
+    "hero": {
+      "title": "The Collection",
+      "subtitle": "Curated abayas in pure linen and refined fabrics — sized, coloured, and finished for everyday poise."
+    },
+    "filters": {
+      "new-in": {
+        "title": "New Arrivals",
+        "subtitle": "Fresh silhouettes and newly released linen pieces from the atelier."
+      },
+      "abayas": {
+        "title": "All Abayas",
+        "subtitle": "Explore the full range of modern, modest, and occasion-ready abayas."
+      },
+      "linen": {
+        "title": "Linen Collection",
+        "subtitle": "Breathable pure linen and linen-blend abayas for elevated everyday wear."
+      },
+      "casual": {
+        "title": "Casual Abayas",
+        "subtitle": "Effortless cuts designed for comfort, movement, and daily elegance."
+      },
+      "formal": {
+        "title": "Occasion & Formal",
+        "subtitle": "Refined evening and event silhouettes with artisanal detail."
+      },
+      "travel": {
+        "title": "Travel Abayas",
+        "subtitle": "Lightweight kimonos and travel-ready layers that pack with ease."
+      },
+      "inners": {
+        "title": "Inners & Slips",
+        "subtitle": "Foundational layers crafted to sit seamlessly beneath your abaya."
+      },
+      "accessories": {
+        "title": "Sheilas & Accessories",
+        "subtitle": "Matching sheilas, hijabs, and finishing pieces for a complete look."
+      },
+      "sale": {
+        "title": "Sale",
+        "subtitle": "Selected pieces at refined prices — while stocks last."
+      }
+    },
+    "catalog": {
+      "ariaLabel": "Product catalog",
+      "results": "{count, plural, =0 {No pieces} one {# piece} other {# pieces}}",
+      "filters": "Filters",
+      "clearAll": "Clear all",
+      "apply": "Show {count, plural, one {# piece} other {# pieces}}",
+      "emptyTitle": "No pieces match",
+      "emptyDescription": "Try adjusting sizes, colours, or price to widen your selection."
+    },
+    "sort": {
+      "label": "Sort by",
+      "featured": "Featured",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "newest": "Newest"
+    },
+    "panel": {
+      "title": "Refine",
+      "size": "Size",
+      "color": "Colour",
+      "selectColor": "Filter by {color}",
+      "badge": "Offers",
+      "sale": "Sale",
+      "new": "New arrivals",
+      "price": "Price",
+      "priceMin": "Minimum price",
+      "priceMax": "Maximum price",
+      "inStock": "In stock only",
+      "includesSheila": "Includes sheila"
+    }
   },
   "Currencies": {
     "TRY": "Turkish Lira (₺)",
@@ -56,5 +570,76 @@
     "USD": "US Dollar ($)",
     "QAR": "Qatari Riyal (QAR)",
     "KWD": "Kuwaiti Dinar (KWD)"
+  },
+  "Footer": {
+    "brandTagline": "Artisanal modest wear celebrating the raw elegance of pure linen.",
+    "brandDescription": "Crafted for the modern muse who seeks effortless poise, architectural silhouettes, and timeless natural luxury.",
+    "newsletter": {
+      "badge": "VIP Privileges",
+      "title": "Join The Linen Circle",
+      "description": "Receive private invitations to seasonal drops, bespoke linen styling edits, and priority access to limited edition abayas.",
+      "placeholder": "Enter your email address...",
+      "button": "Subscribe",
+      "subscribing": "Subscribing...",
+      "success": "Welcome to The Linen Circle. Check your inbox soon.",
+      "invalidEmail": "Please enter a valid email address.",
+      "privacyNote": "By subscribing, you agree to our Privacy Policy. Unsubscribe anytime."
+    },
+    "perks": {
+      "organicLinen": {
+        "title": "100% Pure Organic Linen",
+        "desc": "Breathable artisanal fabrics sourced ethically"
+      },
+      "shipping": {
+        "title": "Express Regional Shipping",
+        "desc": "Complimentary delivery on qualified orders"
+      },
+      "exchanges": {
+        "title": "14-Day Seamless Returns",
+        "desc": "Effortless size swaps and boutique exchanges"
+      },
+      "concierge": {
+        "title": "Bespoke Styling Concierge",
+        "desc": "Expert sizing consultation & length advice"
+      }
+    },
+    "columns": {
+      "collections": "Collections",
+      "services": "Client Care",
+      "atelier": "The Atelier",
+      "connect": "Concierge & Boutiques"
+    },
+    "links": {
+      "newArrivals": "New Arrivals",
+      "linenCollection": "Pure Linen Series",
+      "formal": "Occasion & Evening",
+      "casual": "Everyday Essentials",
+      "travel": "Travel Abayas & Kimonos",
+      "inners": "Inners & Slips",
+      "sheilas": "Sheilas & Hijabs",
+      "sizeGuide": "Abaya Sizing & Fit Guide",
+      "fabricCare": "Linen Care Instructions",
+      "orderTracking": "Track Your Order",
+      "shippingInfo": "Shipping & Duties",
+      "returns": "Returns & Exchanges",
+      "faq": "Frequently Asked Questions",
+      "aboutUs": "Our Heritage & Story",
+      "linenPhilosophy": "The Linen Philosophy",
+      "sustainability": "Artisanal Craftsmanship",
+      "boutiques": "Boutique Locations",
+      "contact": "Contact Our Team",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Settings"
+    },
+    "concierge": {
+      "title": "Direct Concierge",
+      "hours": "Mon - Sat: 9:00 AM - 9:00 PM (GMT+3)",
+      "whatsapp": "Chat on WhatsApp",
+      "email": "concierge@linenlinestore.com"
+    },
+    "backToTop": "Back to top",
+    "allRightsReserved": "All rights reserved.",
+    "paymentSecure": "Encrypted & Secure Checkout"
   }
 }

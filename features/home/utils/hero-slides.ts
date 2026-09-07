@@ -8,7 +8,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     titleKey: "slide1Title",
     descriptionKey: "slide1Description",
     ctaKey: "slide1Cta",
-    href: "/linen-collection",
+    href: "/shop/linen",
   },
   {
     id: "slide-2",
@@ -17,7 +17,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     titleKey: "slide2Title",
     descriptionKey: "slide2Description",
     ctaKey: "slide2Cta",
-    href: "/casual",
+    href: "/shop/casual",
   },
   {
     id: "slide-3",
@@ -26,6 +26,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     titleKey: "slide3Title",
     descriptionKey: "slide3Description",
     ctaKey: "slide3Cta",
-    href: "/formal",
+    href: "/shop/formal",
   },
 ];

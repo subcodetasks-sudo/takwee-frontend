@@ -14,13 +14,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 **Linen Line Store** is an elegant, high-end e-commerce boutique specializing in premium **Abayas** (modern, luxury, minimalist, and traditional modest wear) crafted with fine linen and premium fabrics.
 - **Brand Aesthetic & Identity**: Elegant, modest, clean, luxurious, and earthy/minimalist. The user experience should feel sophisticated, seamless, and tailored for fashion-forward modest clothing shoppers.
 - **Domain Essentials**:
-  - **Product Types**: Abayas (e.g., Casual, Formal/Event, Travel, Embroidered, Silk/Linen Blends), matching Sheilas/Hijabs, inner dresses, and accessories.
+  - **Product Types**: Abayas (e.g., Casual, Formal/Event, Travel, Embroidered, Silk/Linen Blends), matching Sheilas/Hijabs, inner dresses, and accessories. Catalog routes are product-type agnostic so the store can expand beyond abayas.
   - **Attributes & Filters**: Fabric/Material (Pure Linen, Crepe, Silk, Cotton blends), Cuts & Silhouettes (A-Line, Butterfly/Farasha, Classic, Kimono/Open front, Cloche), Sizes (standard abaya lengths e.g., 52, 54, 56, 58, 60, bust width/custom sizing), Colorways (natural earth tones, classic black, olive, sand, neutrals).
   - **Cultural & Localization**: Primary focus on Middle Eastern / GCC, Turkish, and regional modest fashion markets with seamless trilingual support: **Arabic (`ar` - RTL, default)**, **English (`en` - LTR)**, and **Turkish (`tr` - LTR)**. Default currency is set to **Turkish Lira (TRY / ₺)** (with support for localized currencies like SAR, AED, USD, etc.).
   - **i18n & Font System**:
     - Supported locales: `ar`, `en`, `tr` (configured in [`i18n/routing.ts`](file:///c:/Loai/work/linen-line-store/i18n/routing.ts)).
     - Message catalogs: All new UI strings must be provided in [`messages/ar.json`](file:///c:/Loai/work/linen-line-store/messages/ar.json), [`messages/en.json`](file:///c:/Loai/work/linen-line-store/messages/en.json), and [`messages/tr.json`](file:///c:/Loai/work/linen-line-store/messages/tr.json).
-    - Typography: `Noto_Sans_Arabic` for Arabic (`font-noto-arabic`), `Outfit` (with `latin` and `latin-ext` subsets) for English & Turkish (`font-outfit`).
+    - Typography: `Noto_Kufi_Arabic` for Arabic (`font-noto-arabic`), `Outfit` (with `latin` and `latin-ext` subsets) for English & Turkish (`font-outfit`).
 
 ## 1. Feature-Driven Architecture (Feature-Sliced / Modular)
 
@@ -46,7 +46,31 @@ features/
 
 ---
 
-## 2. Installed Packages & Stack Mapping
+## 2. App Route Structure (Catalog & PDP)
+
+All locale routes live under `app/[locale]/…` (default locale `ar` uses `localePrefix: "as-needed"` — no `/ar` prefix).
+
+| Route | File | Purpose |
+|---|---|---|
+| `/shop` | [`app/[locale]/shop/page.tsx`](app/[locale]/shop/page.tsx) | Product listing (PLP) — all products |
+| `/shop/[filter]` | [`app/[locale]/shop/[filter]/page.tsx`](app/[locale]/shop/[filter]/page.tsx) | Filtered listing (category / collection / promo) |
+| `/products` | [`app/[locale]/products/page.tsx`](app/[locale]/products/page.tsx) | **Redirects to `/shop`** (no bare catalog under `/products`) |
+| `/products/[slug]` | [`app/[locale]/products/[slug]/page.tsx`](app/[locale]/products/[slug]/page.tsx) | Product details (PDP) — one product by SEO slug |
+
+**Shop filter slugs** are defined in [`features/product/utils/shop-filters.ts`](features/product/utils/shop-filters.ts) (`SHOP_FILTERS`, `isShopFilter`, `shopPath`). Unknown `[filter]` values must `notFound()`.
+
+Current filters: `new-in`, `abayas`, `linen`, `casual`, `formal`, `travel`, `inners`, `accessories`, `sale`.
+
+**Rules:**
+- Category / occasion / promo live under **`/shop/...`**, never as top-level paths like `/casual` or `/abayas`.
+- Product detail URLs stay **flat** at `/products/[slug]` (category is not part of the PDP path — products can belong to multiple filters).
+- Product cards and deep links use `/products/${product.slug}`.
+- Nav, footer, and home category tiles must use `shopPath(...)` / `/shop/...` hrefs from the shared filter list when pointing at catalog views.
+- Do not invent parallel listing routes (`/collections/...`, top-level category pages) without updating this section and `SHOP_FILTERS`.
+
+---
+
+## 3. Installed Packages & Stack Mapping
 
 Before reaching for any new package, **always leverage the already installed libraries**:
 
@@ -68,7 +92,7 @@ Before reaching for any new package, **always leverage the already installed lib
 
 ---
 
-## 3. Strict Package Management Protocol
+## 4. Strict Package Management Protocol
 
 1. **Check First**: Verify if the requirement can be satisfied using the installed packages listed above or native Web/Next.js/React APIs.
 2. **Never Install Blindly**: Do NOT run `npm i` or `npm install` for any new package without consulting the user first.
@@ -79,7 +103,7 @@ Before reaching for any new package, **always leverage the already installed lib
 
 ---
 
-## 4. UI Styling & Color System Rules
+## 5. UI Styling & Color System Rules
 
 - **Zero Hardcoded Hex Codes**: Do **NOT** use raw hex colors (`#...`), arbitrary values (e.g. `bg-[#b4a094]`), or inline styles with hardcoded color values anywhere in UI components.
 - **Use Brand & Semantic Tokens from [`app/globals.css`](file:///c:/Loai/work/linen-line-store/app/globals.css)**:
@@ -93,5 +117,3 @@ Before reaching for any new package, **always leverage the already installed lib
     - Primary scale: `bg-primary-50` through `bg-primary-950` (e.g. `text-primary-700`, `border-primary-200`).
     - Secondary scale: `bg-secondary-50` through `bg-secondary-950` (e.g. `bg-secondary-100`, `text-secondary-800`).
 - **Dark Mode Support**: All components must automatically support dark mode by relying strictly on these semantic tokens and classes.
-
-
