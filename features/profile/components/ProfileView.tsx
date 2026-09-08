@@ -26,12 +26,6 @@ export async function ProfileView() {
         <FadeIn direction="up" delay={0.12}>
           <ProfilePreferences />
         </FadeIn>
-
-        <FadeIn direction="up" delay={0.16}>
-          <p className="text-center text-xs text-muted-foreground">
-            {t("authNote")}
-          </p>
-        </FadeIn>
       </div>
     </section>
   );

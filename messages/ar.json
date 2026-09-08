@@ -7,7 +7,8 @@
   "ProfilePage": {
     "title": "حسابي",
     "description": "الملف الشخصي وإعدادات الحساب.",
-    "authNote": "سيظهر تسجيل الدخول والخروج هنا عند توفّر نظام الحسابات.",
+    "logout": "تسجيل الخروج",
+    "loggingOut": "جاري تسجيل الخروج...",
     "sections": {
       "account": "حسابكِ"
     },
@@ -45,13 +46,107 @@
       "subtitle": "سجل هادئ لمشترياتكِ الأخيرة.",
       "backToAccount": "العودة إلى الحساب",
       "orderNumber": "طلب {number}",
+      "copyOrderNumber": "نسخ رقم الطلب",
+      "orderNumberCopied": "تم نسخ رقم الطلب",
       "placedOn": "بتاريخ {date}",
       "itemCount": "{count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}}",
+      "items": "قطع هذا الطلب",
+      "deliveredNotice": "تم التسليم بنجاح إلى عنوانكِ المعتمد",
+      "deliveredWithDate": "تم التسليم في {date}",
+      "returnPolicyNotice": "متاح للاستبدال والاسترجاع خلال 14 يوماً",
+      "cancelledNotice": "تم إلغاء الطلب",
+      "cancelledWithDate": "تم إلغاء الطلب في {date}",
+      "refundNotice": "تم رد المبلغ كاملاً ({amount}) إلى وسيلة الدفع الأصلية",
       "status": {
         "delivered": "تم التسليم",
-        "shipped": "قيد الشحن",
+        "shipped": "قيد التوصيل",
         "processing": "قيد التجهيز",
         "cancelled": "ملغى"
+      },
+      "filters": {
+        "all": "جميع الطلبات",
+        "active": "قيد التوصيل",
+        "delivered": "تم التسليم",
+        "cancelled": "الملغاة",
+        "emptyFilter": "لا توجد طلبات في هذه الحالة",
+        "showAll": "عرض جميع الطلبات"
+      },
+      "tracker": {
+        "placed": "تأكيد الطلب",
+        "tailoring": "التجهيز بالمشغل",
+        "shipped": "في الطريق للتوصيل",
+        "delivered": "تم الاستلام",
+        "estimatedArrival": "الوصول المتوقع: {date}",
+        "carrier": "شركة الشحن: {carrier}",
+        "trackingNumber": "رقم التتبع: {number}",
+        "inTransitNotice": "شحنتكِ الأنيقة في طريقها إليكِ بعناية تامة",
+        "processingNotice": "تخضع قطعكِ للفحص الدقيق والتعطير والتغليف في مشغلنا",
+        "copyTrackingNumber": "نسخ رقم التتبع",
+        "trackingCopied": "تم نسخ رقم التتبع"
+      },
+      "actions": {
+        "viewDetails": "تفاصيل الطلب",
+        "trackPackage": "تتبع الشحنة",
+        "buyAgain": "طلب مماثل",
+        "needHelp": "مساعدة من خدمة العملاء",
+        "viewProduct": "عرض المنتج"
+      },
+      "details": {
+        "metaTitle": "طلب {number}",
+        "metaDescription": "تفاصيل وتتبع الطلب {number}.",
+        "notFoundTitle": "الطلب غير موجود",
+        "backToOrders": "العودة إلى الطلبات",
+        "shippingAddress": "عنوان التوصيل",
+        "paymentSummary": "ملخص الدفع",
+        "subtotal": "المجموع الفرعي",
+        "shipping": "الشحن",
+        "shippingFree": "مجاني",
+        "discount": "الخصم",
+        "total": "الإجمالي",
+        "size": "المقاس",
+        "color": "اللون",
+        "quantity": "الكمية",
+        "unitPrice": "للقطعة",
+        "paymentCard": "{brand} ···· {last4}",
+        "paymentMethods": {
+          "card": "الدفع بالبطاقة",
+          "cashOnDelivery": "الدفع عند الاستلام",
+          "bankTransfer": "تحويل بنكي"
+        },
+        "cancelReasons": {
+          "customerRequested": "أُلغي الطلب بناءً على طلب العميل."
+        }
+      },
+      "reviewModal": {
+        "button": "تقييم المنتج",
+        "reviewed": "تم التقييم بنجاح",
+        "title": "شاركينا رأيكِ بالقطعة",
+        "subtitle": "أخبرينا عن تجربتكِ مع {product}",
+        "verifiedBadge": "شراء موثق",
+        "orderRef": "طلب {number}",
+        "ratingPrompt": "التقييم العام",
+        "ratingLabels": {
+          "1": "يحتاج تحسين",
+          "2": "مقبول",
+          "3": "جيد",
+          "4": "رائع جداً",
+          "5": "خيال واستثنائي"
+        },
+        "quickTags": {
+          "trueToSize": "المقاس مضبوط بالملي",
+          "luxuriousFabric": "كتان فاخر ومميز",
+          "flawlessCut": "قصة انسيابية ساحرة",
+          "breathable": "خامة باردة ومريحة",
+          "neatStitching": "خياطة نظيفة ومتقنة"
+        },
+        "reviewPlaceholder": "شاركينا رأيكِ في جودة القماش، المقاس، الخياطة، أو طريقة تنسيقكِ للعباية...",
+        "nameLabel": "الاسم الظاهر",
+        "namePlaceholder": "اسمكِ الكريم",
+        "cancel": "إلغاء",
+        "submit": "إرسال التقييم",
+        "submitting": "جاري الإرسال...",
+        "successTitle": "شكراً لتقييمكِ الراقي!",
+        "successMessage": "رأيكِ يلهم مشغلنا ويسعد عاشقات الأناقة المحتشمة في اختيار قطعهن."
       },
       "empty": {
         "title": "لا طلبات بعد",
@@ -60,25 +155,133 @@
       }
     },
     "addresses": {
-      "metaTitle": "العناوين",
-      "metaDescription": "إدارة عناوين التوصيل والفوترة.",
-      "title": "العناوين",
-      "subtitle": "أين نرسل طلباتكِ.",
+      "metaTitle": "عناويني",
+      "metaDescription": "إدارة عناوين التوصيل والفوترة الخاصة بكِ.",
+      "title": "عناويني",
+      "subtitle": "إدارة وجهات التوصيل المحفوظة وتعيين عنوان المنزل الرئيسي.",
       "backToAccount": "العودة إلى الحساب",
-      "comingSoon": {
-        "title": "دفتر العناوين قريباً",
-        "description": "ستتمكنين من حفظ عناوين التوصيل وتعديلها هنا."
+      "addAddress": "إضافة عنوان جديد",
+      "addressCount": "{count, plural, zero {لا توجد عناوين} one {عنوان واحد} two {عنوانان} few {# عناوين} many {# عنواناً} other {# عنوان}}",
+      "empty": {
+        "title": "لا توجد عناوين محفوظة بعد",
+        "description": "أضيفي عنوان التوصيل الخاص بكِ لتجربة تسوق سريعة ومريحة عند إتمام الطلب.",
+        "cta": "إضافة عنوانكِ الأول"
+      },
+      "card": {
+        "defaultBadge": "العنوان الرئيسي",
+        "setDefault": "تعيين كرئيسي",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "phone": "الهاتف: {phone}",
+        "notes": "ملاحظات التوصيل: {notes}"
+      },
+      "labels": {
+        "home": "المنزل",
+        "work": "العمل",
+        "other": "أخرى"
+      },
+      "form": {
+        "addTitle": "إضافة عنوان توصيل",
+        "editTitle": "تعديل عنوان التوصيل",
+        "subtitle": "يرجى التحقق من صحة تفاصيل الشحن وفقاً لإرشادات التوصيل المحلية.",
+        "typeLabel": "نوع العنوان",
+        "customLabel": "تسمية مخصصة (اختياري)",
+        "customLabelPlaceholder": "مثال: استراحة، المشغل",
+        "fullName": "الاسم الكامل للمستلم",
+        "fullNamePlaceholder": "مثال: ليلى الحسن",
+        "phone": "رقم الهاتف",
+        "phonePlaceholder": "501234567",
+        "phoneCode": "رمز الدولة",
+        "country": "الدولة / المنطقة",
+        "countryPlaceholder": "اختر الدولة",
+        "searchCountryPlaceholder": "ابحث عن الدولة أو الرمز...",
+        "noResultsFound": "لا توجد نتائج مطابقة",
+        "stateOrProvince": "المنطقة / الإمارة / المحافظة",
+        "stateOrProvincePlaceholder": "مثال: منطقة الرياض، إمارة دبي",
+        "city": "المدينة",
+        "cityPlaceholder": "مثال: الرياض",
+        "district": "الحي / المنطقة",
+        "districtPlaceholder": "مثال: حي العليا، وسط المدينة",
+        "streetAddress": "اسم الشارع ورقم المبنى",
+        "streetAddressPlaceholder": "مثال: طريق الملك فهد، مبنى 14",
+        "apartmentOrSuite": "الشقة / الفيلا / الطابق (اختياري)",
+        "apartmentOrSuitePlaceholder": "مثال: شقة 4B، فيلا 12",
+        "postalCode": "الرمز البريدي (اختياري)",
+        "postalCodePlaceholder": "مثال: 12213",
+        "deliveryNotes": "تعليمات التوصيل / معلم بارز (اختياري)",
+        "deliveryNotesPlaceholder": "مثال: تسليم للاستقبال، بالقرب من المسجد الكبير",
+        "isDefault": "تعيين كعنوان المنزل الرئيسي",
+        "isDefaultHint": "سيتم اختيار هذا العنوان تلقائياً كوجهة الشحن الرئيسية عند إتمام الشراء لجميع طلباتكِ القادمة.",
+        "homeAlreadyExists": "تمت إضافة عنوان المنزل بالفعل",
+        "cancel": "إلغاء",
+        "save": "حفظ العنوان",
+        "saving": "جاري الحفظ...",
+        "errors": {
+          "nameRequired": "الاسم الكامل للمستلم مطلوب",
+          "nameLettersOnly": "الاسم يجب أن يحتوي على أحرف فقط",
+          "phoneRequired": "رقم الهاتف مطلوب",
+          "phoneNumbersOnly": "رقم الهاتف يجب أن يحتوي على أرقام فقط",
+          "countryRequired": "يرجى تحديد الدولة",
+          "cityRequired": "المدينة مطلوبة",
+          "streetRequired": "عنوان الشارع مطلوب"
+        }
+      },
+      "deleteDialog": {
+        "title": "حذف العنوان",
+        "description": "هل أنتِ متأكدة من رغبتكِ في حذف هذا العنوان؟ لا يمكن التراجع عن هذا الإجراء.",
+        "confirm": "حذف",
+        "cancel": "الإبقاء على العنوان",
+        "cannotDeleteDefault": "لا يمكن حذف العنوان الرئيسي الوحيد. يرجى تعيين عنوان آخر كعنوان رئيسي أولاً."
       }
     },
     "settings": {
       "metaTitle": "الإعدادات",
-      "metaDescription": "تفضيلات الحساب والإعدادات.",
+      "metaDescription": "إدارة بيانات الحساب وكلمة المرور والتفضيلات.",
       "title": "الإعدادات",
-      "subtitle": "اضبطي تجربة حسابكِ.",
+      "subtitle": "تحديث المعلومات الشخصية وأمان الحساب.",
       "backToAccount": "العودة إلى الحساب",
-      "comingSoon": {
-        "title": "المزيد من الإعدادات قريباً",
-        "description": "ستظهر تفاصيل الملف والإشعارات هنا. اللغة والعملة متاحتان أدناه."
+      "profile": {
+        "title": "المعلومات الشخصية",
+        "subtitle": "الاسم والبريد الإلكتروني وصورة الملف المستخدمة في الحساب.",
+        "name": "الاسم الكامل",
+        "namePlaceholder": "مثال: ليلى الحسن",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "name@example.com",
+        "photo": "صورة الملف",
+        "changePhoto": "تغيير الصورة",
+        "removePhoto": "إزالة الصورة",
+        "photoHint": "JPG أو PNG أو WebP — بحد أقصى 5 ميغابايت.",
+        "save": "حفظ التغييرات",
+        "saving": "جاري الحفظ...",
+        "saved": "تم تحديث الملف بنجاح.",
+        "errors": {
+          "nameRequired": "الاسم الكامل مطلوب",
+          "nameLettersOnly": "الاسم يجب أن يحتوي على أحرف فقط",
+          "emailRequired": "البريد الإلكتروني مطلوب",
+          "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
+          "photoTooLarge": "يجب ألا يتجاوز حجم الصورة 5 ميغابايت",
+          "photoInvalidType": "استخدم صورة بصيغة JPG أو PNG أو WebP"
+        }
+      },
+      "password": {
+        "title": "كلمة المرور",
+        "subtitle": "اختر كلمة مرور قوية لحماية الحساب.",
+        "current": "كلمة المرور الحالية",
+        "new": "كلمة المرور الجديدة",
+        "confirm": "تأكيد كلمة المرور الجديدة",
+        "showPassword": "إظهار كلمة المرور",
+        "hidePassword": "إخفاء كلمة المرور",
+        "save": "تحديث كلمة المرور",
+        "saving": "جاري التحديث...",
+        "saved": "تم تحديث كلمة المرور بنجاح.",
+        "errors": {
+          "currentRequired": "كلمة المرور الحالية مطلوبة",
+          "newRequired": "كلمة المرور الجديدة مطلوبة",
+          "newMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+          "confirmRequired": "يرجى تأكيد كلمة المرور الجديدة",
+          "mismatch": "كلمتا المرور غير متطابقتين",
+          "sameAsCurrent": "يجب أن تختلف كلمة المرور الجديدة عن الحالية"
+        }
       }
     }
   },
@@ -104,7 +307,8 @@
     "slide3Tag": "أناقة المناسبات",
     "slide3Title": "عباية الحرير والكتان الأسود الملكي",
     "slide3Description": "إطلالة مسائية فاخرة بلمسات ذهبية راقية صُممت لتمنحك حضوراً آسراً في أهم مناسباتك.",
-    "slide3Cta": "اكتشفي عبايات السهرة"
+    "slide3Cta": "اكتشفي عبايات السهرة",
+    "ordersCta": "تتبع الطلبات"
   },
   "Navigation": {
     "home": "الرئيسية",
@@ -122,6 +326,7 @@
     "cart": "سلة المشتريات",
     "favorites": "المفضلة",
     "account": "حسابي",
+    "login": "تسجيل الدخول",
     "myOrders": "طلباتي",
     "closeMenu": "إغلاق القائمة",
     "navExplore": "استكشفي",
@@ -160,6 +365,8 @@
     "selectColor": "اختيار {color}",
     "addToCart": "أضف إلى السلة",
     "addedToCart": "تمت الإضافة للسلة",
+    "addToWishlist": "أضف إلى المفضلة",
+    "removeFromWishlist": "إزالة من المفضلة",
     "sale": "تخفيض",
     "new": "جديد",
     "discount": "خصم {percent}%",
@@ -578,12 +785,19 @@
       "badge": "عضوية النخبة",
       "title": "انضمي إلى دائرة الكتان",
       "description": "احصلي على دعوات خاصة لإطلاق المجموعات الحصرية، وإرشادات التنسيق الفاخرة، وأولوية اقتناء الإصدارات المحدودة.",
-      "placeholder": "أدخلي بريدكِ الإلكتروني...",
-      "button": "اشتراك",
-      "subscribing": "جاري الاشتراك...",
-      "success": "أهلاً بكِ في دائرة الكتان. يرجى تفقد بريدكِ قريباً.",
-      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح.",
-      "privacyNote": "بالاشتراك، أنتِ توافقين على سياسة الخصوصية. يمكنكِ إلغاء الاشتراك في أي وقت."
+      "guest": {
+        "signupCta": "إنشاء حساب",
+        "loginCta": "تسجيل الدخول",
+        "note": "أنشئوا حساباً أو سجّلوا الدخول للانضمام إلى دائرة الكتان والاستفادة من امتيازات العضوية."
+      },
+      "member": {
+        "title": "أنت ضمن دائرة الكتان",
+        "description": "امتيازات العضوية مفعّلة — دعوات موسمية خاصة، إرشادات تنسيق، وأولوية الوصول إلى الإصدارات المحدودة.",
+        "status": "الامتيازات مفعّلة",
+        "ordersCta": "عرض الطلبات",
+        "accountCta": "حسابي",
+        "shopCta": "تسوق الجديد"
+      }
     },
     "perks": {
       "organicLinen": {
@@ -641,5 +855,191 @@
     "backToTop": "العودة للأعلى",
     "allRightsReserved": "جميع الحقوق محفوظة.",
     "paymentSecure": "دفع إلكتروني آمن ومشفّر"
+  },
+  "ContentPage": {
+    "lastUpdated": "آخر تحديث: {date}",
+    "continueShopping": "متابعة التسوق"
+  },
+  "NotFoundPage": {
+    "code": "404",
+    "title": "الصفحة غير موجودة",
+    "description": "هذه الصفحة غير متاحة أو قد يكون الرابط غير صحيح. يمكن العودة للرئيسية أو تصفح التشكيلة.",
+    "backHome": "العودة للرئيسية",
+    "browseShop": "تصفح المتجر"
+  },
+  "Auth": {
+    "brandHeadline": "فخامة هادئة من الكتان",
+    "brandTagline": "عبايات وإكسسوارات محتشمة بتفصيل أنيق لليوم والمناسبة.",
+    "brandImageAlt": "صورة تحريرية لعباية من كتان لاين",
+    "backToStore": "العودة إلى المتجر",
+    "login": {
+      "metaTitle": "تسجيل الدخول",
+      "metaDescription": "سجّلوا الدخول إلى حساب كتان لاين لإدارة الطلبات وقائمة الأمنيات والتفضيلات.",
+      "title": "تسجيل الدخول",
+      "subtitle": "مرحباً بعودتكم إلى كتان لاين. تابعوا إلى حسابكم.",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أدخلوا كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "rememberMe": "تذكّرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "submit": "تسجيل الدخول",
+      "submitting": "جارٍ تسجيل الدخول…",
+      "noAccount": "ليس لديكم حساب؟",
+      "createAccount": "إنشاء حساب",
+      "errors": {
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "أدخلوا بريداً إلكترونياً صالحاً",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل"
+      }
+    },
+    "register": {
+      "metaTitle": "إنشاء حساب",
+      "metaDescription": "انضموا إلى كتان لاين لإدارة الطلبات، ومتابعة أحدث المجموعات وحفظ تفضيلاتكم.",
+      "title": "إنشاء حساب",
+      "subtitle": "انضموا إلى كتان لاين لتجربة تسوق سلسة، وتتبّع الطلبات، والحصول على مزايا حصرية.",
+      "name": "الاسم الكامل",
+      "namePlaceholder": "لؤي حسن",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أنشئوا كلمة مرور (8 أحرف على الأقل)",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أعيدوا إدخال كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "termsAgreement": "أوافق على <terms>الشروط والأحكام</terms> و<privacy>سياسة الخصوصية</privacy>",
+      "submit": "إنشاء الحساب",
+      "submitting": "جارٍ إنشاء الحساب…",
+      "hasAccount": "لديكم حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "errors": {
+        "nameRequired": "الاسم الكامل مطلوب",
+        "nameMinLength": "يجب أن يتكون الاسم من حرفين على الأقل",
+        "nameLettersOnly": "الاسم يجب أن يحتوي على أحرف فقط",
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "أدخلوا بريداً إلكترونياً صالحاً",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+        "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين",
+        "termsRequired": "يجب الموافقة على الشروط والأحكام وسياسة الخصوصية"
+      }
+    },
+    "verify": {
+      "metaTitle": "تأكيد الحساب",
+      "metaDescription": "أدخلوا رمز التحقق المكوّن من 6 أرقام المرسل إلى بريدكم الإلكتروني لإكمال التسجيل في كتان لاين.",
+      "title": "تأكيد البريد الإلكتروني",
+      "subtitle": "أرسلنا رمز تحقق مكوّن من 6 أرقام إلى",
+      "subtitleFallback": "أدخلوا رمز التحقق المكوّن من 6 أرقام المرسل إلى بريدكم الإلكتروني لإكمال إنشاء الحساب.",
+      "codeLabel": "رمز التحقق",
+      "submit": "تأكيد ومتابعة",
+      "submitting": "جارٍ التحقق…",
+      "resendPrompt": "لم يصلكم الرمز؟",
+      "resendCountdown": "إعادة الإرسال خلال {time}",
+      "resendAction": "إعادة إرسال الرمز",
+      "resending": "جارٍ الإرسال…",
+      "resendSuccess": "تم إرسال رمز تحقق جديد إلى بريدكم الإلكتروني.",
+      "resendError": "تعذر إعادة إرسال الرمز، يرجى المحاولة لاحقاً.",
+      "wrongEmail": "ليس هذا بريدكم؟",
+      "changeEmail": "العودة للتسجيل",
+      "successTitle": "تم تأكيد الحساب بنجاح!",
+      "successSubtitle": "تم التحقق من حسابكم. جارٍ التوجيه…",
+      "errors": {
+        "codeRequired": "رمز التحقق مطلوب",
+        "codeLength": "يجب أن يتكون الرمز من 6 أرقام",
+        "invalidCode": "رمز التحقق غير صحيح، يرجى التأكد والمحاولة مجدداً."
+      }
+    },
+    "forgotPassword": {
+      "metaTitle": "نسيت كلمة المرور",
+      "metaDescription": "إعادة تعيين كلمة مرور حساب كتان لاين بأمان عبر البريد الإلكتروني.",
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخلوا البريد الإلكتروني المرتبط بحسابكم. سيُرسل رابط إعادة التعيين إذا وُجد حساب.",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "submit": "إرسال رابط إعادة التعيين",
+      "submitting": "جارٍ الإرسال…",
+      "successTitle": "تحققوا من بريدكم",
+      "successDescription": "إذا وُجد حساب مرتبط بـ {email}، فقد أُرسل رابط لإعادة تعيين كلمة المرور. يرجى التحقق من صندوق الوارد والمجلد غير المرغوب فيه.",
+      "rememberPassword": "تتذكرون كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "errors": {
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "أدخلوا بريداً إلكترونياً صالحاً"
+      }
+    },
+    "resetPassword": {
+      "metaTitle": "إعادة تعيين كلمة المرور",
+      "metaDescription": "اختاروا كلمة مرور جديدة لحساب كتان لاين.",
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "اختاروا كلمة مرور جديدة لحسابكم. استخدموا 8 أحرف على الأقل.",
+      "invalidSubtitle": "رابط إعادة التعيين مفقود أو لم يعد صالحاً.",
+      "password": "كلمة المرور الجديدة",
+      "passwordPlaceholder": "أدخلوا كلمة مرور جديدة (8 أحرف على الأقل)",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "confirmPasswordPlaceholder": "أعيدوا إدخال كلمة المرور الجديدة",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "submit": "تحديث كلمة المرور",
+      "submitting": "جارٍ التحديث…",
+      "successTitle": "تم تحديث كلمة المرور",
+      "successDescription": "تم تحديث كلمة المرور بنجاح. جارٍ التوجيه إلى تسجيل الدخول…",
+      "invalidTitle": "الرابط غير متاح",
+      "invalidDescription": "رابط إعادة تعيين كلمة المرور غير صالح أو منتهٍ. اطلبوا رابطاً جديداً للمتابعة.",
+      "requestNewLink": "طلب رابط جديد",
+      "rememberPassword": "تتذكرون كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "errors": {
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+        "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين"
+      }
+    }
+  },
+
+  "WishlistPage": {
+    "metaTitle": "قائمة الأمنيات",
+    "metaDescription": "استعرضي تصاميم العبايات والقطع المفضلة المحفوظة في متجر لينن لاين.",
+    "title": "قائمة الأمنيات",
+    "subtitle": "مجموعتكِ المختارة من القطع المحفوظة والمفضلة.",
+    "backToShop": "العودة إلى المتجر",
+    "itemCount": "{count, plural, =0 {لا توجد قطع} one {قطعة واحدة} two {قطعتان} few {# قطع} many {# قطعة} other {# قطعة}}",
+    "empty": {
+      "eyebrow": "مختارات خزانة أمنياتكِ",
+      "title": "مساحة هادئة بانتظار تصاميمكِ المفضلة",
+      "description": "احفظي العبايات والقطع الحرفية التي تلامس ذوقكِ. قارني بين القصات، وتابعي توفر المقاسات، ونسّقي إطلالتكِ المحتشمة بكل هدوء وتأمل.",
+      "cta": "استكشاف المتجر",
+      "curatedTitle": "تشكيلات مميزة",
+      "features": {
+        "curate": {
+          "title": "مجموعتكِ الخاصة",
+          "description": "احتفظي بالقصات والألوان المفضلة لديكِ في مكان واحد"
+        },
+        "notify": {
+          "title": "تنبيهات التوفر",
+          "description": "كوني أول من يعلم عند توفر المقاسات المحدودة مجدداً"
+        },
+        "seamless": {
+          "title": "تسوق سلس ومريح",
+          "description": "انقلي قطعكِ المختارة إلى الحقيبة بضغطة زر واحدة"
+        }
+      },
+      "quickLinks": {
+        "newIn": "وصلنا حديثاً",
+        "linen": "كتان نقي",
+        "casual": "عبايات يومية",
+        "formal": "عبايات مناسبات"
+      }
+    },
+    "actions": {
+      "moveToCart": "إضافة إلى الحقيبة",
+      "remove": "حذف من المفضلة",
+      "clearAll": "إفراغ القائمة"
+    }
   }
 }

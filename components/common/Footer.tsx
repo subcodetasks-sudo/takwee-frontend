@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   Sparkles,
   PackageCheck,
@@ -24,19 +24,14 @@ import {
 import { motion } from "motion/react";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { NewsletterAnimation } from "./NewsletterAnimation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/features/auth";
 
 export function Footer() {
   const t = useTranslations("Footer");
-  const locale = useLocale();
-
-  // Newsletter state
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+  const { isAuthenticated } = useAuth();
 
   // Mobile Accordion state for columns
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -50,26 +45,6 @@ export function Footer() {
       ...prev,
       [key]: !prev[key],
     }));
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email || !emailRegex.test(email.trim())) {
-      setStatus("error");
-      setErrorMessage(t("newsletter.invalidEmail"));
-      return;
-    }
-
-    setStatus("loading");
-    setErrorMessage("");
-
-    // Simulate luxury newsletter registration
-    setTimeout(() => {
-      setStatus("success");
-      setEmail("");
-    }, 650);
   };
 
   const scrollToTop = () => {
@@ -201,82 +176,98 @@ export function Footer() {
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <div className="lg:col-span-6 space-y-3">
                 <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                  {t("newsletter.title")}
+                  {isAuthenticated
+                    ? t("newsletter.member.title")
+                    : t("newsletter.title")}
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                  {t("newsletter.description")}
+                  {isAuthenticated
+                    ? t("newsletter.member.description")
+                    : t("newsletter.description")}
                 </p>
               </div>
 
               <div className="lg:col-span-6">
-                {status === "success" ? (
+                {isAuthenticated ? (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 rounded-xl border border-success/40 bg-success-muted p-4 sm:p-5 text-success-foreground dark:text-success"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
                   >
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success text-white">
-                      <Check className="size-5" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-foreground">
-                        {t("newsletter.success")}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setStatus("idle")}
-                        className="text-xs underline underline-offset-4 text-muted-foreground hover:text-foreground mt-1 cursor-pointer"
-                      >
-                        {t("newsletter.placeholder")}
-                      </button>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <form onSubmit={handleSubscribe} className="space-y-2.5">
-                    <div className="flex flex-col sm:flex-row gap-2.5">
-                      <div className="relative flex-1">
-                        <Mail className="absolute start-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                        <Input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder={t("newsletter.placeholder")}
-                          disabled={status === "loading"}
-                          className={cn(
-                            "h-11 ps-10 pe-4 bg-background rounded-xl border-border/80 focus-visible:ring-2 focus-visible:ring-primary-500 text-sm",
-                            status === "error" && "border-destructive focus-visible:ring-destructive"
-                          )}
-                        />
+                    <div className="flex items-center gap-3.5 rounded-xl border border-success/40 bg-success-muted p-4 sm:p-5">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success text-white">
+                        <Check className="size-5" />
                       </div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {t("newsletter.member.status")}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-2.5">
                       <Button
-                        type="submit"
-                        disabled={status === "loading"}
-                        className="h-11 px-6 rounded-xl font-medium shadow-xs bg-primary text-primary-foreground hover:bg-primary-600 transition-all cursor-pointer shrink-0"
-                      >
-                        {status === "loading" ? (
-                          <span className="flex items-center gap-2">
-                            <span className="size-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                            {t("newsletter.subscribing")}
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1.5">
-                            {t("newsletter.button")}
-                            <ArrowRight className="size-4 rtl:rotate-180" />
-                          </span>
+                        nativeButton={false}
+                        render={(props) => (
+                          <Link href="/me/orders" {...props} />
                         )}
+                        className="h-11 px-6 rounded-xl font-medium shadow-xs bg-primary text-primary-foreground hover:bg-primary-600 transition-all cursor-pointer shrink-0 sm:flex-1"
+                      >
+                        <span className="flex items-center justify-center gap-1.5">
+                          {t("newsletter.member.ordersCta")}
+                          <ArrowRight className="size-4 rtl:rotate-180" />
+                        </span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        nativeButton={false}
+                        render={(props) => <Link href="/me" {...props} />}
+                        className="h-11 px-6 rounded-xl font-medium border-border/80 bg-background hover:bg-muted/80 transition-all cursor-pointer shrink-0 sm:flex-1"
+                      >
+                        {t("newsletter.member.accountCta")}
                       </Button>
                     </div>
 
-                    {status === "error" && (
-                      <p className="text-xs font-medium text-destructive">
-                        {errorMessage}
-                      </p>
-                    )}
-
+                    <Link
+                      href="/shop/new-in"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
+                    >
+                      {t("newsletter.member.shopCta")}
+                      <ArrowRight className="size-3.5 rtl:rotate-180" />
+                    </Link>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-2.5">
+                      <Button
+                        nativeButton={false}
+                        render={(props) => (
+                          <Link href="/signup" {...props} />
+                        )}
+                        className="h-11 px-6 rounded-xl font-medium shadow-xs bg-primary text-primary-foreground hover:bg-primary-600 transition-all cursor-pointer shrink-0 sm:flex-1"
+                      >
+                        <span className="flex items-center justify-center gap-1.5">
+                          {t("newsletter.guest.signupCta")}
+                          <ArrowRight className="size-4 rtl:rotate-180" />
+                        </span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        nativeButton={false}
+                        render={(props) => (
+                          <Link href="/login" {...props} />
+                        )}
+                        className="h-11 px-6 rounded-xl font-medium border-border/80 bg-background hover:bg-muted/80 transition-all cursor-pointer shrink-0 sm:flex-1"
+                      >
+                        {t("newsletter.guest.loginCta")}
+                      </Button>
+                    </div>
                     <p className="text-[11px] text-muted-foreground/80 leading-normal">
-                      {t("newsletter.privacyNote")}
+                      {t("newsletter.guest.note")}
                     </p>
-                  </form>
+                  </motion.div>
                 )}
               </div>
             </div>

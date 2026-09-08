@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { FadeIn } from "@/components/animations";
 import type { ProfileUser } from "../types";
+import { ProfileLogoutButton } from "./ProfileLogoutButton";
 
 interface ProfileHeroProps {
   user: ProfileUser;
@@ -24,19 +25,22 @@ export async function ProfileHero({ user }: ProfileHeroProps) {
         >
           {user.initials}
         </div>
-        <div className="min-w-0 space-y-2">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            {t("eyebrow")}
-          </p>
-          <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
-            {user.name}
-          </h1>
-          <p className="truncate text-sm text-muted-foreground sm:text-base">
-            {user.email}
-          </p>
-          <p className="pt-1 text-xs text-muted-foreground sm:text-sm">
-            {t("memberSince", { date: memberSinceLabel })}
-          </p>
+        <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <div className="min-w-0 space-y-2">
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              {t("eyebrow")}
+            </p>
+            <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
+              {user.name}
+            </h1>
+            <p className="truncate text-sm text-muted-foreground sm:text-base">
+              {user.email}
+            </p>
+            <p className="pt-1 text-xs text-muted-foreground sm:text-sm">
+              {t("memberSince", { date: memberSinceLabel })}
+            </p>
+          </div>
+          <ProfileLogoutButton className="w-full shrink-0 sm:w-auto sm:pt-1" />
         </div>
       </div>
     </FadeIn>

@@ -32,11 +32,14 @@ features/
   │   ├── components/         # Feature-specific UI components
   │   ├── hooks/              # Feature-specific hooks & state logic
   │   ├── api/                # API calls, fetchers, server actions, mutation hooks
-  │   ├── types/              # Feature-specific TypeScript interfaces & schemas
+  │   ├── schemas/            # Zod schemas for form inputs only (react-hook-form resolvers)
+  │   ├── types/              # Feature-specific TypeScript interfaces & domain types
   │   ├── utils/              # Feature-specific helpers
   │   └── index.ts            # Public barrel export for the feature
 ```
 
+- **`schemas/`**: Zod **only** for user-facing form inputs validated with react-hook-form (e.g. login, register, address, profile). Keep inferred form value types next to their schema. Do **not** add Zod schemas for read-only content, CMS/page payloads, API response shapes, or other non-form data — model those with TypeScript in `types/` instead. Omit the `schemas/` folder entirely when a feature has no forms. Shared Zod ↔ react-hook-form bridging lives in [`lib/zod-resolver.ts`](lib/zod-resolver.ts).
+- **`types/`**: Domain/entity TypeScript types and interfaces only (no Zod).
 ### Shared / Global Code Rules
 - **`app/`**: Only routing, page entries, layouts, and route handlers. Keep page files thin; compose them from feature modules (e.g. `<CartDrawer />`, `<ProductDetails />`).
 - **`components/ui/`**: Base atomic design system / shadcn primitives (`button`, `dialog`, `input`, etc.). Do not put domain logic here.
@@ -56,6 +59,11 @@ All locale routes live under `app/[locale]/…` (default locale `ar` uses `local
 | `/shop/[filter]` | [`app/[locale]/shop/[filter]/page.tsx`](app/[locale]/shop/[filter]/page.tsx) | Filtered listing (category / collection / promo) |
 | `/products` | [`app/[locale]/products/page.tsx`](app/[locale]/products/page.tsx) | **Redirects to `/shop`** (no bare catalog under `/products`) |
 | `/products/[slug]` | [`app/[locale]/products/[slug]/page.tsx`](app/[locale]/products/[slug]/page.tsx) | Product details (PDP) — one product by SEO slug |
+| `/[slug]` (content) | [`app/[locale]/(root)/[slug]/page.tsx`](app/[locale]/(root)/[slug]/page.tsx) | Static boutique pages (terms, privacy, client care, atelier) |
+
+**Content page slugs** are defined in [`features/content/types/index.ts`](features/content/types/index.ts) (`CONTENT_PAGE_SLUGS`, `isContentPageSlug`). Content is loaded via [`getContentPage`](features/content/api/get-content-page.ts) (mock today; swap for CMS/API later). Unknown / missing `[slug]` values must call `notFound()` so [`(root)/not-found.tsx`](app/[locale]/(root)/not-found.tsx) / [`[slug]/not-found.tsx`](app/[locale]/(root)/[slug]/not-found.tsx) render — never leave the dynamic segment empty. When wiring the API, return `null` on HTTP 404 and keep calling `notFound()` from the page.
+
+Current content slugs: `terms`, `privacy`, `cookies`, `size-guide`, `fabric-care`, `track-order`, `shipping`, `returns`, `faq`, `about`, `philosophy`, `sustainability`, `boutiques`, `contact`.
 
 **Shop filter slugs** are defined in [`features/product/utils/shop-filters.ts`](features/product/utils/shop-filters.ts) (`SHOP_FILTERS`, `isShopFilter`, `shopPath`). Unknown `[filter]` values must `notFound()`.
 
@@ -117,3 +125,7 @@ Before reaching for any new package, **always leverage the already installed lib
     - Primary scale: `bg-primary-50` through `bg-primary-950` (e.g. `text-primary-700`, `border-primary-200`).
     - Secondary scale: `bg-secondary-50` through `bg-secondary-950` (e.g. `bg-secondary-100`, `text-secondary-800`).
 - **Dark Mode Support**: All components must automatically support dark mode by relying strictly on these semantic tokens and classes.
+
+## goey-toast
+
+See `*/skills/goey-toast/SKILL.md` for how to install and use goey-toast (gooey morphing React toasts). Mount `<GooeyToaster />` once and import `'goey-toast/styles.css'` at the app entry.

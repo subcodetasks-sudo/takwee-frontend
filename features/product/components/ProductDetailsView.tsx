@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { FadeIn } from "@/components/animations";
 import type { Product } from "../types";
 import { ProductDetailsHero } from "./ProductDetailsHero";
 import { ProductDetailsTabs } from "./ProductDetailsTabs";
@@ -19,11 +18,7 @@ export async function ProductDetailsView({ product }: ProductDetailsViewProps) {
     <ProductDetailsProvider product={product} productName={productName}>
       <article className="page-shell flex w-full flex-col gap-10 py-8 pb-24 sm:gap-12 sm:py-10 sm:pb-28 md:py-12 md:pb-12">
         <ProductDetailsHero product={product} productName={productName} />
-
-        <FadeIn direction="up" delay={0.12}>
-          <ProductDetailsTabs product={product} />
-        </FadeIn>
-
+        <ProductDetailsTabs product={product} />
         <RelatedProducts productId={product.id} />
       </article>
 
@@ -32,4 +27,3 @@ export async function ProductDetailsView({ product }: ProductDetailsViewProps) {
     </ProductDetailsProvider>
   );
 }
-

@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@/features/auth";
 import { cn } from "@/lib/utils";
 
 const slideTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
@@ -27,6 +28,7 @@ const slideTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
 export function Header() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
+  const { isAuthenticated } = useAuth();
   const [hidden, setHidden] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -217,10 +219,9 @@ export function Header() {
                 <Tooltip>
                   <TooltipTrigger
                     render={
-                      <button
-                        type="button"
-                        disabled
-                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg text-foreground opacity-70 cursor-not-allowed"
+                      <Link
+                        href="/wishlist"
+                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg text-foreground hover:bg-muted transition-colors"
                         aria-label={t("favorites")}
                       />
                     }
@@ -267,31 +268,43 @@ export function Header() {
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Link
-                        href="/me"
-                        className="relative hidden min-[1117px]:flex items-center justify-center rounded-full hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-transform active:scale-95"
-                        aria-label={t("account")}
-                      />
-                    }
+                {isAuthenticated ? (
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Link
+                          href="/me"
+                          className="relative hidden min-[1117px]:flex items-center justify-center rounded-full hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-transform active:scale-95"
+                          aria-label={t("account")}
+                        />
+                      }
+                    >
+                      <Avatar className="size-10 sm:size-11 border border-border/80 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+                        <AvatarImage src="" alt={t("account")} />
+                        <AvatarFallback className="bg-primary-50 dark:bg-primary-950/60 text-primary-800 dark:text-primary-200 font-medium">
+                          <User className="size-5 sm:size-5.5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      sideOffset={6}
+                      className="text-xs font-medium"
+                    >
+                      {t("account")}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="ms-0.5 hidden h-8 sm:h-9 px-2.5 sm:px-3 text-xs sm:text-sm font-medium min-[1117px]:inline-flex"
+                    nativeButton={false}
+                    render={(props) => <Link href="/login" {...props} />}
+                    aria-label={t("login")}
                   >
-                    <Avatar className="size-10 sm:size-11 border border-border/80 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
-                      <AvatarImage src="" alt={t("account")} />
-                      <AvatarFallback className="bg-primary-50 dark:bg-primary-950/60 text-primary-800 dark:text-primary-200 font-medium">
-                        <User className="size-5 sm:size-5.5" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    sideOffset={6}
-                    className="text-xs font-medium"
-                  >
-                    {t("account")}
-                  </TooltipContent>
-                </Tooltip>
+                    {t("login")}
+                  </Button>
+                )}
               </TooltipProvider>
             </div>
           </div>

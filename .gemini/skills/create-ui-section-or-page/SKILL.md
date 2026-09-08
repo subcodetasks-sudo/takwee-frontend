@@ -1,6 +1,6 @@
 ---
 name: create-ui-section-or-page
-description: Guide and standard workflow for creating UI pages or sections using the page-shell utility class, global animation wrappers, shadcn tooltips on UI icons, and preserving Server Component (RSC) architecture for optimal SEO.
+description: Guide and standard workflow for creating UI pages or sections using the page-shell utility class, global animation wrappers, shadcn tooltips on UI icons, preserving Server Component (RSC) architecture for optimal SEO, and writing formal gender-neutral i18n copy for unknown visitors.
 ---
 
 # Create UI Section or Page Skill
@@ -22,6 +22,11 @@ This skill provides step-by-step instructions and architectural patterns for cre
 4. **i18n & Localization**:
    - For Server Components, use `await getTranslations(...)` from `next-intl/server`.
    - Update message keys across `messages/ar.json`, `messages/en.json`, and `messages/tr.json`.
+   - **Formal, gender-neutral address (unknown visitors)**: UI copy speaks to an unknown person who may be a man or a woman. Prefer formal tone; never assume feminine (or masculine-only) second-person forms.
+     - **Arabic (`ar`)**: Avoid feminine imperatives/endings that address women only (e.g. تتبعي، تسوقي، اكتشفي، أضيفي). Prefer impersonal / verbal-noun CTAs (e.g. تتبع الطلبات، تسوق التشكيلة، اكتشف المجموعة) or neutral noun phrases (e.g. طلباتي، عرض الطلبات). Do not default to feminine boutique address.
+     - **English (`en`)**: Use neutral formal phrasing toward the visitor (e.g. "Track your orders", "Shop the collection") rather than gendered or overly casual voice.
+     - **Turkish (`tr`)**: Prefer polite formal *siz* where the visitor is addressed (e.g. Siparişlerinizi takip edin), not informal *sen* (e.g. takip et) unless matching an existing casual string in the same surface.
+     - Apply this to CTAs, empty states, toasts, tooltips, `aria-label`s, and any new or edited message strings—not only marketing headlines.
 5. **Color & Design Tokens**:
    - Strictly use semantic color tokens (`bg-background`, `text-foreground`, `bg-card`, `bg-primary`, `text-primary-foreground`, `border-border`, `text-muted-foreground`, etc.).
 6. **Tooltips on Small UI Icons & Icon Actions (Accessibility & Clarity)**:
@@ -171,3 +176,4 @@ When rendering an existing interactive link or button primitive, use the `render
 - **Full Bleed Utility**: `full-bleed` (in `app/globals.css`)
 - **Animation Wrappers**: `@/components/animations` (`<FadeIn />`, `<StaggerContainer />`, `<StaggerItem />`)
 - **Icon Tooltips**: `@/components/ui/tooltip` (`<TooltipProvider />`, `<Tooltip />`, `<TooltipTrigger />`, `<TooltipContent />`)
+- **Copy voice**: Formal + gender-neutral for unknown visitors (`ar` / `en` / `tr` — see i18n principle above)

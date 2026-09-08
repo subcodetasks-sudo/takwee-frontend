@@ -7,7 +7,8 @@
   "ProfilePage": {
     "title": "Hesabım",
     "description": "Kullanıcı profili ve hesap ayarları.",
-    "authNote": "Hesap kimlik doğrulaması hazır olduğunda giriş ve çıkış burada görünecek.",
+    "logout": "Çıkış yapın",
+    "loggingOut": "Çıkış yapılıyor...",
     "sections": {
       "account": "Hesabınız"
     },
@@ -45,13 +46,107 @@
       "subtitle": "Son alışverişlerinizin sakin bir kaydı.",
       "backToAccount": "Hesaba dön",
       "orderNumber": "Sipariş {number}",
+      "copyOrderNumber": "Sipariş numarasını kopyala",
+      "orderNumberCopied": "Sipariş numarası kopyalandı",
       "placedOn": "{date} tarihinde verildi",
       "itemCount": "{count, plural, one {# ürün} other {# ürün}}",
+      "items": "Bu siparişteki ürünler",
+      "deliveredNotice": "Kayıtlı adresinize başarıyla teslim edildi",
+      "deliveredWithDate": "{date} tarihinde teslim edildi",
+      "returnPolicyNotice": "14 gün içinde değişim ve iadeye uygun",
+      "cancelledNotice": "Sipariş iptal edildi",
+      "cancelledWithDate": "{date} tarihinde iptal edildi",
+      "refundNotice": "Toplam {amount} tutarındaki iade orijinal ödeme yönteminize yapıldı",
       "status": {
         "delivered": "Teslim edildi",
-        "shipped": "Kargoda",
+        "shipped": "Kargoda / Yolda",
         "processing": "Hazırlanıyor",
         "cancelled": "İptal edildi"
+      },
+      "filters": {
+        "all": "Tüm Siparişler",
+        "active": "Kargoda / Yolda",
+        "delivered": "Teslim Edildi",
+        "cancelled": "İptal Edilenler",
+        "emptyFilter": "Bu durumda sipariş bulunamadı",
+        "showAll": "Tüm siparişleri göster"
+      },
+      "tracker": {
+        "placed": "Sipariş Alındı",
+        "tailoring": "Atölye Hazırlığı",
+        "shipped": "Kargoda / Yolda",
+        "delivered": "Teslim Edildi",
+        "estimatedArrival": "Tahmini teslimat: {date}",
+        "carrier": "Kargo Şirketi: {carrier}",
+        "trackingNumber": "Takip No: {number}",
+        "inTransitNotice": "Siparişiniz özenle paketlenip yola çıktı",
+        "processingNotice": "Parçalarınız atölyemizde özenle kontrol ediliyor ve kokulandırılarak paketleniyor",
+        "copyTrackingNumber": "Takip numarasını kopyala",
+        "trackingCopied": "Takip numarası kopyalandı"
+      },
+      "actions": {
+        "viewDetails": "Sipariş detayları",
+        "trackPackage": "Kargo takibi",
+        "buyAgain": "Tekrar satın al",
+        "needHelp": "Müşteri desteği",
+        "viewProduct": "Ürünü görüntüle"
+      },
+      "details": {
+        "metaTitle": "Sipariş {number}",
+        "metaDescription": "{number} sipariş detayları ve takibi.",
+        "notFoundTitle": "Sipariş bulunamadı",
+        "backToOrders": "Siparişlere dön",
+        "shippingAddress": "Teslimat adresi",
+        "paymentSummary": "Ödeme özeti",
+        "subtotal": "Ara toplam",
+        "shipping": "Kargo",
+        "shippingFree": "Ücretsiz",
+        "discount": "İndirim",
+        "total": "Toplam",
+        "size": "Beden",
+        "color": "Renk",
+        "quantity": "Adet",
+        "unitPrice": "adet",
+        "paymentCard": "{brand} ···· {last4}",
+        "paymentMethods": {
+          "card": "Kart ile ödeme",
+          "cashOnDelivery": "Kapıda ödeme",
+          "bankTransfer": "Banka havalesi"
+        },
+        "cancelReasons": {
+          "customerRequested": "Müşteri talebi üzerine iptal edildi."
+        }
+      },
+      "reviewModal": {
+        "button": "Ürünü değerlendir",
+        "reviewed": "Değerlendirildi",
+        "title": "Ürününüzü değerlendirin",
+        "subtitle": "{product} hakkındaki düşüncelerinizi paylaşın",
+        "verifiedBadge": "Onaylı Alışveriş",
+        "orderRef": "Sipariş {number}",
+        "ratingPrompt": "Genel değerlendirme",
+        "ratingLabels": {
+          "1": "Geliştirilmeli",
+          "2": "Orta",
+          "3": "İyi",
+          "4": "Çok iyi",
+          "5": "Kusursuz ve mükemmel"
+        },
+        "quickTags": {
+          "trueToSize": "Tam kalıp",
+          "luxuriousFabric": "Lüks keten kumaş",
+          "flawlessCut": "Zarif ve asil döküm",
+          "breathable": "Nefes alan & hafif",
+          "neatStitching": "Kusursuz dikiş işçiliği"
+        },
+        "reviewPlaceholder": "Kumaşın kalitesi, dökümü, bedeni veya kombinleme deneyiminiz hakkında yazın...",
+        "nameLabel": "Görünecek isim",
+        "namePlaceholder": "Adınız",
+        "cancel": "Vazgeç",
+        "submit": "Değerlendirmeyi gönder",
+        "submitting": "Gönderiliyor...",
+        "successTitle": "Değerlendirmeniz için teşekkürler!",
+        "successMessage": "Geri bildiriminiz atölyemize ve mütevazı moda tutkunlarına ilham veriyor."
       },
       "empty": {
         "title": "Henüz sipariş yok",
@@ -60,25 +155,133 @@
       }
     },
     "addresses": {
-      "metaTitle": "Adresler",
+      "metaTitle": "Adreslerim",
       "metaDescription": "Teslimat ve fatura adreslerinizi yönetin.",
-      "title": "Adresler",
-      "subtitle": "Siparişlerinizi nereye gönderelim.",
+      "title": "Adreslerim",
+      "subtitle": "Kayıtlı teslimat adreslerinizi ve birincil ev adresinizi yönetin.",
       "backToAccount": "Hesaba dön",
-      "comingSoon": {
-        "title": "Adres defteri yakında",
-        "description": "Teslimat adreslerini burada kaydedip düzenleyebileceksiniz."
+      "addAddress": "Yeni adres ekle",
+      "addressCount": "{count, plural, one {# adres} other {# adres}}",
+      "empty": {
+        "title": "Henüz kayıtlı adres yok",
+        "description": "Ödeme aşamasında hızlı ve kolay sipariş verebilmek için teslimat adresi ekleyin.",
+        "cta": "İlk adresinizi ekleyin"
+      },
+      "card": {
+        "defaultBadge": "Varsayılan Adres",
+        "setDefault": "Varsayılan Yap",
+        "edit": "Düzenle",
+        "delete": "Sil",
+        "phone": "Telefon: {phone}",
+        "notes": "Teslimat notu: {notes}"
+      },
+      "labels": {
+        "home": "Ev",
+        "work": "İş",
+        "other": "Diğer"
+      },
+      "form": {
+        "addTitle": "Teslimat adresi ekle",
+        "editTitle": "Adresi düzenle",
+        "subtitle": "Sorunsuz bir teslimat için adres bilgilerinizin doğruluğundan emin olun.",
+        "typeLabel": "Adres Türü",
+        "customLabel": "Özel Başlık (isteğe bağlı)",
+        "customLabelPlaceholder": "Örn. Yazlık, Atölye",
+        "fullName": "Alıcının Adı Soyadı",
+        "fullNamePlaceholder": "Örn. Ayşe Yılmaz",
+        "phone": "Telefon Numarası",
+        "phonePlaceholder": "5321234567",
+        "phoneCode": "Ülke Kodu",
+        "country": "Ülke",
+        "countryPlaceholder": "Ülke seçin",
+        "searchCountryPlaceholder": "Ülke veya kod ara...",
+        "noResultsFound": "Eşleşen sonuç bulunamadı",
+        "stateOrProvince": "İl / Eyalet",
+        "stateOrProvincePlaceholder": "Örn. İstanbul, Ankara",
+        "city": "İlçe / Şehir",
+        "cityPlaceholder": "Örn. Kadıköy, Çankaya",
+        "district": "Mahalle / Semt",
+        "districtPlaceholder": "Örn. Moda, Suadiye",
+        "streetAddress": "Cadde / Sokak ve Bina No",
+        "streetAddressPlaceholder": "Örn. Bağdat Cad. No: 124",
+        "apartmentOrSuite": "Daire / Kat / Blok (isteğe bağlı)",
+        "apartmentOrSuitePlaceholder": "Örn. Daire: 5, Kat: 3",
+        "postalCode": "Posta Kodu (isteğe bağlı)",
+        "postalCodePlaceholder": "Örn. 34710",
+        "deliveryNotes": "Teslimat Notu / Tarif (isteğe bağlı)",
+        "deliveryNotesPlaceholder": "Örn. Güvenliğe teslim edilebilir",
+        "isDefault": "Varsayılan ev adresi olarak kaydet",
+        "isDefaultHint": "Bu adres sonraki siparişlerinizde ödeme ekranında birincil teslimat adresi olarak otomatik seçilecektir.",
+        "homeAlreadyExists": "Ev adresi zaten eklendi",
+        "cancel": "İptal",
+        "save": "Adresi kaydet",
+        "saving": "Kaydediliyor...",
+        "errors": {
+          "nameRequired": "Alıcının adı soyadı zorunludur",
+          "nameLettersOnly": "Ad yalnızca harf içerebilir",
+          "phoneRequired": "Telefon numarası zorunludur",
+          "phoneNumbersOnly": "Telefon numarası yalnızca rakam içerebilir",
+          "countryRequired": "Lütfen ülke seçin",
+          "cityRequired": "Şehir / ilçe zorunludur",
+          "streetRequired": "Cadde / sokak bilgisi zorunludur"
+        }
+      },
+      "deleteDialog": {
+        "title": "Adresi sil",
+        "description": "Bu teslimat adresini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+        "confirm": "Sil",
+        "cancel": "Vazgeç",
+        "cannotDeleteDefault": "Tek varsayılan adresinizi silemezsiniz. Lütfen önce başka bir adresi varsayılan olarak belirleyin."
       }
     },
     "settings": {
       "metaTitle": "Ayarlar",
-      "metaDescription": "Hesap tercihleri ve ayarlar.",
+      "metaDescription": "Hesap bilgilerinizi, şifrenizi ve tercihlerinizi yönetin.",
       "title": "Ayarlar",
-      "subtitle": "Hesap deneyiminizi ince ayarlayın.",
+      "subtitle": "Kişisel bilgilerinizi ve hesap güvenliğinizi güncelleyin.",
       "backToAccount": "Hesaba dön",
-      "comingSoon": {
-        "title": "Daha fazla ayar yakında",
-        "description": "Profil detayları ve bildirimler burada olacak. Dil ve para birimi aşağıda."
+      "profile": {
+        "title": "Kişisel bilgiler",
+        "subtitle": "Hesapta kullanılan ad, e-posta ve profil fotoğrafı.",
+        "name": "Ad soyad",
+        "namePlaceholder": "örn. Layla Al-Hassan",
+        "email": "E-posta adresi",
+        "emailPlaceholder": "name@example.com",
+        "photo": "Profil fotoğrafı",
+        "changePhoto": "Fotoğrafı değiştir",
+        "removePhoto": "Fotoğrafı kaldır",
+        "photoHint": "JPG, PNG veya WebP — en fazla 5 MB.",
+        "save": "Değişiklikleri kaydet",
+        "saving": "Kaydediliyor...",
+        "saved": "Profil başarıyla güncellendi.",
+        "errors": {
+          "nameRequired": "Ad soyad zorunludur",
+          "nameLettersOnly": "Ad yalnızca harf içerebilir",
+          "emailRequired": "E-posta adresi zorunludur",
+          "emailInvalid": "Geçerli bir e-posta adresi girin",
+          "photoTooLarge": "Görsel en fazla 5 MB olabilir",
+          "photoInvalidType": "JPG, PNG veya WebP görsel kullanın"
+        }
+      },
+      "password": {
+        "title": "Şifre",
+        "subtitle": "Hesabınızı korumak için güçlü bir şifre seçin.",
+        "current": "Mevcut şifre",
+        "new": "Yeni şifre",
+        "confirm": "Yeni şifreyi onayla",
+        "showPassword": "Şifreyi göster",
+        "hidePassword": "Şifreyi gizle",
+        "save": "Şifreyi güncelle",
+        "saving": "Güncelleniyor...",
+        "saved": "Şifre başarıyla güncellendi.",
+        "errors": {
+          "currentRequired": "Mevcut şifre zorunludur",
+          "newRequired": "Yeni şifre zorunludur",
+          "newMinLength": "Şifre en az 8 karakter olmalıdır",
+          "confirmRequired": "Yeni şifreyi onaylayın",
+          "mismatch": "Şifreler eşleşmiyor",
+          "sameAsCurrent": "Yeni şifre mevcut şifreden farklı olmalıdır"
+        }
       }
     }
   },
@@ -104,7 +307,8 @@
     "slide3Tag": "Özel Gün Şıklığı",
     "slide3Title": "İpek & Keten Gece Işıltısı",
     "slide3Description": "Özel davetleriniz için tasarlanmış, zarif altın işlemeli dökümlü asil abaya tasarımı.",
-    "slide3Cta": "Abiyeleri Keşfet"
+    "slide3Cta": "Abiyeleri Keşfet",
+    "ordersCta": "Siparişlerinizi takip edin"
   },
   "Navigation": {
     "home": "Ana Sayfa",
@@ -122,6 +326,7 @@
     "cart": "Alışveriş Çantası",
     "favorites": "Favorilerim",
     "account": "Hesabım",
+    "login": "Giriş yapın",
     "myOrders": "Siparişlerim",
     "closeMenu": "Menüyü kapat",
     "navExplore": "Keşfet",
@@ -160,6 +365,8 @@
     "selectColor": "{color} rengini seç",
     "addToCart": "Sepete Ekle",
     "addedToCart": "Sepete Eklendi",
+    "addToWishlist": "Favorilere Ekle",
+    "removeFromWishlist": "Favorilerden Çıkar",
     "sale": "İndirim",
     "new": "Yeni",
     "discount": "%{percent} İndirim",
@@ -578,12 +785,19 @@
       "badge": "Özel Ayrıcalıklar",
       "title": "Keten Çemberine Katılın",
       "description": "Yeni sezon koleksiyonlarına, özel stil önerilerine ve sınırlı sayıda üretilen abayalara öncelikli erişim sağlayın.",
-      "placeholder": "E-posta adresinizi girin...",
-      "button": "Abone Ol",
-      "subscribing": "Kaydediliyor...",
-      "success": "Keten Çemberine hoş geldiniz. E-postanızı kontrol edin.",
-      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin.",
-      "privacyNote": "Abone olarak Gizlilik Politikamızı kabul etmiş olursunuz. İstediğiniz zaman ayrılabilirsiniz."
+      "guest": {
+        "signupCta": "Hesap oluştur",
+        "loginCta": "Giriş yapın",
+        "note": "Keten Çemberine katılmak ve üyelik ayrıcalıklarını açmak için hesap oluşturun veya giriş yapın."
+      },
+      "member": {
+        "title": "Keten Çemberindesiniz",
+        "description": "Üyelik ayrıcalıklarınız aktif — özel sezon davetleri, stil önerileri ve sınırlı edisyonlara öncelikli erişim.",
+        "status": "Ayrıcalıklar aktif",
+        "ordersCta": "Siparişlerinizi görüntüleyin",
+        "accountCta": "Hesabım",
+        "shopCta": "Yeni gelenleri keşfedin"
+      }
     },
     "perks": {
       "organicLinen": {
@@ -641,5 +855,191 @@
     "backToTop": "Yukarı Çık",
     "allRightsReserved": "Tüm hakları saklıdır.",
     "paymentSecure": "Güvenli ve Şifreli Ödeme"
+  },
+  "ContentPage": {
+    "lastUpdated": "Son güncelleme: {date}",
+    "continueShopping": "Alışverişe devam edin"
+  },
+  "NotFoundPage": {
+    "code": "404",
+    "title": "Sayfa bulunamadı",
+    "description": "Bu sayfa kullanılamıyor veya bağlantı hatalı olabilir. Ana sayfaya dönebilir veya koleksiyona göz atabilirsiniz.",
+    "backHome": "Ana sayfaya dönün",
+    "browseShop": "Mağazaya göz atın"
+  },
+  "Auth": {
+    "brandHeadline": "Ketenle sakin bir lüks",
+    "brandTagline": "Gündelik konfor ve özel anlar için özenle tasarlanmış abayeler ve mütevazı parçalar.",
+    "brandImageAlt": "Linen Line abaye editoryal portresi",
+    "backToStore": "Mağazaya dönün",
+    "login": {
+      "metaTitle": "Giriş yapın",
+      "metaDescription": "Siparişlerinizi, favorilerinizi ve tercihlerinizi yönetmek için Linen Line hesabınıza giriş yapın.",
+      "title": "Giriş yapın",
+      "subtitle": "Linen Line’a hoş geldiniz. Hesabınıza devam edin.",
+      "email": "E-posta adresi",
+      "emailPlaceholder": "name@example.com",
+      "password": "Şifre",
+      "passwordPlaceholder": "Şifrenizi girin",
+      "showPassword": "Şifreyi göster",
+      "hidePassword": "Şifreyi gizle",
+      "rememberMe": "Beni hatırla",
+      "forgotPassword": "Şifrenizi mi unuttunuz?",
+      "submit": "Giriş yapın",
+      "submitting": "Giriş yapılıyor…",
+      "noAccount": "Hesabınız yok mu?",
+      "createAccount": "Hesap oluşturun",
+      "errors": {
+        "emailRequired": "E-posta adresi gereklidir",
+        "emailInvalid": "Geçerli bir e-posta adresi girin",
+        "passwordRequired": "Şifre gereklidir",
+        "passwordMinLength": "Şifre en az 8 karakter olmalıdır"
+      }
+    },
+    "register": {
+      "metaTitle": "Hesap oluşturun",
+      "metaDescription": "Sipariş takibi, yeni koleksiyonlara erken erişim ve kayıtlı tercihler için Linen Line’a katılın.",
+      "title": "Hesap oluşturun",
+      "subtitle": "Linen Line’a katılın. Sorunsuz alışverişin, sipariş takibinin ve özel ayrıcalıkların tadını çıkarın.",
+      "name": "Ad Soyad",
+      "namePlaceholder": "Loai Hassan",
+      "email": "E-posta adresi",
+      "emailPlaceholder": "name@example.com",
+      "password": "Şifre",
+      "passwordPlaceholder": "Bir şifre oluşturun (en az 8 karakter)",
+      "confirmPassword": "Şifreyi onayla",
+      "confirmPasswordPlaceholder": "Şifrenizi tekrar girin",
+      "showPassword": "Şifreyi göster",
+      "hidePassword": "Şifreyi gizle",
+      "termsAgreement": "<terms>Kullanım Koşulları</terms> ve <privacy>Gizlilik Politikası</privacy>’nı kabul ediyorum",
+      "submit": "Hesap oluştur",
+      "submitting": "Hesap oluşturuluyor…",
+      "hasAccount": "Zaten bir hesabınız var mı?",
+      "signIn": "Giriş yapın",
+      "errors": {
+        "nameRequired": "Ad Soyad gereklidir",
+        "nameMinLength": "Ad en az 2 karakter olmalıdır",
+        "nameLettersOnly": "Ad yalnızca harf içerebilir",
+        "emailRequired": "E-posta adresi gereklidir",
+        "emailInvalid": "Geçerli bir e-posta adresi girin",
+        "passwordRequired": "Şifre gereklidir",
+        "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+        "confirmPasswordRequired": "Lütfen şifrenizi onaylayın",
+        "passwordMismatch": "Şifreler eşleşmiyor",
+        "termsRequired": "Kullanım Koşulları ve Gizlilik Politikası’nı kabul etmelisiniz"
+      }
+    },
+    "verify": {
+      "metaTitle": "Hesabınızı doğrulayın",
+      "metaDescription": "Linen Line kaydınızı tamamlamak için e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.",
+      "title": "E-postanızı doğrulayın",
+      "subtitle": "6 haneli doğrulama kodunu şu adrese gönderdik:",
+      "subtitleFallback": "Hesap kaydınızı tamamlamak için e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.",
+      "codeLabel": "Doğrulama kodu",
+      "submit": "Doğrula ve devam et",
+      "submitting": "Doğrulanıyor…",
+      "resendPrompt": "Kodu almadınız mı?",
+      "resendCountdown": "{time} sonra tekrar gönder",
+      "resendAction": "Kodu tekrar gönder",
+      "resending": "Gönderiliyor…",
+      "resendSuccess": "E-posta adresinize yeni bir doğrulama kodu gönderildi.",
+      "resendError": "Kod yeniden gönderilemedi. Lütfen tekrar deneyin.",
+      "wrongEmail": "Yanlış e-posta adresi mi?",
+      "changeEmail": "Kayda geri dön",
+      "successTitle": "E-posta doğrulandı!",
+      "successSubtitle": "Hesabınız başarıyla doğrulandı. Yönlendiriliyorsunuz…",
+      "errors": {
+        "codeRequired": "Doğrulama kodu gereklidir",
+        "codeLength": "Kod tam olarak 6 haneli olmalıdır",
+        "invalidCode": "Geçersiz doğrulama kodu. Lütfen kontrol edip tekrar deneyin."
+      }
+    },
+    "forgotPassword": {
+      "metaTitle": "Şifrenizi mi unuttunuz",
+      "metaDescription": "Linen Line hesap şifrenizi e-posta yoluyla güvenli şekilde sıfırlayın.",
+      "title": "Şifrenizi mi unuttunuz",
+      "subtitle": "Hesabınıza bağlı e-posta adresinizi girin. Hesap varsa bir sıfırlama bağlantısı gönderilir.",
+      "email": "E-posta adresi",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Sıfırlama bağlantısı gönder",
+      "submitting": "Gönderiliyor…",
+      "successTitle": "E-postanızı kontrol edin",
+      "successDescription": "{email} için bir hesap varsa, şifre sıfırlama bağlantısı gönderildi. Lütfen gelen kutunuzu ve istenmeyen klasörünüzü kontrol edin.",
+      "rememberPassword": "Şifrenizi hatırlıyor musunuz?",
+      "signIn": "Giriş yapın",
+      "errors": {
+        "emailRequired": "E-posta adresi gereklidir",
+        "emailInvalid": "Geçerli bir e-posta adresi girin"
+      }
+    },
+    "resetPassword": {
+      "metaTitle": "Şifreyi sıfırlayın",
+      "metaDescription": "Linen Line hesabınız için yeni bir şifre belirleyin.",
+      "title": "Şifreyi sıfırlayın",
+      "subtitle": "Hesabınız için yeni bir şifre belirleyin. En az 8 karakter kullanın.",
+      "invalidSubtitle": "Bu sıfırlama bağlantısı eksik veya artık geçerli değil.",
+      "password": "Yeni şifre",
+      "passwordPlaceholder": "Yeni bir şifre girin (en az 8 karakter)",
+      "confirmPassword": "Yeni şifreyi onayla",
+      "confirmPasswordPlaceholder": "Yeni şifrenizi tekrar girin",
+      "showPassword": "Şifreyi göster",
+      "hidePassword": "Şifreyi gizle",
+      "submit": "Şifreyi güncelle",
+      "submitting": "Güncelleniyor…",
+      "successTitle": "Şifre güncellendi",
+      "successDescription": "Şifreniz başarıyla güncellendi. Giriş sayfasına yönlendiriliyorsunuz…",
+      "invalidTitle": "Bağlantı kullanılamıyor",
+      "invalidDescription": "Bu şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş. Devam etmek için yeni bir bağlantı isteyin.",
+      "requestNewLink": "Yeni bağlantı isteyin",
+      "rememberPassword": "Şifrenizi hatırlıyor musunuz?",
+      "signIn": "Giriş yapın",
+      "errors": {
+        "passwordRequired": "Şifre gereklidir",
+        "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+        "confirmPasswordRequired": "Lütfen şifrenizi onaylayın",
+        "passwordMismatch": "Şifreler eşleşmiyor"
+      }
+    }
+  },
+
+  "WishlistPage": {
+    "metaTitle": "İstek Listesi",
+    "metaDescription": "Linen Line Store'da kaydettiğiniz abaya ve özel tasarımları inceleyin.",
+    "title": "İstek Listesi",
+    "subtitle": "Kaydettiğiniz ve beğendiğiniz özel parçaların koleksiyonu.",
+    "backToShop": "Mağazaya Dön",
+    "itemCount": "{count, plural, =0 {Ürün yok} one {# ürün} other {# ürün}}",
+    "empty": {
+      "eyebrow": "Kişisel İstek Listeniz",
+      "title": "Favori parçalarınızı bekleyen sakin bir köşe",
+      "description": "Tarzınıza hitap eden saf keten abaya ve özel tasarımları kaydedin. Kesimleri karşılaştırın, beden durumunu takip edin ve kişisel gardırobunuzu kendi ritminizde oluşturun.",
+      "cta": "Butiği Keşfet",
+      "curatedTitle": "Popüler Koleksiyonlar",
+      "features": {
+        "curate": {
+          "title": "Kişisel Seçim",
+          "description": "Beğendiğiniz silüetleri ve renkleri tek yerde toplayın"
+        },
+        "notify": {
+          "title": "Stok & Beden Bildirimleri",
+          "description": "Tükenen özel parçalar yenilendiğinde ilk siz haberdar olun"
+        },
+        "seamless": {
+          "title": "Zahmetsiz Sipariş",
+          "description": "Hazır olduğunuzda tek dokunuşla alışveriş çantanıza aktarın"
+        }
+      },
+      "quickLinks": {
+        "newIn": "Yeni Gelenler",
+        "linen": "Saf Keten",
+        "casual": "Günlük Abaya",
+        "formal": "Özel Davet"
+      }
+    },
+    "actions": {
+      "moveToCart": "Sepete Ekle",
+      "remove": "Listeden Çıkar",
+      "clearAll": "Listeyi Temizle"
+    }
   }
 }

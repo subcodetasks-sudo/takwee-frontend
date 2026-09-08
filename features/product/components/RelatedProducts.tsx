@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { FadeIn } from "@/components/animations";
 import { getRelatedProducts } from "../utils/get-related-products";
 import { RelatedProductsCarousel } from "./RelatedProductsCarousel";
 
@@ -20,15 +19,13 @@ export async function RelatedProducts({ productId }: RelatedProductsProps) {
       aria-labelledby="related-products-heading"
       className="w-full rounded-2xl bg-muted/60 p-5 sm:rounded-3xl sm:p-6 md:p-8"
     >
-      <FadeIn direction="up">
-        <RelatedProductsCarousel
-          title={t("title")}
-          subtitle={t("subtitle")}
-          products={products}
-          previousLabel={t("previous")}
-          nextLabel={t("next")}
-        />
-      </FadeIn>
+      <RelatedProductsCarousel
+        title={t("title")}
+        subtitle={t("subtitle")}
+        products={products}
+        previousLabel={t("previous")}
+        nextLabel={t("next")}
+      />
     </section>
   );
 }

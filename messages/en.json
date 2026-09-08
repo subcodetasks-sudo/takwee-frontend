@@ -7,7 +7,8 @@
   "ProfilePage": {
     "title": "My Account",
     "description": "User profile and account settings.",
-    "authNote": "Sign in and sign out will appear here when account authentication is available.",
+    "logout": "Sign out",
+    "loggingOut": "Signing out...",
     "sections": {
       "account": "Your account"
     },
@@ -45,13 +46,107 @@
       "subtitle": "A quiet record of your recent purchases.",
       "backToAccount": "Back to account",
       "orderNumber": "Order {number}",
+      "copyOrderNumber": "Copy order number",
+      "orderNumberCopied": "Order number copied",
       "placedOn": "Placed {date}",
       "itemCount": "{count, plural, one {# item} other {# items}}",
+      "items": "Items in this order",
+      "deliveredNotice": "Delivered to your designated address",
+      "deliveredWithDate": "Delivered on {date}",
+      "returnPolicyNotice": "14-day exchange & return eligible",
+      "cancelledNotice": "Order cancelled",
+      "cancelledWithDate": "Order cancelled on {date}",
+      "refundNotice": "Full refund of {amount} issued to original payment method",
       "status": {
         "delivered": "Delivered",
-        "shipped": "Shipped",
+        "shipped": "In Delivery",
         "processing": "Processing",
         "cancelled": "Cancelled"
+      },
+      "filters": {
+        "all": "All Orders",
+        "active": "In Delivery",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "emptyFilter": "No orders found in this status",
+        "showAll": "Show all orders"
+      },
+      "tracker": {
+        "placed": "Order Placed",
+        "tailoring": "Tailoring & Prep",
+        "shipped": "Out for Delivery",
+        "delivered": "Delivered",
+        "estimatedArrival": "Estimated arrival: {date}",
+        "carrier": "Carrier: {carrier}",
+        "trackingNumber": "Tracking: {number}",
+        "inTransitNotice": "Your parcel is on its way with premium care",
+        "processingNotice": "Your order is being inspected and hand-packed in our atelier",
+        "copyTrackingNumber": "Copy tracking number",
+        "trackingCopied": "Tracking number copied"
+      },
+      "actions": {
+        "viewDetails": "Order details",
+        "trackPackage": "Live tracking",
+        "buyAgain": "Buy again",
+        "needHelp": "Concierge help",
+        "viewProduct": "View product"
+      },
+      "details": {
+        "metaTitle": "Order {number}",
+        "metaDescription": "Order details and tracking for {number}.",
+        "notFoundTitle": "Order not found",
+        "backToOrders": "Back to orders",
+        "shippingAddress": "Delivery address",
+        "paymentSummary": "Payment summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "shippingFree": "Complimentary",
+        "discount": "Discount",
+        "total": "Total",
+        "size": "Size",
+        "color": "Color",
+        "quantity": "Qty",
+        "unitPrice": "each",
+        "paymentCard": "{brand} ···· {last4}",
+        "paymentMethods": {
+          "card": "Card payment",
+          "cashOnDelivery": "Cash on delivery",
+          "bankTransfer": "Bank transfer"
+        },
+        "cancelReasons": {
+          "customerRequested": "Cancelled at the customer's request."
+        }
+      },
+      "reviewModal": {
+        "button": "Write a review",
+        "reviewed": "Review submitted",
+        "title": "Review your piece",
+        "subtitle": "Share your thoughts about {product}",
+        "verifiedBadge": "Verified Purchase",
+        "orderRef": "Order {number}",
+        "ratingPrompt": "Overall rating",
+        "ratingLabels": {
+          "1": "Needs improvement",
+          "2": "Fair",
+          "3": "Good",
+          "4": "Very good",
+          "5": "Exceptional"
+        },
+        "quickTags": {
+          "trueToSize": "True to size",
+          "luxuriousFabric": "Premium linen",
+          "flawlessCut": "Elegant drape",
+          "breathable": "Breathable & light",
+          "neatStitching": "Impeccable seamwork"
+        },
+        "reviewPlaceholder": "Share how the abaya feels, the fit, craftsmanship, or how you styled it...",
+        "nameLabel": "Display name",
+        "namePlaceholder": "Your name",
+        "cancel": "Cancel",
+        "submit": "Submit review",
+        "submitting": "Submitting...",
+        "successTitle": "Thank you for your review!",
+        "successMessage": "Your feedback helps our atelier and community of modest fashion lovers."
       },
       "empty": {
         "title": "No orders yet",
@@ -63,22 +158,130 @@
       "metaTitle": "Addresses",
       "metaDescription": "Manage your delivery and billing addresses.",
       "title": "Addresses",
-      "subtitle": "Where we send your orders.",
+      "subtitle": "Manage your saved delivery destinations and primary home address.",
       "backToAccount": "Back to account",
-      "comingSoon": {
-        "title": "Address book coming soon",
-        "description": "You will be able to save and edit delivery addresses here."
+      "addAddress": "Add new address",
+      "addressCount": "{count, plural, one {# address} other {# addresses}}",
+      "empty": {
+        "title": "No addresses saved yet",
+        "description": "Add your delivery addresses for an effortless checkout experience.",
+        "cta": "Add your first address"
+      },
+      "card": {
+        "defaultBadge": "Default Address",
+        "setDefault": "Set as default",
+        "edit": "Edit",
+        "delete": "Delete",
+        "phone": "Phone: {phone}",
+        "notes": "Delivery note: {notes}"
+      },
+      "labels": {
+        "home": "Home",
+        "work": "Work",
+        "other": "Other"
+      },
+      "form": {
+        "addTitle": "Add delivery address",
+        "editTitle": "Edit delivery address",
+        "subtitle": "Ensure your shipping details match local delivery guidelines.",
+        "typeLabel": "Address Type",
+        "customLabel": "Custom Label (optional)",
+        "customLabelPlaceholder": "e.g. Summer Villa, Atelier",
+        "fullName": "Recipient Full Name",
+        "fullNamePlaceholder": "e.g. Layla Al-Hassan",
+        "phone": "Phone Number",
+        "phonePlaceholder": "501234567",
+        "phoneCode": "Country Code",
+        "country": "Country / Territory",
+        "countryPlaceholder": "Select country",
+        "searchCountryPlaceholder": "Search country or code...",
+        "noResultsFound": "No matching results found",
+        "stateOrProvince": "Province / Emirate / State",
+        "stateOrProvincePlaceholder": "e.g. Riyadh Province, Dubai",
+        "city": "City",
+        "cityPlaceholder": "e.g. Riyadh",
+        "district": "District / Neighborhood",
+        "districtPlaceholder": "e.g. Al Olaya, Downtown",
+        "streetAddress": "Street Address & Building",
+        "streetAddressPlaceholder": "e.g. King Fahd Rd, Building 14",
+        "apartmentOrSuite": "Apartment / Villa / Floor (optional)",
+        "apartmentOrSuitePlaceholder": "e.g. Apt 4B, Villa 12",
+        "postalCode": "Postal / ZIP Code (optional)",
+        "postalCodePlaceholder": "e.g. 12213",
+        "deliveryNotes": "Courier Instructions / Landmark (optional)",
+        "deliveryNotesPlaceholder": "e.g. Leave with concierge, near Grand Mosque",
+        "isDefault": "Set as default home address",
+        "isDefaultHint": "This address will be automatically selected as your primary delivery destination at checkout.",
+        "homeAlreadyExists": "Home address already added",
+        "cancel": "Cancel",
+        "save": "Save address",
+        "saving": "Saving address...",
+        "errors": {
+          "nameRequired": "Recipient full name is required",
+          "nameLettersOnly": "Name may contain letters only",
+          "phoneRequired": "Phone number is required",
+          "phoneNumbersOnly": "Phone number may contain digits only",
+          "countryRequired": "Country selection is required",
+          "cityRequired": "City is required",
+          "streetRequired": "Street address is required"
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete address",
+        "description": "Are you sure you want to remove this delivery address? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Keep address",
+        "cannotDeleteDefault": "You cannot delete your only default address. Please assign another address as default first."
       }
     },
     "settings": {
       "metaTitle": "Settings",
-      "metaDescription": "Account preferences and settings.",
+      "metaDescription": "Manage your account details, password, and preferences.",
       "title": "Settings",
-      "subtitle": "Fine-tune how your account feels.",
+      "subtitle": "Update personal information and account security.",
       "backToAccount": "Back to account",
-      "comingSoon": {
-        "title": "More settings coming soon",
-        "description": "Profile details and notifications will live here. Language and currency are available below."
+      "profile": {
+        "title": "Personal information",
+        "subtitle": "Name, email, and profile photo used across the account.",
+        "name": "Full name",
+        "namePlaceholder": "e.g. Layla Al-Hassan",
+        "email": "Email address",
+        "emailPlaceholder": "name@example.com",
+        "photo": "Profile photo",
+        "changePhoto": "Change photo",
+        "removePhoto": "Remove photo",
+        "photoHint": "JPG, PNG, or WebP — up to 5 MB.",
+        "save": "Save changes",
+        "saving": "Saving...",
+        "saved": "Profile updated successfully.",
+        "errors": {
+          "nameRequired": "Full name is required",
+          "nameLettersOnly": "Name may contain letters only",
+          "emailRequired": "Email address is required",
+          "emailInvalid": "Enter a valid email address",
+          "photoTooLarge": "Image must be 5 MB or smaller",
+          "photoInvalidType": "Use a JPG, PNG, or WebP image"
+        }
+      },
+      "password": {
+        "title": "Password",
+        "subtitle": "Choose a strong password to protect the account.",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "save": "Update password",
+        "saving": "Updating...",
+        "saved": "Password updated successfully.",
+        "errors": {
+          "currentRequired": "Current password is required",
+          "newRequired": "New password is required",
+          "newMinLength": "Password must be at least 8 characters",
+          "confirmRequired": "Confirm the new password",
+          "mismatch": "Passwords do not match",
+          "sameAsCurrent": "New password must differ from the current one"
+        }
       }
     }
   },
@@ -104,7 +307,8 @@
     "slide3Tag": "Evening Modesty",
     "slide3Title": "Silk & Linen Midnight Radiance",
     "slide3Description": "Flowing evening elegance adorned with subtle gold accents, designed for prestigious formal occasions.",
-    "slide3Cta": "Discover Eveningwear"
+    "slide3Cta": "Discover Eveningwear",
+    "ordersCta": "Track your orders"
   },
   "Navigation": {
     "home": "Home",
@@ -122,6 +326,7 @@
     "cart": "Shopping Bag",
     "favorites": "Wishlist",
     "account": "My Account",
+    "login": "Sign in",
     "myOrders": "My Orders",
     "closeMenu": "Close menu",
     "navExplore": "Explore",
@@ -160,6 +365,8 @@
     "selectColor": "Select {color}",
     "addToCart": "Add to Cart",
     "addedToCart": "Added to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
     "sale": "Sale",
     "new": "New",
     "discount": "-{percent}%",
@@ -578,12 +785,19 @@
       "badge": "VIP Privileges",
       "title": "Join The Linen Circle",
       "description": "Receive private invitations to seasonal drops, bespoke linen styling edits, and priority access to limited edition abayas.",
-      "placeholder": "Enter your email address...",
-      "button": "Subscribe",
-      "subscribing": "Subscribing...",
-      "success": "Welcome to The Linen Circle. Check your inbox soon.",
-      "invalidEmail": "Please enter a valid email address.",
-      "privacyNote": "By subscribing, you agree to our Privacy Policy. Unsubscribe anytime."
+      "guest": {
+        "signupCta": "Create account",
+        "loginCta": "Sign in",
+        "note": "Create an account or sign in to join The Linen Circle and unlock member privileges."
+      },
+      "member": {
+        "title": "You are in The Linen Circle",
+        "description": "Member privileges are active — private seasonal invitations, styling edits, and priority access to limited editions.",
+        "status": "Privileges active",
+        "ordersCta": "View my orders",
+        "accountCta": "My account",
+        "shopCta": "Shop new arrivals"
+      }
     },
     "perks": {
       "organicLinen": {
@@ -641,5 +855,191 @@
     "backToTop": "Back to top",
     "allRightsReserved": "All rights reserved.",
     "paymentSecure": "Encrypted & Secure Checkout"
+  },
+  "ContentPage": {
+    "lastUpdated": "Last updated: {date}",
+    "continueShopping": "Continue shopping"
+  },
+  "NotFoundPage": {
+    "code": "404",
+    "title": "Page not found",
+    "description": "This page is unavailable or the link may be incorrect. Return home or browse the collection.",
+    "backHome": "Back to home",
+    "browseShop": "Browse the shop"
+  },
+  "Auth": {
+    "brandHeadline": "Quiet luxury in linen",
+    "brandTagline": "Refined abayas and modest essentials, crafted for everyday ease and occasion.",
+    "brandImageAlt": "Linen Line abaya editorial portrait",
+    "backToStore": "Back to the store",
+    "login": {
+      "metaTitle": "Sign in",
+      "metaDescription": "Sign in to your Linen Line account to manage orders, wishlist, and preferences.",
+      "title": "Sign in",
+      "subtitle": "Welcome back to Linen Line. Continue to your account.",
+      "email": "Email address",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "noAccount": "Do not have an account?",
+      "createAccount": "Create an account",
+      "errors": {
+        "emailRequired": "Email address is required",
+        "emailInvalid": "Enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 8 characters"
+      }
+    },
+    "register": {
+      "metaTitle": "Create an account",
+      "metaDescription": "Join Linen Line for curated orders, early collection drops, and saved preferences.",
+      "title": "Create an account",
+      "subtitle": "Join Linen Line. Enjoy seamless shopping, order tracking, and exclusive previews.",
+      "name": "Full name",
+      "namePlaceholder": "Loai Hassan",
+      "email": "Email address",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password (min. 8 characters)",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "termsAgreement": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "errors": {
+        "nameRequired": "Full name is required",
+        "nameMinLength": "Name must be at least 2 characters",
+        "nameLettersOnly": "Name may contain letters only",
+        "emailRequired": "Email address is required",
+        "emailInvalid": "Enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordMismatch": "Passwords do not match",
+        "termsRequired": "You must agree to the Terms of Service and Privacy Policy"
+      }
+    },
+    "verify": {
+      "metaTitle": "Verify your account",
+      "metaDescription": "Enter the 6-digit verification code sent to your email to complete your registration with Linen Line.",
+      "title": "Verify your email",
+      "subtitle": "We've sent a 6-digit verification code to",
+      "subtitleFallback": "Enter the 6-digit verification code sent to your email to complete your account registration.",
+      "codeLabel": "Verification code",
+      "submit": "Verify & continue",
+      "submitting": "Verifying…",
+      "resendPrompt": "Didn't receive the code?",
+      "resendCountdown": "Resend code in {time}",
+      "resendAction": "Resend code",
+      "resending": "Resending…",
+      "resendSuccess": "A new verification code has been sent to your email.",
+      "resendError": "Failed to resend code. Please try again.",
+      "wrongEmail": "Wrong email?",
+      "changeEmail": "Back to signup",
+      "successTitle": "Email verified!",
+      "successSubtitle": "Your account has been confirmed. Redirecting…",
+      "errors": {
+        "codeRequired": "Verification code is required",
+        "codeLength": "Code must be exactly 6 digits",
+        "invalidCode": "Invalid verification code. Please check and try again."
+      }
+    },
+    "forgotPassword": {
+      "metaTitle": "Forgot password",
+      "metaDescription": "Reset your Linen Line account password securely via email.",
+      "title": "Forgot password",
+      "subtitle": "Enter the email linked to your account. A reset link will be sent if an account exists.",
+      "email": "Email address",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "successTitle": "Check your email",
+      "successDescription": "If an account exists for {email}, a password reset link has been sent. Please check your inbox and spam folder.",
+      "rememberPassword": "Remember your password?",
+      "signIn": "Sign in",
+      "errors": {
+        "emailRequired": "Email address is required",
+        "emailInvalid": "Enter a valid email address"
+      }
+    },
+    "resetPassword": {
+      "metaTitle": "Reset password",
+      "metaDescription": "Choose a new password for your Linen Line account.",
+      "title": "Reset password",
+      "subtitle": "Choose a new password for your account. Use at least 8 characters.",
+      "invalidSubtitle": "This reset link is missing or no longer valid.",
+      "password": "New password",
+      "passwordPlaceholder": "Enter a new password (min. 8 characters)",
+      "confirmPassword": "Confirm new password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Update password",
+      "submitting": "Updating…",
+      "successTitle": "Password updated",
+      "successDescription": "Your password has been updated. Redirecting to sign in…",
+      "invalidTitle": "Link unavailable",
+      "invalidDescription": "This password reset link is invalid or has expired. Request a new link to continue.",
+      "requestNewLink": "Request a new link",
+      "rememberPassword": "Remember your password?",
+      "signIn": "Sign in",
+      "errors": {
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordMismatch": "Passwords do not match"
+      }
+    }
+  },
+
+  "WishlistPage": {
+    "metaTitle": "Wishlist",
+    "metaDescription": "Explore your saved abayas and boutique pieces at Linen Line Store.",
+    "title": "Wishlist",
+    "subtitle": "Your curated selection of saved pieces and favorites.",
+    "backToShop": "Back to boutique",
+    "itemCount": "{count, plural, =0 {No items} one {# item} other {# items}}",
+    "empty": {
+      "eyebrow": "Curated Boutique Wardrobe",
+      "title": "A quiet space waiting for your favorites",
+      "description": "Save the silhouettes and pure linen abayas that inspire you. Compare cuts, keep track of pieces, and style your bespoke wardrobe at your own pace.",
+      "cta": "Explore Boutique",
+      "curatedTitle": "Popular Collections",
+      "features": {
+        "curate": {
+          "title": "Personal Curation",
+          "description": "Keep track of silhouettes and shades in one place"
+        },
+        "notify": {
+          "title": "Restock & Size Alerts",
+          "description": "Be notified when artisanal pieces return to stock"
+        },
+        "seamless": {
+          "title": "Effortless Ordering",
+          "description": "Move directly to your shopping bag when ready"
+        }
+      },
+      "quickLinks": {
+        "newIn": "New Arrivals",
+        "linen": "Pure Linen",
+        "casual": "Casual Abayas",
+        "formal": "Formal & Occasion"
+      }
+    },
+    "actions": {
+      "moveToCart": "Move to bag",
+      "remove": "Remove from wishlist",
+      "clearAll": "Clear wishlist"
+    }
   }
 }

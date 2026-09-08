@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { Star } from "lucide-react";
+import { Heart } from "@/components/animate-ui/icons/heart";
 import { Link } from "@/i18n/routing";
 import {
   Carousel,
@@ -32,12 +33,14 @@ interface ProductCardProps {
   product: Product;
   className?: string;
   onAddToCart?: (product: Product, selectedColorId: string) => void;
+  onToggleWishlist?: (product: Product, isWishlisted: boolean) => void;
 }
 
 export function ProductCard({
   product,
   className,
   onAddToCart,
+  onToggleWishlist,
 }: ProductCardProps) {
   const t = useTranslations("ProductCard");
   const tColors = useTranslations("ProductCard.colors");
@@ -51,6 +54,7 @@ export function ProductCard({
     product.colors[0];
 
   const [isAdded, setIsAdded] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
     if (!isAdded) return;
@@ -65,6 +69,16 @@ export function ProductCard({
     e.stopPropagation();
     onAddToCart?.(product, selectedColor?.id ?? product.colors[0]?.id);
     setIsAdded(true);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsWishlisted((prev) => {
+      const next = !prev;
+      onToggleWishlist?.(product, next);
+      return next;
+    });
   };
 
   const images = selectedColor?.images ?? [];
@@ -115,16 +129,54 @@ export function ProductCard({
             />
           </motion.div>
         </AnimatePresence>
+        <AnimateIcon animateOnTap>
+        <TooltipProvider delay={100}>
+          <Tooltip>
+            <TooltipTrigger
+              type="button"
+              onClick={handleToggleWishlist}
+              aria-label={
+                isWishlisted ? t("removeFromWishlist") : t("addToWishlist")
+              }
+              aria-pressed={isWishlisted}
+              className={cn(
+                "absolute left-2 top-2 sm:left-3 sm:top-3 z-20",
+                "flex size-8 sm:size-9 items-center justify-center rounded-full",
+                "bg-background/90 text-foreground backdrop-blur-sm",
+                "ring-1 ring-border/70 shadow-sm",
+                "transition-colors duration-200 outline-none cursor-pointer",
+                "hover:bg-background hover:text-error",
+                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                isWishlisted && "text-primary",
+              )}
+            >
+              <Heart
+                className={cn(
+                  "size-4 sm:size-4.5 transition-colors",
+                  isWishlisted && "fill-error stroke-error",
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              sideOffset={6}
+              className="text-xs font-medium"
+            >
+              {isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        </AnimateIcon>
 
         {isOnSale ? (
           <Badge
-            className="absolute inset-s-2 top-2 sm:inset-s-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
+            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
           >
             {discountPercent > 0 ? `-${discountPercent}%` : t("sale")}
           </Badge>
         ) : product.badge ? (
           <Badge
-            className="absolute inset-s-2 top-2 sm:inset-s-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase shadow-sm bg-background/95 text-foreground backdrop-blur-sm ring-1 ring-border"
+            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase shadow-sm bg-background/95 text-foreground backdrop-blur-sm ring-1 ring-border"
           >
             {t(product.badge)}
           </Badge>

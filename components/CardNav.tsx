@@ -9,6 +9,7 @@ import { Menu, Package, User, X } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { CurrencyDropdown } from "@/components/common/CurrencyDropdown";
+import { useAuth } from "@/features/auth";
 import { cn } from "@/lib/utils";
 
 function subscribeToNothing() {
@@ -53,6 +54,7 @@ export default function CardNav({
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const [panelTop, setPanelTop] = useState(0);
@@ -198,30 +200,51 @@ export default function CardNav({
                 >
                   <div className="flex flex-col gap-3 p-3">
                     <div className="text-lg font-medium tracking-tight">
-                      {t("account")}
+                      {isAuthenticated ? t("account") : t("login")}
                     </div>
 
-                    <div className="flex flex-col gap-0.5">
-                      <Link
-                        href="/me"
-                        onClick={closeMenu}
-                        aria-label={t("account")}
-                        className="inline-flex items-center gap-1.5 py-0.5 text-[15px] no-underline transition-opacity hover:opacity-80"
-                      >
-                        <User className="size-4 shrink-0" aria-hidden />
-                        {t("account")}
-                      </Link>
+                    {isAuthenticated ? (
+                      <div className="flex flex-col gap-0.5">
+                        <Link
+                          href="/me"
+                          onClick={closeMenu}
+                          aria-label={t("account")}
+                          className="inline-flex items-center gap-1.5 py-0.5 text-[15px] no-underline transition-opacity hover:opacity-80"
+                        >
+                          <User className="size-4 shrink-0" aria-hidden />
+                          {t("account")}
+                        </Link>
 
-                      <Link
-                        href="/me/orders"
-                        onClick={closeMenu}
-                        aria-label={t("myOrders")}
-                        className="inline-flex items-center gap-1.5 py-0.5 text-[15px] no-underline transition-opacity hover:opacity-80"
+                        <Link
+                          href="/me/orders"
+                          onClick={closeMenu}
+                          aria-label={t("myOrders")}
+                          className="inline-flex items-center gap-1.5 py-0.5 text-[15px] no-underline transition-opacity hover:opacity-80"
+                        >
+                          <Package className="size-4 shrink-0" aria-hidden />
+                          {t("myOrders")}
+                        </Link>
+                      </div>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="w-full justify-center font-medium"
+                        nativeButton={false}
+                        render={(props) => (
+                          <Link
+                            href="/login"
+                            {...props}
+                            onClick={(event) => {
+                              props.onClick?.(event);
+                              closeMenu();
+                            }}
+                          />
+                        )}
+                        aria-label={t("login")}
                       >
-                        <Package className="size-4 shrink-0" aria-hidden />
-                        {t("myOrders")}
-                      </Link>
-                    </div>
+                        {t("login")}
+                      </Button>
+                    )}
 
                     <div className="flex flex-col gap-2 border-t border-border/60 pt-2">
                       <div className="flex items-center justify-between gap-2">

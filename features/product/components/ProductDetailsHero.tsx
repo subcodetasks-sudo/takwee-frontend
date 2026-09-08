@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Check, Minus, Plus, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FadeIn } from "@/components/animations";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import {
   PRODUCT_SWATCH_CLASSES,
@@ -18,6 +19,8 @@ import { SizeGuideDialog } from "./SizeGuideDialog";
 import { HeightSizeCalculator } from "./HeightSizeCalculator";
 import { useProductDetails } from "../context/ProductDetailsContext";
 import { ProductImageZoom } from "./ProductImageZoom";
+
+const COLOR_IMAGE_EASE = [0.21, 0.47, 0.32, 0.98] as const;
 
 const SIZE_ROWS = [
   { size: "52", length: "130", bust: "52" },
@@ -168,109 +171,133 @@ export function ProductDetailsHero({
             </ul>
           ) : null}
 
-          {activeImage ? (
-            <ProductImageZoom
-              className="order-1 lg:order-2 lg:flex-1"
-              src={activeImage}
-              alt={
-                images.length > 1
-                  ? `${productName} — ${t("imageIndex", {
-                      current: activeImageIndex + 1,
-                      total: images.length,
-                    })}`
-                  : productName
-              }
-              priority
-            />
-          ) : (
-            <div className="order-1 aspect-3/4 min-w-0 rounded-xl bg-muted lg:order-2 lg:flex-1" />
-          )}
+          <FadeIn
+            direction="up"
+            duration={0.65}
+            distance={28}
+            className="order-1 min-w-0 lg:order-2 lg:flex-1"
+          >
+            <div className="relative aspect-3/4 min-w-0 overflow-hidden rounded-xl bg-muted">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={selectedColor?.id ?? "no-color"}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.4, ease: COLOR_IMAGE_EASE }}
+                >
+                  {activeImage ? (
+                    <ProductImageZoom
+                      src={activeImage}
+                      alt={
+                        images.length > 1
+                          ? `${productName} — ${t("imageIndex", {
+                              current: activeImageIndex + 1,
+                              total: images.length,
+                            })}`
+                          : productName
+                      }
+                      priority
+                      className="size-full rounded-xl aspect-auto"
+                    />
+                  ) : null}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </FadeIn>
         </div>
       </div>
 
-      <FadeIn direction="up" delay={0.08} className="min-w-0">
-        <div className="flex flex-col gap-6 lg:pt-1">
-          <div className="space-y-3">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              {productName}
-            </h1>
+      <StaggerContainer
+        staggerDelay={0.08}
+        delayChildren={0.1}
+        className="flex min-w-0 flex-col gap-6 lg:pt-1"
+      >
+        <StaggerItem>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {productName}
+          </h1>
+        </StaggerItem>
 
-            {/* Product Rating Stars */}
-            <div className="flex items-center gap-1.5">
-              <div
-                className="flex items-center gap-0.5 text-warning"
-                aria-label="4.9 out of 5 stars"
-              >
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className="size-4 fill-warning stroke-warning"
-                    aria-hidden
-                  />
-                ))}
-              </div>
-              <span className="text-xs sm:text-sm font-bold tabular-nums text-foreground">
-                4.9
-              </span>
+        <StaggerItem>
+          <div className="flex items-center gap-1.5">
+            <div
+              className="flex items-center gap-0.5 text-warning"
+              aria-label="4.9 out of 5 stars"
+            >
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star
+                  key={s}
+                  className="size-4 fill-warning stroke-warning"
+                  aria-hidden
+                />
+              ))}
+            </div>
+            <span className="text-xs font-bold tabular-nums text-foreground sm:text-sm">
+              4.9
+            </span>
+          </div>
+        </StaggerItem>
+
+        <StaggerItem>
+          <div className="rounded-2xl border border-border/80 bg-card/60 p-4 shadow-xs sm:p-5">
+            <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3.5">
+              <ProductPrice
+                amountTRY={product.priceTRY}
+                className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+                iconClassName="size-7 sm:size-8 stroke-[2.4]"
+              />
+              {product.compareAtPriceTRY != null && isOnSale ? (
+                <ProductPrice
+                  amountTRY={product.compareAtPriceTRY}
+                  className="text-base text-muted-foreground line-through decoration-muted-foreground/60 tabular-nums sm:text-lg"
+                />
+              ) : null}
+              {savingsTRY > 0 ? (
+                <Badge className="rounded-full border-0 bg-success-muted px-2.5 py-1 text-xs font-semibold text-success">
+                  {discountPercent > 0
+                    ? t("discount", { percent: discountPercent })
+                    : t("save")}
+                </Badge>
+              ) : null}
+              {product.badge === "new" ? (
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-secondary-300 bg-secondary-50/70 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-secondary-800 dark:border-secondary-800 dark:bg-secondary-950 dark:text-secondary-200"
+                >
+                  {t("new")}
+                </Badge>
+              ) : null}
             </div>
 
-            {/* Elevated Price & Stock Showcase */}
-            <div className="rounded-2xl border border-border/80 bg-card/60 p-4 sm:p-5 shadow-xs">
-              <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3.5">
-                <ProductPrice
-                  amountTRY={product.priceTRY}
-                  className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-                  iconClassName="size-7 sm:size-8 stroke-[2.4]"
+            <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5 text-xs">
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "flex size-2 rounded-full",
+                    product.inStock
+                      ? "bg-success ring-4 ring-success/20 animate-pulse"
+                      : "bg-error ring-4 ring-error/20",
+                  )}
                 />
-                {product.compareAtPriceTRY != null && isOnSale ? (
-                  <ProductPrice
-                    amountTRY={product.compareAtPriceTRY}
-                    className="text-base sm:text-lg text-muted-foreground line-through decoration-muted-foreground/60 tabular-nums"
-                  />
-                ) : null}
-                {savingsTRY > 0 ? (
-                  <Badge className="rounded-full border-0 bg-success-muted px-2.5 py-1 text-xs font-semibold text-success">
-                    {discountPercent > 0
-                      ? t("discount", { percent: discountPercent })
-                      : t("save")}
-                  </Badge>
-                ) : null}
-                {product.badge === "new" ? (
-                  <Badge
-                    variant="outline"
-                    className="rounded-full border-secondary-300 bg-secondary-50/70 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-secondary-800 dark:border-secondary-800 dark:bg-secondary-950 dark:text-secondary-200"
-                  >
-                    {t("new")}
-                  </Badge>
-                ) : null}
-              </div>
-
-              <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5 text-xs">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={cn(
-                      "flex size-2 rounded-full",
-                      product.inStock
-                        ? "bg-success ring-4 ring-success/20 animate-pulse"
-                        : "bg-error ring-4 ring-error/20",
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "font-semibold",
-                      product.inStock ? "text-success" : "text-error",
-                    )}
-                  >
-                    {product.inStock ? t("inStock") : t("outOfStock")}
-                  </span>
-                </div>
-                <span className="font-medium text-muted-foreground">
-                  {t("inclusiveVat")}
+                <span
+                  className={cn(
+                    "font-semibold",
+                    product.inStock ? "text-success" : "text-error",
+                  )}
+                >
+                  {product.inStock ? t("inStock") : t("outOfStock")}
                 </span>
               </div>
+              <span className="font-medium text-muted-foreground">
+                {t("inclusiveVat")}
+              </span>
             </div>
           </div>
+        </StaggerItem>
 
+        <StaggerItem>
           <dl className="grid grid-cols-2 gap-3 rounded-xl border border-border/70 bg-muted/25 p-3.5 text-xs sm:text-sm">
             <div className="flex flex-col gap-0.5">
               <dt className="text-muted-foreground">{t("modelNumber")}</dt>
@@ -285,8 +312,10 @@ export function ProductDetailsHero({
               </dd>
             </div>
           </dl>
+        </StaggerItem>
 
-          {product.colors.length > 0 ? (
+        {product.colors.length > 0 ? (
+          <StaggerItem>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -304,45 +333,54 @@ export function ProductDetailsHero({
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5" role="list">
+              <StaggerContainer
+                staggerDelay={0.04}
+                delayChildren={0.05}
+                role="list"
+                className="flex flex-wrap items-center gap-2.5"
+              >
                 {product.colors.map((color) => {
                   const isSelected = color.id === selectedColor?.id;
                   const colorName = tColors(color.nameKey);
                   return (
-                    <button
-                      key={color.id}
-                      type="button"
-                      onClick={() => handleSelectColor(color.id)}
-                      aria-label={t("selectColor", { color: colorName })}
-                      aria-pressed={isSelected}
-                      className={cn(
-                        "group relative flex size-9 items-center justify-center rounded-full transition-all",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                        isSelected
-                          ? "scale-105 ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                          : "ring-1 ring-border/80 hover:scale-105 hover:ring-foreground/50",
-                      )}
-                    >
-                      <span
+                    <StaggerItem key={color.id} role="listitem">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectColor(color.id)}
+                        aria-label={t("selectColor", { color: colorName })}
+                        aria-pressed={isSelected}
                         className={cn(
-                          "size-7 rounded-full ring-1 ring-black/15 shrink-0 transition-transform",
-                          PRODUCT_SWATCH_CLASSES[color.swatch],
-                          isSelected && "ring-1 ring-black/25",
+                          "group relative flex size-9 items-center justify-center rounded-full transition-all",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                          isSelected
+                            ? "scale-105 ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                            : "ring-1 ring-border/80 hover:scale-105 hover:ring-foreground/50",
                         )}
-                      />
-                    </button>
+                      >
+                        <span
+                          className={cn(
+                            "size-7 shrink-0 rounded-full ring-1 ring-black/15 transition-transform",
+                            PRODUCT_SWATCH_CLASSES[color.swatch],
+                            isSelected && "ring-1 ring-black/25",
+                          )}
+                        />
+                      </button>
+                    </StaggerItem>
                   );
                 })}
-              </div>
+              </StaggerContainer>
             </div>
-          ) : null}
+          </StaggerItem>
+        ) : null}
 
-          {/* Height-Based Size Calculator */}
+        <StaggerItem>
           <HeightSizeCalculator
             selectedSize={selectedSize}
             onSelectSize={(size) => setSelectedSize(size)}
           />
+        </StaggerItem>
 
+        <StaggerItem>
           <div id="size-selector" className="space-y-3 scroll-mt-24">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -361,47 +399,56 @@ export function ProductDetailsHero({
               />
             </div>
 
-            <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
+            <StaggerContainer
+              staggerDelay={0.04}
+              delayChildren={0.05}
+              className="grid grid-cols-5 gap-2 sm:gap-2.5"
+            >
               {product.sizes.map((size) => {
                 const isSelected = size === selectedSize;
                 const sizeRow = SIZE_ROWS.find((r) => r.size === size);
                 return (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setSelectedSize(size)}
-                    aria-pressed={isSelected}
-                    className={cn(
-                      "group flex flex-col items-center justify-center rounded-xl border py-2.5 px-2 text-center transition-all",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                      isSelected
-                        ? "border-foreground bg-foreground text-background shadow-xs ring-1 ring-foreground"
-                        : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60",
-                    )}
-                  >
-                    <span className="text-sm sm:text-base font-bold tabular-nums">
-                      {size}
-                    </span>
-                    {sizeRow ? (
-                      <span
-                        className={cn(
-                          "text-[10px] sm:text-[11px] font-normal tabular-nums mt-0.5",
-                          isSelected
-                            ? "text-background/80"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {sizeRow.length} cm
+                  <StaggerItem key={size}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSize(size)}
+                      aria-pressed={isSelected}
+                      className={cn(
+                        "group flex w-full flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-center transition-all",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                        isSelected
+                          ? "border-foreground bg-foreground text-background shadow-xs ring-1 ring-foreground"
+                          : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60",
+                      )}
+                    >
+                      <span className="text-sm font-bold tabular-nums sm:text-base">
+                        {size}
                       </span>
-                    ) : null}
-                  </button>
+                      {sizeRow ? (
+                        <span
+                          className={cn(
+                            "mt-0.5 text-[10px] font-normal tabular-nums sm:text-[11px]",
+                            isSelected
+                              ? "text-background/80"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {sizeRow.length} cm
+                        </span>
+                      ) : null}
+                    </button>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerContainer>
           </div>
+        </StaggerItem>
 
+        <StaggerItem>
           <div className="space-y-2.5">
-            <p className="text-sm font-semibold text-foreground">{t("quantity")}</p>
+            <p className="text-sm font-semibold text-foreground">
+              {t("quantity")}
+            </p>
             <div className="flex flex-wrap items-center gap-3">
               <div className="inline-flex items-center rounded-xl border border-border bg-card shadow-2xs">
                 <button
@@ -435,7 +482,7 @@ export function ProductDetailsHero({
                 disabled={!product.inStock || !selectedSize}
                 onClick={handleAddToCart}
                 className={cn(
-                  "min-h-11 flex-1 rounded-xl px-6 text-sm font-semibold sm:min-w-48 sm:flex-none transition-all shadow-xs",
+                  "min-h-11 flex-1 rounded-xl px-6 text-sm font-semibold shadow-xs transition-all sm:min-w-48 sm:flex-none",
                   isAdded &&
                     "bg-success text-success-foreground hover:bg-success/90",
                 )}
@@ -451,8 +498,8 @@ export function ProductDetailsHero({
               </Button>
             </div>
           </div>
-        </div>
-      </FadeIn>
+        </StaggerItem>
+      </StaggerContainer>
     </div>
   );
 }

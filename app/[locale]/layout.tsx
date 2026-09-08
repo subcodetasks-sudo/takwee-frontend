@@ -4,6 +4,10 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { CurrencyProvider } from "@/hooks/useCurrency";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { AuthProvider } from "@/features/auth";
+import { GooeyToaster } from "@/components/ui/goey-toaster";
 import "../globals.css";
 
 const notoKufiArabic = Noto_Kufi_Arabic({
@@ -27,10 +31,6 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-import { CurrencyProvider } from "@/hooks/useCurrency";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
-
 export default async function LocaleLayout({
   children,
   params,
@@ -48,8 +48,10 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const activeFontClass = locale === "ar" ? notoKufiArabic.className : outfit.className;
-  const activeFontVar = locale === "ar" ? "var(--font-noto-arabic)" : "var(--font-outfit)";
+  const activeFontClass =
+    locale === "ar" ? notoKufiArabic.className : outfit.className;
+  const activeFontVar =
+    locale === "ar" ? "var(--font-noto-arabic)" : "var(--font-outfit)";
 
   return (
     <html
@@ -58,13 +60,14 @@ export default async function LocaleLayout({
       style={{ ["--font-sans" as string]: activeFontVar }}
       className={`${notoKufiArabic.variable} ${outfit.variable} ${activeFontClass} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="flex min-h-full flex-col bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <CurrencyProvider>
-            <Header />
-            <div className="flex-1 flex flex-col">{children}</div>
-            <Footer />
-          </CurrencyProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <CurrencyProvider>{children}</CurrencyProvider>
+            </AuthProvider>
+          </QueryProvider>
+          <GooeyToaster />
         </NextIntlClientProvider>
       </body>
     </html>

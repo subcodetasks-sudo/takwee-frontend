@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Package } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/routing";
 import {
@@ -250,6 +250,18 @@ export function HeroCarousel() {
                           ) : (
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                           )}
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="px-6 py-5 text-sm sm:text-base font-semibold rounded-xl border-foreground/20 bg-background/60 text-foreground backdrop-blur-md shadow-md hover:bg-background/80 hover:shadow-lg transition-all duration-300 group"
+                          nativeButton={false}
+                          render={(props) => (
+                            <Link href="/me/orders" {...props} />
+                          )}
+                        >
+                          <Package className="h-4 w-4" />
+                          <span>{t("ordersCta")}</span>
                         </Button>
                       </motion.div>
                     </div>

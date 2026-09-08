@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 type QuickLink =
   | {
       id: string;
-      href: "/me/orders" | "/me/addresses" | "/me/settings";
+      href: "/me/orders" | "/me/addresses" | "/me/settings" | "/wishlist";
       icon: typeof Package;
       disabled?: false;
     }
@@ -26,7 +26,7 @@ type QuickLink =
 
 const LINKS: QuickLink[] = [
   { id: "orders", href: "/me/orders", icon: Package },
-  { id: "wishlist", icon: Heart, disabled: true },
+  { id: "wishlist", href: "/wishlist", icon: Heart },
   { id: "addresses", href: "/me/addresses", icon: MapPin },
   { id: "settings", href: "/me/settings", icon: Settings },
 ];
