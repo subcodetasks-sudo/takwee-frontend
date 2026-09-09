@@ -50,6 +50,7 @@ export function Header() {
   const hideCategoryNav = hidden && isDesktopNav;
 
   const navLinks = [
+    { href: "/", label: t("home") },
     { href: "/shop/new-in", label: t("newArrivals"), badge: "New", highlight: true },
     { href: "/shop", label: t("allAbayas") },
     { href: "/shop/linen", label: t("linenCollection") },
@@ -67,6 +68,7 @@ export function Header() {
         label: t("navExplore"),
         className: "bg-primary text-primary-foreground",
         links: [
+          { label: t("home"), href: "/", ariaLabel: t("home") },
           { label: t("newArrivals"), href: "/shop/new-in", ariaLabel: t("newArrivals") },
           { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
           { label: t("linenCollection"), href: "/shop/linen", ariaLabel: t("linenCollection") },

@@ -83,7 +83,7 @@ export function CheckoutOrderSummary({
         disabled={isSubmitting || items.length === 0}
         className={cn(
           buttonVariants({ variant: "default", size: "lg" }),
-          "w-full h-11 sm:h-12 rounded-xl text-sm sm:text-base font-medium shadow-xs hover:shadow-md transition-all gap-2 disabled:opacity-60",
+          "w-full h-11 sm:h-12 rounded-xl text-sm sm:text-base font-medium shadow-xs hover:shadow-md transition-all gap-2 disabled:opacity-60 bg-success text-success-foreground hover:bg-success/90",
         )}
       >
         {isSubmitting ? (
