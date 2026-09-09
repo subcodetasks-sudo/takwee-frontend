@@ -136,7 +136,9 @@ function AdditionalSectionBlock({
         >
           {section.products.map((product) => (
             <StaggerItem key={`${section.id}-${product.id}`}>
-              <ProductCard product={product} />
+              <ProductCard
+                product={product}
+              />
             </StaggerItem>
           ))}
         </StaggerContainer>

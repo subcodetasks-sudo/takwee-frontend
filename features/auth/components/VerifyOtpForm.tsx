@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { gooeyToast } from "goey-toast";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import { CheckCircle2, Clock, MailCheck, RotateCw } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,9 @@ import {
 } from "../schemas/verify-otp-schema";
 
 const RESEND_COOLDOWN_SECONDS = 60;
+
+const OTP_SLOT_CLASS =
+  "size-9 text-sm font-semibold bg-background border-border data-[active=true]:border-primary sm:size-11 sm:text-base md:size-12 md:text-lg";
 
 function formatCountdown(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -130,7 +133,9 @@ export function VerifyOtpForm({
       setIsSuccess(true);
 
       try {
-        gooeyToast.success(t("successTitle"));
+        gooeyToast.success(t("successTitle"), {
+          description: t("successSubtitle"),
+        });
       } catch {
         // Fallback gracefully
       }
@@ -148,36 +153,42 @@ export function VerifyOtpForm({
   const hasAutoSubmittedRef = useRef(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       <form
         id={formId}
         onSubmit={handleSubmit(onValidSubmit)}
-        className="space-y-6 rounded-xl border border-border bg-card p-5 shadow-md sm:p-7 sm:shadow-lg"
+        className="space-y-5 rounded-xl border border-border bg-card p-4 shadow-md sm:space-y-6 sm:p-7 sm:shadow-lg"
         noValidate
       >
         {/* Visual Badge & Email info */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary ring-8 ring-primary/5">
+        <div className="flex flex-col items-center space-y-2.5 text-center sm:space-y-3">
+          <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary ring-4 ring-primary/5 sm:size-14 sm:ring-8">
             {isSuccess ? (
-              <CheckCircle2 className="size-7 text-success" aria-hidden />
+              <CheckCircle2 className="size-6 text-success sm:size-7" aria-hidden />
             ) : (
-              <MailCheck className="size-7" aria-hidden />
+              <MailCheck className="size-6 sm:size-7" aria-hidden />
             )}
           </div>
 
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">
+          <div className="w-full max-w-full space-y-1.5">
+            <p className="text-xs text-muted-foreground sm:text-sm">
               {email ? t("subtitle") : t("subtitleFallback")}
             </p>
             {email && (
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs">
-                <span dir="ltr" className="font-medium text-foreground">
+              <div className="mx-auto flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[11px] sm:px-3 sm:text-xs">
+                <span
+                  dir="ltr"
+                  className="max-w-[min(100%,12rem)] truncate font-medium text-foreground sm:max-w-[16rem]"
+                  title={email}
+                >
                   {email}
                 </span>
-                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground" aria-hidden>
+                  •
+                </span>
                 <Link
                   href="/signup"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="shrink-0 font-medium text-primary underline-offset-4 hover:underline"
                 >
                   {t("changeEmail")}
                 </Link>
@@ -234,8 +245,8 @@ export function VerifyOtpForm({
             name="code"
             control={control}
             render={({ field }) => (
-              <div className="flex flex-col items-center space-y-2">
-                <div dir="ltr">
+              <div className="flex w-full flex-col items-center space-y-2">
+                <div dir="ltr" className="w-full max-w-full overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <InputOTP
                     id="otp-input"
                     maxLength={6}
@@ -253,40 +264,22 @@ export function VerifyOtpForm({
                         hasAutoSubmittedRef.current = false;
                       }
                     }}
-                    containerClassName="justify-center"
+                    containerClassName="justify-center gap-1 sm:gap-2"
                     aria-invalid={!!errors.code || !!serverError}
                     autoFocus
                   >
                     <InputOTPGroup className="shadow-2xs">
-                      <InputOTPSlot
-                        index={0}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
-                      <InputOTPSlot
-                        index={1}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
-                      <InputOTPSlot
-                        index={2}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
+                      <InputOTPSlot index={0} className={OTP_SLOT_CLASS} />
+                      <InputOTPSlot index={1} className={OTP_SLOT_CLASS} />
+                      <InputOTPSlot index={2} className={OTP_SLOT_CLASS} />
                     </InputOTPGroup>
 
-                    <InputOTPSeparator className="text-muted-foreground/60 px-1" />
+                    <InputOTPSeparator className="shrink-0 px-0.5 text-muted-foreground/60 sm:px-1" />
 
                     <InputOTPGroup className="shadow-2xs">
-                      <InputOTPSlot
-                        index={3}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
-                      <InputOTPSlot
-                        index={4}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
-                      <InputOTPSlot
-                        index={5}
-                        className="size-11 text-base sm:size-12 sm:text-lg font-semibold bg-background border-border data-[active=true]:border-primary"
-                      />
+                      <InputOTPSlot index={3} className={OTP_SLOT_CLASS} />
+                      <InputOTPSlot index={4} className={OTP_SLOT_CLASS} />
+                      <InputOTPSlot index={5} className={OTP_SLOT_CLASS} />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -305,21 +298,21 @@ export function VerifyOtpForm({
         <Button
           type="submit"
           disabled={isSubmitting || isSuccess}
-          className="h-10 w-full text-sm font-medium shadow-2xs sm:h-11 transition-all"
+          className="h-9 w-full text-sm font-medium shadow-2xs transition-all sm:h-11"
         >
           {isSubmitting ? t("submitting") : t("submit")}
         </Button>
 
         {/* Resend Timer section */}
-        <div className="flex flex-col items-center justify-center space-y-2 pt-2 border-t border-border/60 text-center">
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col items-center justify-center space-y-1.5 border-t border-border/60 pt-2 text-center sm:space-y-2">
+          <p className="text-[11px] text-muted-foreground sm:text-xs">
             {t("resendPrompt")}
           </p>
 
           {timeLeft > 0 ? (
-            <div className="inline-flex items-center gap-1.5 rounded-md bg-muted/60 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-              <Clock className="size-3.5 text-muted-foreground/80 animate-pulse" aria-hidden />
-              <span>
+            <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-md bg-muted/60 px-2 py-1 text-[11px] font-medium text-muted-foreground sm:px-2.5 sm:text-xs">
+              <Clock className="size-3.5 shrink-0 text-muted-foreground/80 animate-pulse" aria-hidden />
+              <span className="tabular-nums">
                 {t("resendCountdown", {
                   time: formatCountdown(timeLeft),
                 })}
@@ -332,7 +325,7 @@ export function VerifyOtpForm({
               size="sm"
               disabled={isResending || isSubmitting || isSuccess}
               onClick={handleResend}
-              className="h-8 gap-1.5 text-xs font-medium text-primary hover:text-primary hover:bg-primary/10 transition-colors"
+              className="h-8 gap-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 hover:text-primary"
             >
               <RotateCw
                 className={cn("size-3.5", isResending && "animate-spin")}

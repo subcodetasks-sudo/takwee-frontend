@@ -7,9 +7,9 @@ export async function VerifyView() {
   const t = await getTranslations("Auth.verify");
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <FadeIn direction="up" className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {t("title")}
         </h1>
       </FadeIn>

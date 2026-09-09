@@ -1,6 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { useCart, useCartFly } from "@/features/cart";
+import { useWishlist } from "@/features/wishlist";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import type { AbayaSize, Product } from "../types";
 
 export interface ProductDetailsContextValue {
@@ -16,7 +20,10 @@ export interface ProductDetailsContextValue {
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
   isAdded: boolean;
   setIsAdded: React.Dispatch<React.SetStateAction<boolean>>;
-  handleAddToCart: () => void;
+  isWishlisted: boolean;
+  isInCart: boolean;
+  handleAddToCart: (origin?: HTMLElement | null) => void;
+  handleToggleWishlist: () => void;
 }
 
 const ProductDetailsContext =
@@ -40,6 +47,11 @@ export function ProductDetailsProvider({
   onAddToCart,
   children,
 }: ProductDetailsProviderProps) {
+  const { addItem, isInCart: isCartInCart, isHydrated } = useCart();
+  const { flyToCart } = useCartFly();
+  const { isWishlisted: isProductWishlisted, toggleItem } = useWishlist();
+  const tCart = useTranslations("CartPage.toasts");
+  const tWishlist = useTranslations("WishlistPage.toasts");
   const [selectedColorId, setSelectedColorId] = useState(
     product.colors[0]?.id,
   );
@@ -59,8 +71,10 @@ export function ProductDetailsProvider({
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
     product.colors[0];
+  const isWishlisted = isProductWishlisted(product.id);
+  const isInCart = (isHydrated && isCartInCart(product.id)) || isAdded;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (origin?: HTMLElement | null) => {
     if (!product.inStock) return;
     if (!selectedSize) {
       const el = document.getElementById("size-selector");
@@ -73,13 +87,40 @@ export function ProductDetailsProvider({
       }
       return;
     }
+    const colorId = selectedColor?.id ?? product.colors[0]?.id;
+    const imageUrl =
+      selectedColor?.images[activeImageIndex] ??
+      selectedColor?.images[0] ??
+      product.colors[0]?.images[0] ??
+      "";
+    addItem(product, {
+      selectedColorId: colorId,
+      selectedSize,
+      quantity,
+    });
+    if (origin) {
+      flyToCart({
+        origin,
+        imageUrl,
+        alt: productName,
+      });
+    }
     onAddToCart?.({
       product,
-      colorId: selectedColor?.id ?? product.colors[0]?.id,
+      colorId,
       size: selectedSize,
       quantity,
     });
     setIsAdded(true);
+    gooeyToast.success(tCart("added"));
+  };
+
+  const handleToggleWishlist = () => {
+    const next = toggleItem(product, {
+      selectedColorId: selectedColor?.id ?? product.colors[0]?.id,
+      selectedSize: selectedSize ?? undefined,
+    });
+    gooeyToast.success(next ? tWishlist("added") : tWishlist("removed"));
   };
 
   return (
@@ -97,7 +138,10 @@ export function ProductDetailsProvider({
         setQuantity,
         isAdded,
         setIsAdded,
+        isWishlisted,
+        isInCart,
         handleAddToCart,
+        handleToggleWishlist,
       }}
     >
       {children}

@@ -5,6 +5,10 @@ export function getProductBySlug(slug: string): Product | undefined {
   return SAMPLE_PRODUCTS.find((product) => product.slug === slug);
 }
 
+export function getProductById(id: string): Product | undefined {
+  return SAMPLE_PRODUCTS.find((product) => product.id === id);
+}
+
 export function getAllProductSlugs(): string[] {
   return SAMPLE_PRODUCTS.map((product) => product.slug);
 }

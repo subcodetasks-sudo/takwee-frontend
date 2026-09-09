@@ -365,6 +365,7 @@
     "selectColor": "Select {color}",
     "addToCart": "Add to Cart",
     "addedToCart": "Added to Cart",
+    "inCart": "In Cart",
     "addToWishlist": "Add to Wishlist",
     "removeFromWishlist": "Remove from Wishlist",
     "sale": "Sale",
@@ -395,6 +396,10 @@
     "quantity": "Quantity",
     "addToCart": "Add to Cart",
     "addedToCart": "Added to Cart",
+    "inCart": "In Cart",
+    "proceedToPayment": "Proceed to Payment",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
     "inStock": "In stock",
     "outOfStock": "Out of stock",
     "save": "Save",
@@ -411,6 +416,7 @@
     "imageIndex": "Image {current} of {total}",
     "hoverToZoom": "Hover to zoom",
     "detailsHeading": "Details",
+    "backToShop": "Back to boutique",
     "reviewsEmpty": "No reviews yet. Be the first to share how this abaya feels and fits.",
     "related": {
       "title": "You may also like",
@@ -1040,6 +1046,201 @@
       "moveToCart": "Move to bag",
       "remove": "Remove from wishlist",
       "clearAll": "Clear wishlist"
+    },
+    "toasts": {
+      "added": "Saved to wishlist",
+      "removed": "Removed from wishlist",
+      "cleared": "Wishlist cleared"
+    }
+  },
+
+  "CartPage": {
+    "metaTitle": "Shopping Bag",
+    "metaDescription": "Review your selected luxury abayas and boutique pieces at Linen Line Store.",
+    "title": "Shopping Bag",
+    "subtitle": "Your curated pieces, ready for effortless checkout.",
+    "backToShop": "Back to boutique",
+    "itemCount": "{count, plural, =0 {No items} one {# item} other {# items}}",
+    "empty": {
+      "eyebrow": "Your Bag is Empty",
+      "title": "A quiet space waiting for your selection",
+      "description": "You haven't added any abayas or boutique garments yet. Discover our pure linen collections, refined silhouettes, and artisanal modest wear.",
+      "cta": "Explore Boutique",
+      "curatedTitle": "Popular Collections",
+      "features": {
+        "shipping": {
+          "title": "Complimentary Delivery",
+          "description": "Fast, secure regional shipping across the GCC"
+        },
+        "packaging": {
+          "title": "Luxury Unboxing",
+          "description": "Bespoke gift packaging and atelier presentation"
+        },
+        "craft": {
+          "title": "Artisanal Craftsmanship",
+          "description": "Pure linen and natural weaves tailored to perfection"
+        }
+      },
+      "quickLinks": {
+        "newIn": "New Arrivals",
+        "linen": "Pure Linen",
+        "casual": "Casual Abayas",
+        "formal": "Formal & Occasion"
+      }
+    },
+    "actions": {
+      "checkout": "Proceed to Checkout",
+      "continueShopping": "Continue Shopping",
+      "remove": "Remove from bag",
+      "clearAll": "Clear bag"
+    },
+    "continueShopping": "Continue Shopping",
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "itemCount": "{count, plural, =0 {0 items} one {# item} other {# items}}",
+      "estimatedTax": "Estimated Taxes (VAT 10%)",
+      "taxTooltip": "Estimated value-added tax on boutique merchandise.",
+      "total": "Estimated Total",
+      "totalNote": "Includes merchandise VAT (10%).",
+      "promoCode": {
+        "label": "Promo Code",
+        "placeholder": "Enter promo code",
+        "apply": "Apply",
+        "applied": "Applied"
+      },
+      "checkoutButton": "Proceed to Checkout",
+      "scrollToSummary": "Order Summary",
+      "guarantees": {
+        "secure": "Secure 256-bit encrypted checkout",
+        "packaging": "Complimentary luxury boutique unboxing",
+        "returns": "14-day hassle-free boutique returns"
+      }
+    },
+    "item": {
+      "size": "Size",
+      "color": "Color",
+      "unitPrice": "Unit price",
+      "quantity": "Quantity",
+      "inStock": "In Stock & Ready to Ship",
+      "remove": "Remove item",
+      "decrease": "Decrease quantity",
+      "increase": "Increase quantity"
+    },
+    "toasts": {
+      "added": "Added to shopping bag",
+      "removed": "Removed from shopping bag",
+      "cleared": "Shopping bag cleared",
+      "updated": "Cart updated"
+    }
+  },
+  "CheckoutPage": {
+    "metaTitle": "Checkout",
+    "metaDescription": "Complete your Linen Line order with secure boutique checkout.",
+    "title": "Checkout",
+    "subtitle": "Confirm delivery details and payment to place your order.",
+    "backToCart": "Back to shopping bag",
+    "backToShop": "Back to boutique",
+    "itemCount": "{count, plural, =0 {No items} one {# item} other {# items}}",
+    "empty": {
+      "title": "Nothing to check out",
+      "description": "Your shopping bag is empty. Add a piece from the boutique before proceeding to payment.",
+      "ctaShop": "Explore boutique",
+      "ctaCart": "View shopping bag"
+    },
+    "shipping": {
+      "title": "Delivery address",
+      "subtitle": "Select where this order should be delivered.",
+      "addAddress": "Add address",
+      "noAddresses": "No saved addresses yet. Add a delivery address to continue.",
+      "defaultBadge": "Default",
+      "errors": {
+        "required": "Please select a delivery address."
+      }
+    },
+    "payment": {
+      "title": "Payment method",
+      "subtitle": "Choose how you would like to pay for this order.",
+      "methods": {
+        "card": {
+          "label": "Card payment",
+          "description": "Secure mock card payment (Visa ···· 4242)."
+        },
+        "cashOnDelivery": {
+          "label": "Cash on delivery",
+          "description": "Pay in cash when your order arrives."
+        },
+        "bankTransfer": {
+          "label": "Bank transfer",
+          "description": "Transfer funds using the boutique bank details provided after ordering."
+        }
+      },
+      "errors": {
+        "required": "Please select a payment method."
+      }
+    },
+    "summary": {
+      "title": "Order summary",
+      "subtotal": "Subtotal",
+      "estimatedTax": "Estimated taxes (VAT 10%)",
+      "shipping": "Shipping",
+      "shippingComplimentary": "Complimentary",
+      "total": "Order total",
+      "totalNote": "Includes merchandise VAT (10%). Shipping is complimentary.",
+      "placeOrder": "Place order",
+      "placingOrder": "Placing order…",
+      "secureNote": "Secure boutique checkout",
+      "scrollToSummary": "Order Summary",
+      "itemCount": "{count, plural, =0 {0 items} one {# item} other {# items}}",
+      "size": "Size",
+      "color": "Color",
+      "qty": "Qty {count}"
+    },
+    "toasts": {
+      "success": "Order placed successfully",
+      "error": "Unable to place the order. Please try again."
+    },
+    "confirmation": {
+      "metaTitle": "Order confirmed",
+      "metaDescription": "Your Linen Line order has been placed.",
+      "eyebrow": "Order confirmed",
+      "title": "Thank you for your order",
+      "description": "Your order {number} has been received and is being prepared by the atelier.",
+      "orderNumber": "Order number",
+      "placedAt": "Placed on",
+      "copyOrderNumber": "Copy order number",
+      "copied": "Copied to clipboard",
+      "printReceipt": "Print receipt",
+      "estimatedArrival": "Estimated delivery: {date}",
+      "timelineTitle": "Atelier Progress",
+      "timelineStep1": "Order Received",
+      "timelineStep2": "Atelier Tailoring",
+      "timelineStep3": "Quality Inspection",
+      "timelineStep4": "Courier Delivery",
+      "shippingTitle": "Delivery",
+      "paymentTitle": "Payment",
+      "itemsTitle": "Items in this order",
+      "subtotal": "Subtotal",
+      "shippingFee": "Shipping",
+      "complimentary": "Complimentary",
+      "tax": "Estimated VAT (10%)",
+      "total": "Total",
+      "perks": {
+        "craftTitle": "Artisanal Tailoring",
+        "craftDesc": "Handcrafted modest silhouettes cut from pure natural fabrics.",
+        "packagingTitle": "Luxury Packaging",
+        "packagingDesc": "Arrives in our signature keepsake box with protective garment care.",
+        "supportTitle": "Concierge Care",
+        "supportDesc": "Our atelier client advisors are available for bespoke assistance."
+      },
+      "continueShopping": "Continue shopping",
+      "viewOrders": "View my orders",
+      "paymentCard": "{brand} ···· {last4}",
+      "missing": {
+        "title": "No order to show",
+        "description": "There is no recent checkout confirmation in this session.",
+        "cta": "Return to shopping bag"
+      }
     }
   }
 }

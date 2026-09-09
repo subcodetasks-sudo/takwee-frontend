@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/features/product/types";
 import {
@@ -34,7 +34,9 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    setFilters(createDefaultFilterState(bounds));
+    startTransition(() => {
+      setFilters(createDefaultFilterState(bounds));
+    });
   }, [bounds.min, bounds.max, products]);
 
   const filteredProducts = useMemo(
@@ -44,12 +46,24 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
 
   const activeFilterCount = countActiveFilters(filters, bounds);
 
+  const handleFiltersChange = (
+    next: ShopFilterState | ((prev: ShopFilterState) => ShopFilterState),
+  ) => {
+    startTransition(() => {
+      setFilters(next);
+    });
+  };
+
   const clearFilters = () => {
-    setFilters(createDefaultFilterState(bounds));
+    startTransition(() => {
+      setFilters(createDefaultFilterState(bounds));
+    });
   };
 
   const handleSortChange = (sort: ShopSort) => {
-    setFilters((prev) => ({ ...prev, sort }));
+    startTransition(() => {
+      setFilters((prev) => ({ ...prev, sort }));
+    });
   };
 
   return (
@@ -63,7 +77,7 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
             filters={filters}
             bounds={bounds}
             resultCount={filteredProducts.length}
-            onChange={setFilters}
+            onChange={handleFiltersChange}
             onClear={clearFilters}
             idPrefix="shop-desktop"
           />

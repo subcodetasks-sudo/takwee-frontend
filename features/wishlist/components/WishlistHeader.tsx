@@ -1,14 +1,22 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { motion, type Variants } from "motion/react";
 import { Link } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const LUXURY_EASE = [0.16, 1, 0.3, 1] as const;
 
 interface WishlistHeaderProps {
   itemCount?: number;
+  onClearAll?: () => void;
 }
 
 const headerContainerVariants: Variants = {
@@ -45,7 +53,10 @@ const titleVariants: Variants = {
   },
 };
 
-export function WishlistHeader({ itemCount = 0 }: WishlistHeaderProps) {
+export function WishlistHeader({
+  itemCount = 0,
+  onClearAll,
+}: WishlistHeaderProps) {
   const t = useTranslations("WishlistPage");
 
   return (
@@ -90,6 +101,35 @@ export function WishlistHeader({ itemCount = 0 }: WishlistHeaderProps) {
             {t("subtitle")}
           </p>
         </div>
+
+        {onClearAll ? (
+          <TooltipProvider delay={100}>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onClearAll}
+                    aria-label={t("actions.clearAll")}
+                    className="gap-1.5 rounded-xl text-muted-foreground hover:text-error"
+                  />
+                }
+              >
+                <Trash2 className="size-3.5" aria-hidden />
+                <span className="hidden sm:inline">{t("actions.clearAll")}</span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={6}
+                className="text-xs font-medium"
+              >
+                {t("actions.clearAll")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
       </motion.div>
     </motion.div>
   );

@@ -299,12 +299,12 @@ export default function CardNav({
         type="button"
         variant="ghost"
         size="icon"
-        className="size-9 text-foreground hover:bg-muted"
+        className="size-8 text-foreground hover:bg-muted sm:size-9"
         aria-label={isOpen ? t("closeMenu") : t("menu")}
         aria-expanded={isOpen}
         onClick={toggleMenu}
       >
-        {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        {isOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
       </Button>
       {panel}
     </div>

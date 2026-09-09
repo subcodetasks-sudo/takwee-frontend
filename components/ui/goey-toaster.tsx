@@ -14,8 +14,8 @@ export type {
   GooeyToastTimings,
 } from "goey-toast"
 
-function GooeyToaster(props: GooeyToasterProps) {
-  return <GooeyToasterPrimitive position="bottom-right" {...props} />
+function GooeyToaster({ closeButton = false, ...props }: GooeyToasterProps) {
+  return <GooeyToasterPrimitive closeButton={closeButton} {...props} />
 }
 
 export { GooeyToaster }

@@ -365,6 +365,7 @@
     "selectColor": "{color} rengini seç",
     "addToCart": "Sepete Ekle",
     "addedToCart": "Sepete Eklendi",
+    "inCart": "Sepette",
     "addToWishlist": "Favorilere Ekle",
     "removeFromWishlist": "Favorilerden Çıkar",
     "sale": "İndirim",
@@ -395,6 +396,10 @@
     "quantity": "Adet",
     "addToCart": "Sepete Ekle",
     "addedToCart": "Sepete Eklendi",
+    "inCart": "Sepette",
+    "proceedToPayment": "Ödemeye Geç",
+    "addToWishlist": "Favorilere ekleyin",
+    "removeFromWishlist": "Favorilerden çıkarın",
     "inStock": "Stokta",
     "outOfStock": "Stokta yok",
     "save": "Kazanç",
@@ -411,6 +416,7 @@
     "imageIndex": "Görsel {current} / {total}",
     "hoverToZoom": "Yakınlaştırmak için üzerine gelin",
     "detailsHeading": "Detaylar",
+    "backToShop": "Koleksiyona dön",
     "reviewsEmpty": "Henüz yorum yok. Bu abayanın dokusunu ve kalıbını ilk siz paylaşın.",
     "related": {
       "title": "Bunları da beğenebilirsiniz",
@@ -1040,6 +1046,201 @@
       "moveToCart": "Sepete Ekle",
       "remove": "Listeden Çıkar",
       "clearAll": "Listeyi Temizle"
+    },
+    "toasts": {
+      "added": "Favorilerinize eklendi",
+      "removed": "Favorilerinizden çıkarıldı",
+      "cleared": "Favori listeniz temizlendi"
+    }
+  },
+
+  "CartPage": {
+    "metaTitle": "Alışveriş Çantası",
+    "metaDescription": "Linen Line Store'da seçtiğiniz abaya ve özel tasarımları inceleyin.",
+    "title": "Alışveriş Çantası",
+    "subtitle": "Özenle seçtiğiniz parçalar, tamamlanmayı bekliyor.",
+    "backToShop": "Mağazaya Dön",
+    "itemCount": "{count, plural, =0 {Ürün yok} one {# ürün} other {# ürün}}",
+    "empty": {
+      "eyebrow": "Çantanız Boş",
+      "title": "Seçimlerinizi bekleyen zarif bir alan",
+      "description": "Henüz çantanıza bir abaya veya özel tasarım eklemediniz. Saf keten koleksiyonlarımızı ve zarif silüetlerimizi keşfedin.",
+      "cta": "Butiği Keşfet",
+      "curatedTitle": "Popüler Koleksiyonlar",
+      "features": {
+        "shipping": {
+          "title": "Özel Teslimat",
+          "description": "Tüm Körfez bölgesine hızlı ve güvenilir teslimat"
+        },
+        "packaging": {
+          "title": "Lüks Butik Paketleme",
+          "description": "Hediye edilmeye hazır, zarif kutu ve sunum deneyimi"
+        },
+        "craft": {
+          "title": "Saf Keten & Usta İşçilik",
+          "description": "Kusursuz terzilikle işlenmiş doğal ve kaliteli dokular"
+        }
+      },
+      "quickLinks": {
+        "newIn": "Yeni Gelenler",
+        "linen": "Saf Keten",
+        "casual": "Günlük Abaya",
+        "formal": "Özel Davet"
+      }
+    },
+    "actions": {
+      "checkout": "Siparişi Tamamla",
+      "continueShopping": "Alışverişe Devam Et",
+      "remove": "Çantadan Çıkar",
+      "clearAll": "Çantayı Temizle"
+    },
+    "continueShopping": "Alışverişe Devam Et",
+    "summary": {
+      "title": "Sipariş Özeti",
+      "subtotal": "Ara Toplam",
+      "itemCount": "{count, plural, =0 {0 ürün} one {# ürün} other {# ürün}}",
+      "estimatedTax": "Tahmini Vergi (%10 KDV)",
+      "taxTooltip": "Lüks butik ürünleri için tahmini katma değer vergisi.",
+      "total": "Tahmini Toplam",
+      "totalNote": "Ürün KDV (%10) dahildir.",
+      "promoCode": {
+        "label": "Kupon Kodu",
+        "placeholder": "Kupon kodunuzu girin",
+        "apply": "Uygula",
+        "applied": "Uygulandı"
+      },
+      "checkoutButton": "Ödemeye Geç",
+      "scrollToSummary": "Sipariş Özeti",
+      "guarantees": {
+        "secure": "256-bit SSL ile güvenli ödeme",
+        "packaging": "Özel butik kutusunda lüks paketleme",
+        "returns": "14 gün içinde kolay iade imkanı"
+      }
+    },
+    "item": {
+      "size": "Beden",
+      "color": "Renk",
+      "unitPrice": "Birim Fiyat",
+      "quantity": "Adet",
+      "inStock": "Stokta Mevcut & Kargoya Hazır",
+      "remove": "Ürünü kaldır",
+      "decrease": "Adeti azalt",
+      "increase": "Adeti artır"
+    },
+    "toasts": {
+      "added": "Çantanıza eklendi",
+      "removed": "Çantanızdan çıkarıldı",
+      "cleared": "Çantanız temizlendi",
+      "updated": "Çanta güncellendi"
+    }
+  },
+  "CheckoutPage": {
+    "metaTitle": "Ödeme",
+    "metaDescription": "Linen Line siparişinizi güvenli butik ödeme ile tamamlayın.",
+    "title": "Ödeme",
+    "subtitle": "Siparişi vermek için teslimat bilgilerini ve ödemeyi onaylayın.",
+    "backToCart": "Alışveriş çantasına dön",
+    "backToShop": "Butiğe dön",
+    "itemCount": "{count, plural, =0 {Ürün yok} one {# ürün} other {# ürün}}",
+    "empty": {
+      "title": "Ödenecek bir şey yok",
+      "description": "Alışveriş çantanız boş. Ödemeye geçmeden önce butikten bir parça ekleyin.",
+      "ctaShop": "Koleksiyonu keşfedin",
+      "ctaCart": "Alışveriş çantasını görüntüle"
+    },
+    "shipping": {
+      "title": "Teslimat adresi",
+      "subtitle": "Bu siparişin teslim edileceği adresi seçin.",
+      "addAddress": "Adres ekle",
+      "noAddresses": "Henüz kayıtlı adres yok. Devam etmek için bir teslimat adresi ekleyin.",
+      "defaultBadge": "Varsayılan",
+      "errors": {
+        "required": "Lütfen bir teslimat adresi seçin."
+      }
+    },
+    "payment": {
+      "title": "Ödeme yöntemi",
+      "subtitle": "Bu sipariş için nasıl ödemek istediğinizi seçin.",
+      "methods": {
+        "card": {
+          "label": "Kartla ödeme",
+          "description": "Güvenli örnek kart ödemesi (Visa ···· 4242)."
+        },
+        "cashOnDelivery": {
+          "label": "Kapıda ödeme",
+          "description": "Siparişiniz geldiğinde nakit ödeyin."
+        },
+        "bankTransfer": {
+          "label": "Banka havalesi",
+          "description": "Sipariş sonrası paylaşılan butik banka bilgileriyle transfer yapın."
+        }
+      },
+      "errors": {
+        "required": "Lütfen bir ödeme yöntemi seçin."
+      }
+    },
+    "summary": {
+      "title": "Sipariş özeti",
+      "subtotal": "Ara toplam",
+      "estimatedTax": "Tahmini vergiler (KDV %10)",
+      "shipping": "Kargo",
+      "shippingComplimentary": "Ücretsiz",
+      "total": "Sipariş toplamı",
+      "totalNote": "Ürün KDV’sini (%10) içerir. Kargo ücretsizdir.",
+      "placeOrder": "Siparişi onayla",
+      "placingOrder": "Sipariş onaylanıyor…",
+      "secureNote": "Güvenli butik ödeme",
+      "scrollToSummary": "Sipariş Özeti",
+      "itemCount": "{count, plural, =0 {0 ürün} one {# ürün} other {# ürün}}",
+      "size": "Beden",
+      "color": "Renk",
+      "qty": "Adet {count}"
+    },
+    "toasts": {
+      "success": "Sipariş başarıyla oluşturuldu",
+      "error": "Sipariş oluşturulamadı. Lütfen tekrar deneyin."
+    },
+    "confirmation": {
+      "metaTitle": "Sipariş onaylandı",
+      "metaDescription": "Linen Line siparişiniz alındı.",
+      "eyebrow": "Sipariş onaylandı",
+      "title": "Siparişiniz için teşekkürler",
+      "description": "{number} numaralı siparişiniz alındı ve atölyede hazırlanıyor.",
+      "orderNumber": "Sipariş numarası",
+      "placedAt": "Sipariş tarihi",
+      "copyOrderNumber": "Sipariş numarasını kopyala",
+      "copied": "Sipariş numarası kopyalandı",
+      "printReceipt": "Makbuzu yazdır",
+      "estimatedArrival": "Tahmini teslimat: {date}",
+      "timelineTitle": "Atölye Süreci",
+      "timelineStep1": "Sipariş Alındı",
+      "timelineStep2": "Atölye Dikimi",
+      "timelineStep3": "Kalite Kontrolü",
+      "timelineStep4": "Kurye Teslimatı",
+      "shippingTitle": "Teslimat",
+      "paymentTitle": "Ödeme",
+      "itemsTitle": "Bu siparişteki ürünler",
+      "subtotal": "Ara Toplam",
+      "shippingFee": "Kargo",
+      "complimentary": "Ücretsiz",
+      "tax": "Tahmini KDV (%10)",
+      "total": "Toplam",
+      "perks": {
+        "craftTitle": "Özel Atölye İşçiliği",
+        "craftDesc": "Doğal ve kaliteli kumaşlardan özenle dikilmiş seçkin abaya tasarımları.",
+        "packagingTitle": "Lüks Hediye Kutusu",
+        "packagingDesc": "Özel korumalı lüks Linen Line kutusunda şık unboxing deneyimi.",
+        "supportTitle": "Ayrıcalıklı Danışmanlık",
+        "supportDesc": "Sipariş sonrası her türlü sorunuz için müşteri danışmanlarımız hazır."
+      },
+      "continueShopping": "Alışverişe devam",
+      "viewOrders": "Siparişlerinizi görüntüleyin",
+      "paymentCard": "{brand} ···· {last4}",
+      "missing": {
+        "title": "Gösterilecek sipariş yok",
+        "description": "Bu oturumda yakın zamanda bir ödeme onayı bulunmuyor.",
+        "cta": "Alışveriş çantasına dön"
+      }
     }
   }
 }

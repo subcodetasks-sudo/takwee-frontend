@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import { Star } from "lucide-react";
+import { Check as LucideCheck, Star } from "lucide-react";
 import { Heart } from "@/components/animate-ui/icons/heart";
 import { Link } from "@/i18n/routing";
 import {
@@ -23,6 +23,9 @@ import {
 import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Plus } from "@/components/animate-ui/icons/plus";
 import { cn } from "@/lib/utils";
+import { gooeyToast } from "@/components/ui/goey-toaster";
+import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
+import { useCart, useCartFly } from "@/features/cart";
 import { PRODUCT_SWATCH_CLASSES, type Product } from "../types";
 import { ProductPrice } from "./ProductPrice";
 import { Check } from "@/components/animate-ui/icons/check";
@@ -43,10 +46,15 @@ export function ProductCard({
   onToggleWishlist,
 }: ProductCardProps) {
   const t = useTranslations("ProductCard");
+  const tWishlist = useTranslations("WishlistPage.toasts");
+  const tCart = useTranslations("CartPage.toasts");
   const tColors = useTranslations("ProductCard.colors");
   const tProducts = useTranslations("Products");
   const locale = useLocale();
   const isRtl = locale === "ar";
+  const { isWishlisted: isProductWishlisted, toggleItem } = useWishlist();
+  const { addItem, isInCart, isHydrated } = useCart();
+  const { flyToCart } = useCartFly();
 
   const [selectedColorId, setSelectedColorId] = useState(product.colors[0]?.id);
   const selectedColor =
@@ -54,7 +62,8 @@ export function ProductCard({
     product.colors[0];
 
   const [isAdded, setIsAdded] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const isWishlisted = isProductWishlisted(product.id);
+  const inCart = (isHydrated && isInCart(product.id)) || isAdded;
 
   useEffect(() => {
     if (!isAdded) return;
@@ -67,18 +76,32 @@ export function ProductCard({
   const handleAddToCart = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToCart?.(product, selectedColor?.id ?? product.colors[0]?.id);
+    const colorId = selectedColor?.id ?? product.colors[0]?.id;
+    const imageUrl =
+      selectedColor?.images[0] ?? product.colors[0]?.images[0] ?? "";
+    addItem(product, {
+      selectedColorId: colorId,
+      selectedSize: product.sizes[0],
+      quantity: 1,
+    });
+    flyToCart({
+      origin: e.currentTarget,
+      imageUrl,
+      alt: tProducts(product.nameKey),
+    });
+    onAddToCart?.(product, colorId);
     setIsAdded(true);
+    gooeyToast.success(tCart("added"));
   };
 
   const handleToggleWishlist = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted((prev) => {
-      const next = !prev;
-      onToggleWishlist?.(product, next);
-      return next;
+    const next = toggleItem(product, {
+      selectedColorId: selectedColor?.id ?? product.colors[0]?.id,
     });
+    onToggleWishlist?.(product, next);
+    gooeyToast.success(next ? tWishlist("added") : tWishlist("removed"));
   };
 
   const images = selectedColor?.images ?? [];
@@ -106,8 +129,10 @@ export function ProductCard({
     <article
       className={cn(
         "group/card flex h-full flex-col overflow-hidden rounded-xl sm:rounded-2xl bg-card",
-        "ring-1 ring-border/60 transition-shadow duration-300",
-        "hover:shadow-md",
+        "transition-all duration-300 hover:shadow-md",
+        inCart
+          ? "border border-success/70 ring-1 ring-success/40 shadow-2xs"
+          : "ring-1 ring-border/60",
         className,
       )}
     >
@@ -141,7 +166,7 @@ export function ProductCard({
               aria-pressed={isWishlisted}
               className={cn(
                 "absolute left-2 top-2 sm:left-3 sm:top-3 z-20",
-                "flex size-8 sm:size-9 items-center justify-center rounded-full",
+                "flex size-7 sm:size-9 items-center justify-center rounded-full",
                 "bg-background/90 text-foreground backdrop-blur-sm",
                 "ring-1 ring-border/70 shadow-sm",
                 "transition-colors duration-200 outline-none cursor-pointer",
@@ -152,7 +177,7 @@ export function ProductCard({
             >
               <Heart
                 className={cn(
-                  "size-4 sm:size-4.5 transition-colors",
+                  "size-3.5 sm:size-4.5 transition-colors",
                   isWishlisted && "fill-error stroke-error",
                 )}
               />
@@ -181,6 +206,27 @@ export function ProductCard({
             {t(product.badge)}
           </Badge>
         ) : null}
+
+        {/* In-cart indicator badge on image */}
+        <AnimatePresence>
+          {inCart ? (
+            <motion.div
+              initial={{ opacity: 0, y: 4, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="absolute start-2 bottom-2 sm:start-3 sm:bottom-3 z-20 pointer-events-none"
+            >
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 rounded-full border-success/40 bg-background/95 px-2 py-0.5 text-[10px] sm:text-xs font-semibold text-success shadow-xs backdrop-blur-sm"
+              >
+                <LucideCheck className="size-2.5 sm:size-3 stroke-[2.5]" aria-hidden />
+                <span>{t("inCart")}</span>
+              </Badge>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
 
       <div className="flex flex-1 flex-col gap-2 px-3 py-3 sm:px-3.5 sm:py-3.5">
@@ -250,26 +296,44 @@ export function ProductCard({
         <div className="mt-auto flex items-center justify-between gap-2 pt-1 [direction:ltr]">
           <TooltipProvider delay={100}>
             <Tooltip>
-              <AnimateIcon animateOnHover className="inline-flex">
-                <TooltipTrigger
-                  type="button"
-                  onClick={handleAddToCart}
-                  aria-label={isAdded ? t("addedToCart") : t("addToCart")}
-                  className={cn(
-                    "flex size-8 shrink-0 items-center justify-center rounded-md border transition-all duration-200 outline-none select-none cursor-pointer",
-                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                    isAdded
-                      ? "bg-success text-success-foreground border-success"
-                      : "bg-primary text-primary-foreground border-primary/20 hover:bg-primary/85 hover:border-primary/40 active:scale-95 shadow-xs",
-                  )}
-                >
-                  {isAdded ? (
-                    <Check size={16} animate/>
-                  ) : (
-                    <Plus size={16} />
-                  )}
-                </TooltipTrigger>
-              </AnimateIcon>
+              <div className="relative inline-flex">
+                <AnimatePresence>
+                  {inCart ? (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0.6 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.6 }}
+                      transition={{ duration: 0.15 }}
+                      className="pointer-events-none absolute -top-1.5 -end-1.5 z-10 flex size-3.5 sm:size-4 items-center justify-center rounded-full bg-success text-success-foreground shadow-2xs ring-2 ring-card"
+                    >
+                      <LucideCheck className="size-2 sm:size-2.5 stroke-[3]" aria-hidden />
+                    </motion.span>
+                  ) : null}
+                </AnimatePresence>
+
+                <AnimateIcon animateOnHover className="inline-flex">
+                  <TooltipTrigger
+                    type="button"
+                    onClick={handleAddToCart}
+                    aria-label={isAdded ? t("addedToCart") : t("addToCart")}
+                    className={cn(
+                      "flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-md border transition-all duration-200 outline-none select-none cursor-pointer",
+                      "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                      isAdded
+                        ? "bg-success text-success-foreground border-success"
+                        : inCart
+                          ? "border-success/40 bg-success-muted text-success hover:bg-success-muted/80 shadow-2xs"
+                          : "bg-primary text-primary-foreground border-primary/20 hover:bg-primary/85 hover:border-primary/40 active:scale-95 shadow-xs",
+                    )}
+                  >
+                    {isAdded ? (
+                      <Check size={14} className="sm:size-4" animate />
+                    ) : (
+                      <Plus size={14} className="sm:size-4" />
+                    )}
+                  </TooltipTrigger>
+                </AnimateIcon>
+              </div>
               <TooltipContent
                 side="top"
                 align="start"
@@ -296,7 +360,7 @@ export function ProductCard({
                       aria-pressed={isSelected}
                       title={colorName}
                       className={cn(
-                        "size-5 rounded-full ring-1 ring-border transition-all duration-200",
+                        "size-4 sm:size-5 rounded-full ring-1 ring-border transition-all duration-200",
                         "hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
                         PRODUCT_SWATCH_CLASSES[color.swatch],
                         isSelected &&
@@ -372,7 +436,10 @@ function ProductImageCarousel({
 
   if (!hasMultiple) {
     return (
-      <Link href={href} className="relative block aspect-3/4 w-full overflow-hidden">
+      <Link
+        href={href}
+        className="relative block aspect-3/4 w-full overflow-hidden"
+      >
         <Image
           src={images[0]}
           alt={alt}

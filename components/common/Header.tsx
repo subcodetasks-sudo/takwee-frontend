@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Heart, ShoppingBasket, Search, X, User } from "lucide-react";
@@ -21,23 +21,33 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/features/auth";
+import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
+import { useCart, useCartFly } from "@/features/cart";
 import { cn } from "@/lib/utils";
 
 const slideTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
+/** Matches `min-[1117px]` — when the desktop category nav is shown. */
+const DESKTOP_NAV_BREAKPOINT = 1117;
 
 export function Header() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
   const { isAuthenticated } = useAuth();
+  const { itemCount: favoriteItemCount, isHydrated: isWishlistHydrated } =
+    useWishlist();
+  const { itemCount: cartItemCount, isHydrated: isCartHydrated } = useCart();
+  const { registerCartTarget, pulseToken } = useCartFly();
   const [hidden, setHidden] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mainBarH, setMainBarH] = useState(0);
-  const mainBarRef = useRef<HTMLDivElement>(null);
+  const [isDesktopNav, setIsDesktopNav] = useState(false);
 
-  // Mock counters for Cart & Favorites (ready for Cart / Wishlist feature hooks)
-  const cartItemCount = 2;
-  const favoriteItemCount = 3;
+  const showFavoriteCount = isWishlistHydrated && favoriteItemCount > 0;
+  const showCartCount = isCartHydrated && cartItemCount > 0;
+
+  // Desktop: hide category nav. Mobile: hide main bar. Same slide as before.
+  const hideMainBar = hidden && !isDesktopNav;
+  const hideCategoryNav = hidden && isDesktopNav;
 
   const navLinks = [
     { href: "/shop/new-in", label: t("newArrivals"), badge: "New", highlight: true },
@@ -78,23 +88,21 @@ export function Header() {
     [t],
   );
 
-  useLayoutEffect(() => {
-    const el = mainBarRef.current;
-    if (!el) return;
-
-    const measure = () => setMainBarH(el.offsetHeight);
-    measure();
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [isMobileSearchOpen]);
+  useEffect(() => {
+    const mql = window.matchMedia(
+      `(min-width: ${DESKTOP_NAV_BREAKPOINT}px)`,
+    );
+    const onChange = () => setIsDesktopNav(mql.matches);
+    onChange();
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     let previousScrollY = window.scrollY;
 
     const handleScroll = () => {
-      // Keep the main bar pinned while menu or mobile search is open —
+      // Keep chrome pinned while menu or mobile search is open —
       // focusing/expanding search often nudges scrollY on mobile and would
       // otherwise trigger the hide/show animation.
       if (isMenuOpen || isMobileSearchOpen) {
@@ -120,7 +128,9 @@ export function Header() {
   }, [isMenuOpen, isMobileSearchOpen]);
 
   return (
-    <header className={cn("sticky top-0 z-40 w-full", isMenuOpen && "z-[70]")}>
+    <header
+      className={cn("sticky top-0 z-40 w-full", isMenuOpen && "z-[70]")}
+    >
       {/* Always pinned */}
       <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary">
         <TextLoop
@@ -130,26 +140,25 @@ export function Header() {
           shape="line"
           separator="❖"
           speed={35}
-          fontSize={12}
+          fontSize={11}
           fontWeight={600}
-          letterSpacing={1.5}
+          letterSpacing={1.25}
           ribbon={false}
           color="currentColor"
-          className="text-white dark:text-secondary-300 bg-secondary"
+          className="bg-secondary py-1 text-white dark:text-secondary-300"
         />
       </div>
 
-      {/* Only the main bar (logo / search / actions) slides away */}
+      {/* Mobile: main bar slides under TextLoop (old animation). Desktop: stays pinned. */}
       <motion.div
-        ref={mainBarRef}
-        className="relative z-0 w-full border-b border-border/70 bg-background/95 backdrop-blur-md"
+        className="relative z-10 w-full border-b border-border/70 bg-background/95 backdrop-blur-md"
         initial={false}
-        animate={{ y: hidden ? "-100%" : "0%" }}
+        animate={{ y: hideMainBar ? "-100%" : "0%" }}
         transition={slideTransition}
-        style={{ pointerEvents: hidden ? "none" : "auto" }}
+        style={{ pointerEvents: hideMainBar ? "none" : "auto" }}
       >
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18 sm:h-20 gap-3 sm:gap-6">
+          <div className="flex h-14 items-center justify-between gap-2 sm:h-18 sm:gap-6 md:h-20">
             <div className="flex items-center min-[1117px]:hidden">
               <CardNav
                 items={mobileNavCards}
@@ -162,35 +171,35 @@ export function Header() {
 
             <Link
               href="/"
-              className="flex items-center gap-3 group focus:outline-none transition-transform active:scale-95 shrink-0"
+              className="flex shrink-0 items-center gap-2 transition-transform focus:outline-none active:scale-95 group sm:gap-3"
               aria-label="Linen Line Home"
             >
-              <div className="relative h-9 sm:h-12 w-auto flex items-center justify-center">
+              <div className="relative flex h-7 w-auto items-center justify-center sm:h-12">
                 <Image
                   src="/imgs/logo-2.webp"
                   alt="Linen Line Store Logo"
                   width={150}
                   height={56}
                   priority
-                  className="h-8 sm:h-11 w-auto object-contain transition-transform duration-300"
+                  className="h-7 w-auto object-contain transition-transform duration-300 sm:h-11"
                 />
               </div>
-              <div className="hidden sm:flex flex-col">
-                <span className="font-heading font-bold text-base sm:text-lg tracking-wider text-foreground uppercase group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+              <div className="hidden flex-col sm:flex">
+                <span className="font-heading text-base font-bold tracking-wider text-foreground uppercase transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-300 sm:text-lg">
                   Linen Line
                 </span>
-                <span className="text-[10px] tracking-widest text-muted-foreground uppercase -mt-0.5 font-medium">
+                <span className="text-[10px] -mt-0.5 font-medium tracking-widest text-muted-foreground uppercase">
                   Abaya Boutique
                 </span>
               </div>
             </Link>
 
-            <div className="hidden min-[1117px]:flex flex-1 max-w-md mx-4 lg:mx-8">
+            <div className="mx-4 hidden max-w-md flex-1 min-[1117px]:flex lg:mx-8">
               <SearchBar />
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2">
-              <div className="hidden min-[1117px]:flex items-center gap-1 border-e border-border/80 pe-2 me-1">
+            <div className="flex items-center gap-0.5 sm:gap-2">
+              <div className="me-1 hidden items-center gap-1 border-e border-border/80 pe-2 min-[1117px]:flex">
                 <CurrencyDropdown />
                 <LanguageDropdown />
               </div>
@@ -205,13 +214,13 @@ export function Header() {
                     return next;
                   });
                 }}
-                className="min-[1117px]:hidden size-9 text-foreground hover:bg-muted"
+                className="size-8 text-foreground hover:bg-muted min-[1117px]:hidden sm:size-9"
                 aria-label={t("searchButton")}
               >
                 {isMobileSearchOpen ? (
-                  <X className="size-5" />
+                  <X className="size-4 sm:size-5" />
                 ) : (
-                  <Search className="size-5" />
+                  <Search className="size-4 sm:size-5" />
                 )}
               </Button>
 
@@ -221,14 +230,14 @@ export function Header() {
                     render={
                       <Link
                         href="/wishlist"
-                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg text-foreground hover:bg-muted transition-colors"
+                        className="relative flex size-8 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted sm:size-10"
                         aria-label={t("favorites")}
                       />
                     }
                   >
-                    <Heart className="size-5" />
-                    {favoriteItemCount > 0 && (
-                      <span className="absolute -top-1 -end-1 flex items-center justify-center size-4 sm:size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold shadow-xs">
+                    <Heart className="size-4 sm:size-5" />
+                    {showFavoriteCount && (
+                      <span className="absolute -top-0.5 -end-0.5 flex size-3.5 items-center justify-center rounded-full bg-error text-[9px] font-bold text-white shadow-xs sm:-top-1 sm:-end-1 sm:size-4.5 sm:text-[10px]">
                         {favoriteItemCount}
                       </span>
                     )}
@@ -246,18 +255,34 @@ export function Header() {
                   <TooltipTrigger
                     render={
                       <Link
+                        ref={registerCartTarget}
                         href="/cart"
-                        className="relative flex items-center justify-center size-9 sm:size-10 rounded-lg bg-primary-50 dark:bg-primary-950/50 hover:bg-primary-100 dark:hover:bg-primary-900/60 text-primary-900 dark:text-primary-100 border border-primary-200/60 dark:border-primary-800/40 transition-all hover:shadow-xs"
+                        className="relative flex size-8 items-center justify-center rounded-lg border border-primary-200/60 bg-primary-50 text-primary-900 transition-all hover:bg-primary-100 hover:shadow-xs dark:border-primary-800/40 dark:bg-primary-950/50 dark:text-primary-100 dark:hover:bg-primary-900/60 sm:size-10"
                         aria-label={t("cart")}
                       />
                     }
                   >
-                    <ShoppingBasket className="size-5 text-primary-800 dark:text-primary-200" />
-                    {cartItemCount > 0 && (
-                      <span className="absolute -top-1.5 -end-1.5 flex items-center justify-center min-w-4 h-4 sm:min-w-4.5 sm:h-4.5 px-1 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold shadow-xs">
-                        {cartItemCount}
-                      </span>
-                    )}
+                    <motion.span
+                      key={pulseToken}
+                      initial={false}
+                      animate={
+                        pulseToken > 0
+                          ? { scale: [1, 1.15, 1] }
+                          : { scale: 1 }
+                      }
+                      transition={{
+                        duration: 0.35,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="relative flex size-full items-center justify-center"
+                    >
+                      <ShoppingBasket className="size-4 text-primary-800 dark:text-primary-200 sm:size-5" />
+                      {showCartCount && (
+                        <span className="absolute -top-1 -end-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-secondary px-0.5 text-[9px] font-bold text-secondary-foreground shadow-xs sm:-top-1.5 sm:-end-1.5 sm:h-4.5 sm:min-w-4.5 sm:px-1 sm:text-[10px]">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </motion.span>
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
@@ -274,15 +299,15 @@ export function Header() {
                       render={
                         <Link
                           href="/me"
-                          className="relative hidden min-[1117px]:flex items-center justify-center rounded-full hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-transform active:scale-95"
+                          className="relative hidden items-center justify-center rounded-full transition-transform hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-95 min-[1117px]:flex"
                           aria-label={t("account")}
                         />
                       }
                     >
-                      <Avatar className="size-10 sm:size-11 border border-border/80 hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+                      <Avatar className="size-9 border border-border/80 transition-colors hover:border-primary-400 dark:hover:border-primary-600 sm:size-11">
                         <AvatarImage src="" alt={t("account")} />
-                        <AvatarFallback className="bg-primary-50 dark:bg-primary-950/60 text-primary-800 dark:text-primary-200 font-medium">
-                          <User className="size-5 sm:size-5.5" />
+                        <AvatarFallback className="bg-primary-50 font-medium text-primary-800 dark:bg-primary-950/60 dark:text-primary-200">
+                          <User className="size-4 sm:size-5.5" />
                         </AvatarFallback>
                       </Avatar>
                     </TooltipTrigger>
@@ -297,7 +322,7 @@ export function Header() {
                 ) : (
                   <Button
                     size="sm"
-                    className="ms-0.5 hidden h-8 sm:h-9 px-2.5 sm:px-3 text-xs sm:text-sm font-medium min-[1117px]:inline-flex"
+                    className="ms-0.5 hidden h-8 px-2.5 text-xs font-medium min-[1117px]:inline-flex sm:h-9 sm:px-3 sm:text-sm"
                     nativeButton={false}
                     render={(props) => <Link href="/login" {...props} />}
                     aria-label={t("login")}
@@ -310,7 +335,7 @@ export function Header() {
           </div>
 
           {isMobileSearchOpen && (
-            <div className="min-[1117px]:hidden pb-3 pt-1 border-t border-border animate-in fade-in-50 duration-150">
+            <div className="animate-in fade-in-50 border-t border-border pt-1 pb-2.5 duration-150 min-[1117px]:hidden sm:pb-3">
               <SearchBar
                 isMobile
                 onSearchSubmit={() => setIsMobileSearchOpen(false)}
@@ -320,13 +345,14 @@ export function Header() {
         </div>
       </motion.div>
 
-      {/* Nav stays visible — rises under the TextLoop when the main bar hides */}
+      {/* Desktop: category nav slides away with the same old translateY animation */}
       <motion.nav
         initial={false}
-        animate={{ y: hidden ? -mainBarH : 0 }}
+        animate={{ y: hideCategoryNav ? "-100%" : "0%" }}
         transition={slideTransition}
+        style={{ pointerEvents: hideCategoryNav ? "none" : "auto" }}
         className={cn(
-          "relative z-10 hidden min-[1117px]:flex items-center justify-center gap-1 lg:gap-3",
+          "relative z-0 hidden min-[1117px]:flex items-center justify-center gap-1 lg:gap-3",
           "py-2.5 px-4 sm:px-6 lg:px-8 overflow-x-auto scrollbar-none",
           "border-b border-border/70 bg-background/95 backdrop-blur-md",
         )}

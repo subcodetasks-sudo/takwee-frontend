@@ -5,7 +5,7 @@ import type { AuthSession, AuthSnapshot, AuthUser } from "../types";
  * `true`  → signed in as the mock user (cookie seeded automatically)
  * `false` → signed out (login button, no session)
  */
-export const DEV_MOCK_AUTHENTICATED = false;
+export const DEV_MOCK_AUTHENTICATED = true;
 
 /**
  * Demo account used while real auth APIs are not wired.

@@ -7,6 +7,8 @@ import { routing, type Locale } from "@/i18n/routing";
 import { CurrencyProvider } from "@/hooks/useCurrency";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/features/auth";
+import { WishlistProvider } from "@/features/wishlist";
+import { CartFlyProvider, CartProvider } from "@/features/cart";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
 import "../globals.css";
 
@@ -64,10 +66,19 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
             <AuthProvider>
-              <CurrencyProvider>{children}</CurrencyProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <CartFlyProvider>
+                    <CurrencyProvider>{children}</CurrencyProvider>
+                  </CartFlyProvider>
+                </CartProvider>
+              </WishlistProvider>
             </AuthProvider>
           </QueryProvider>
-          <GooeyToaster />
+          <GooeyToaster
+            dir={dir}
+            position={"top-center"}
+          />
         </NextIntlClientProvider>
       </body>
     </html>

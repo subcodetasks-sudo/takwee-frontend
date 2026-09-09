@@ -90,7 +90,10 @@ export async function ProfileQuickLinks() {
                   {content}
                 </div>
               ) : (
-                <Link href={link.href} className={className}>
+                <Link
+                  href={link.href}
+                  className={className}
+                >
                   {content}
                 </Link>
               )}

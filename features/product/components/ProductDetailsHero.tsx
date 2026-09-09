@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { Check, Minus, Plus, Star } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
+import { useCart } from "@/features/cart";
+import { StaggerContainer, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import {
   PRODUCT_SWATCH_CLASSES,
@@ -19,6 +21,7 @@ import { SizeGuideDialog } from "./SizeGuideDialog";
 import { HeightSizeCalculator } from "./HeightSizeCalculator";
 import { useProductDetails } from "../context/ProductDetailsContext";
 import { ProductImageZoom } from "./ProductImageZoom";
+import { ProductDetailsWishlistButton } from "./ProductDetailsWishlistButton";
 
 const COLOR_IMAGE_EASE = [0.21, 0.47, 0.32, 0.98] as const;
 
@@ -50,6 +53,7 @@ export function ProductDetailsHero({
   const tColors = useTranslations("ProductCard.colors");
   const tGuide = useTranslations("ProductDetails.sizeGuide");
 
+  const { isInCart: isCartInCart, isHydrated } = useCart();
   const context = useProductDetails();
 
   const [localColorId, setLocalColorId] = useState(product.colors[0]?.id);
@@ -76,6 +80,9 @@ export function ProductDetailsHero({
   const setQuantity = context ? context.setQuantity : setLocalQuantity;
   const isAdded = context ? context.isAdded : localIsAdded;
   const setIsAdded = context ? context.setIsAdded : setLocalIsAdded;
+  const inCart = context
+    ? context.isInCart
+    : (isHydrated && isCartInCart(product.id)) || isAdded;
 
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
@@ -116,9 +123,17 @@ export function ProductDetailsHero({
     setActiveImageIndex(0);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (
+    e?: MouseEvent<HTMLElement> | HTMLElement | null,
+  ) => {
+    const origin =
+      e && typeof e === "object" && "currentTarget" in e
+        ? e.currentTarget
+        : e instanceof HTMLElement
+          ? e
+          : null;
     if (context) {
-      context.handleAddToCart();
+      context.handleAddToCart(origin);
       return;
     }
     if (!selectedSize || !product.inStock) return;
@@ -171,12 +186,7 @@ export function ProductDetailsHero({
             </ul>
           ) : null}
 
-          <FadeIn
-            direction="up"
-            duration={0.65}
-            distance={28}
-            className="order-1 min-w-0 lg:order-2 lg:flex-1"
-          >
+          <div className="order-1 min-w-0 lg:order-2 lg:flex-1">
             <div className="relative aspect-3/4 min-w-0 overflow-hidden rounded-xl bg-muted">
               <AnimatePresence initial={false}>
                 <motion.div
@@ -205,7 +215,7 @@ export function ProductDetailsHero({
                 </motion.div>
               </AnimatePresence>
             </div>
-          </FadeIn>
+          </div>
         </div>
       </div>
 
@@ -215,9 +225,12 @@ export function ProductDetailsHero({
         className="flex min-w-0 flex-col gap-6 lg:pt-1"
       >
         <StaggerItem>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            {productName}
-          </h1>
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="min-w-0 flex-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              {productName}
+            </h1>
+            <ProductDetailsWishlistButton />
+          </div>
         </StaggerItem>
 
         <StaggerItem>
@@ -449,7 +462,7 @@ export function ProductDetailsHero({
             <p className="text-sm font-semibold text-foreground">
               {t("quantity")}
             </p>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 pt-1.5 sm:gap-3">
               <div className="inline-flex items-center rounded-xl border border-border bg-card shadow-2xs">
                 <button
                   type="button"
@@ -476,26 +489,74 @@ export function ProductDetailsHero({
                 </button>
               </div>
 
-              <Button
-                type="button"
-                size="lg"
-                disabled={!product.inStock || !selectedSize}
-                onClick={handleAddToCart}
-                className={cn(
-                  "min-h-11 flex-1 rounded-xl px-6 text-sm font-semibold shadow-xs transition-all sm:min-w-48 sm:flex-none",
-                  isAdded &&
-                    "bg-success text-success-foreground hover:bg-success/90",
-                )}
-              >
-                {isAdded ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <Check className="size-4" />
-                    {t("addedToCart")}
-                  </span>
-                ) : (
-                  t("addToCart")
-                )}
-              </Button>
+              <div className="relative flex-1 sm:flex-none">
+                <AnimatePresence>
+                  {inCart ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4, scale: 0.85 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.85 }}
+                      transition={{ duration: 0.18 }}
+                      className="pointer-events-none absolute -top-2.5 start-3.5 z-10"
+                    >
+                      <Badge
+                        variant="outline"
+                        className="flex items-center gap-1 rounded-full border-success/40 bg-success-muted px-2 py-0.5 text-[10px] font-semibold text-success shadow-2xs backdrop-blur-xs"
+                      >
+                        <Check className="size-2.5 stroke-[2.5]" aria-hidden />
+                        <span>{t("inCart")}</span>
+                      </Badge>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+
+                <Button
+                  type="button"
+                  size="lg"
+                  disabled={!product.inStock || !selectedSize}
+                  onClick={handleAddToCart}
+                  className={cn(
+                    "min-h-11 w-full rounded-xl px-6 text-sm font-semibold shadow-xs transition-all sm:min-w-44",
+                    isAdded &&
+                      "bg-success text-success-foreground hover:bg-success/90",
+                  )}
+                >
+                  {isAdded ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Check className="size-4" />
+                      {t("addedToCart")}
+                    </span>
+                  ) : (
+                    t("addToCart")
+                  )}
+                </Button>
+              </div>
+
+              <AnimatePresence>
+                {inCart ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex-1 basis-full sm:basis-auto sm:flex-none"
+                  >
+                    <Link
+                      href="/checkout"
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "lg" }),
+                        "group min-h-11 w-full rounded-xl border-primary bg-transparent px-4 sm:px-6 text-sm font-semibold text-primary shadow-xs hover:bg-primary/5 hover:text-primary hover:shadow-md transition-all gap-2 flex items-center justify-center sm:min-w-44",
+                      )}
+                    >
+                      <span>{t("proceedToPayment")}</span>
+                      <ArrowRight
+                        className="size-4 rtl:rotate-180 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                        aria-hidden
+                      />
+                    </Link>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </div>
           </div>
         </StaggerItem>

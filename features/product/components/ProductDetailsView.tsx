@@ -1,4 +1,6 @@
 import { getTranslations } from "next-intl/server";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import type { Product } from "../types";
 import { ProductDetailsHero } from "./ProductDetailsHero";
 import { ProductDetailsTabs } from "./ProductDetailsTabs";
@@ -12,11 +14,24 @@ interface ProductDetailsViewProps {
 
 export async function ProductDetailsView({ product }: ProductDetailsViewProps) {
   const tProducts = await getTranslations("Products");
+  const tDetails = await getTranslations("ProductDetails");
   const productName = tProducts(product.nameKey);
 
   return (
     <ProductDetailsProvider product={product} productName={productName}>
-      <article className="page-shell flex w-full flex-col gap-10 py-8 pb-24 sm:gap-12 sm:py-10 sm:pb-28 md:py-12 md:pb-12">
+      <article className="page-shell flex w-full flex-col gap-6 py-6 pb-24 sm:gap-8 sm:py-8 sm:pb-28 md:py-10 md:pb-12">
+        <nav aria-label="Breadcrumb" className="-mb-1">
+          <Link
+            href="/shop"
+            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft
+              className="size-3.5 rtl:rotate-180 transition-transform duration-200 group-hover:-translate-x-1 rtl:group-hover:translate-x-1"
+              aria-hidden
+            />
+            <span>{tDetails("backToShop")}</span>
+          </Link>
+        </nav>
         <ProductDetailsHero product={product} productName={productName} />
         <ProductDetailsTabs product={product} />
         <RelatedProducts productId={product.id} />

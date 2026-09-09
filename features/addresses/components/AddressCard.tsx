@@ -40,6 +40,17 @@ export function AddressCard({
 }: AddressCardProps) {
   const t = useTranslations("ProfilePage.addresses");
 
+  const getLabelIcon = () => {
+    switch (address.type) {
+      case "home":
+        return Home;
+      case "work":
+        return Briefcase;
+      default:
+        return MapPin;
+    }
+  };
+
   const getLabelText = () => {
     if (address.type === "other" && address.customLabel) {
       return address.customLabel;
@@ -47,7 +58,7 @@ export function AddressCard({
     return t(`labels.${address.type}`);
   };
 
-  const Icon = ADDRESS_TYPE_ICONS[address.type] ?? MapPin;
+  const Icon = ADDRESS_TYPE_ICONS[address.type] ?? getLabelIcon();
 
   // Construct readable address lines
   const line1 = [address.streetAddress, address.apartmentOrSuite]

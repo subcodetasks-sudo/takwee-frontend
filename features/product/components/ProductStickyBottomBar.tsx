@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export function ProductStickyBottomBar({
   const quantity = context?.quantity ?? 1;
   const setQuantity = context?.setQuantity;
   const isAdded = context?.isAdded ?? false;
+  const inCart = context?.isInCart ?? false;
   const selectedSize = context?.selectedSize;
   const handleAddToCart = context?.handleAddToCart;
 
@@ -42,6 +44,10 @@ export function ProductStickyBottomBar({
         el.classList.remove("ring-2", "ring-primary", "rounded-xl", "p-2");
       }, 1800);
     }
+  };
+
+  const onAddToCartClick = (e: MouseEvent<HTMLElement>) => {
+    handleAddToCart?.(e.currentTarget);
   };
 
   return (
@@ -134,7 +140,7 @@ export function ProductStickyBottomBar({
             type="button"
             size="sm"
             disabled={!product.inStock}
-            onClick={handleAddToCart}
+            onClick={onAddToCartClick}
             className={cn(
               "h-9 sm:h-10 min-w-28 sm:min-w-32 rounded-xl px-3 sm:px-4 text-xs font-semibold shadow-xs transition-all",
               isAdded &&
