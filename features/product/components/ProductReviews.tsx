@@ -6,153 +6,23 @@ import { Check, CheckCircle2, MessageSquarePlus, Star, ThumbsUp } from "lucide-r
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Product } from "../types";
+import type { Product, ProductReview } from "../types";
 
-export interface ReviewItem {
-  id: string;
-  author: string;
-  rating: number;
-  date: string;
-  title: string;
-  comment: string;
-  verified: boolean;
-  sizePurchased?: string;
-  helpfulCount: number;
-}
-
-const INITIAL_REVIEWS_AR: ReviewItem[] = [
-  {
-    id: "rev-ar-1",
-    author: "فاطمة العامري",
-    rating: 5,
-    date: "منذ 3 أيام",
-    title: "خامة كتان فاخرة وخياطة متقنة جداً",
-    comment:
-      "العباية تجنن بكل معنى الكلمة! قماش الكتان بارد وانسيابي وما يكرمش بسهولة. أخذت مقاس 56 وطلع طولها مضبوط بالملي مع كعب ناعم. التغليف فخم والتوصيل سريع جداً بالرياض.",
-    verified: true,
-    sizePurchased: "56",
-    helpfulCount: 14,
-  },
-  {
-    id: "rev-ar-2",
-    author: "ريم العتيبي",
-    rating: 5,
-    date: "منذ أسبوع",
-    title: "أناقة هادئة وسواد فاحم مذهل",
-    comment:
-      "أجمل ما في القطعة بساطتها ودقة تفاصيل الأكمام والحواف. الطرحة المتناسقة المرفقة ناعمة جداً وثابتة. تستاهل كل ريال وبكرر الشراء بدون تردد.",
-    verified: true,
-    sizePurchased: "54",
-    helpfulCount: 9,
-  },
-  {
-    id: "rev-ar-3",
-    author: "نورة الدوسري",
-    rating: 5,
-    date: "منذ أسبوعين",
-    title: "حاسبة المقاس فادتني كثير والقصة مريحة",
-    comment:
-      "استخدمت حاسبة الطول في الصفحة واقترحت لي مقاس 54 لطولي 159 سم، وجاءت ممتازة ومريحة للدوام والمناسبات. خياطة نظيفة وأقمشة تدوم.",
-    verified: true,
-    sizePurchased: "54",
-    helpfulCount: 6,
-  },
-];
-
-const INITIAL_REVIEWS_EN: ReviewItem[] = [
-  {
-    id: "rev-en-1",
-    author: "Layla M.",
-    rating: 5,
-    date: "3 days ago",
-    title: "Exquisite craftsmanship and fluid drape",
-    comment:
-      "The fabric feels extraordinary—breathable, refined linen blend that drapes with graceful poise. Size 56 was ideal for my stature. Arrived beautifully packaged with boutique client care.",
-    verified: true,
-    sizePurchased: "56",
-    helpfulCount: 14,
-  },
-  {
-    id: "rev-en-2",
-    author: "Sara Al-Zahrani",
-    rating: 5,
-    date: "1 week ago",
-    title: "Timeless quiet luxury & deep black tone",
-    comment:
-      "Impeccable seamwork and clean finishes. The included coordinating sheila is soft, perfectly matched, and lightweight. Truly worth every penny.",
-    verified: true,
-    sizePurchased: "54",
-    helpfulCount: 9,
-  },
-  {
-    id: "rev-en-3",
-    author: "Amina K.",
-    rating: 5,
-    date: "2 weeks ago",
-    title: "The height calculator was spot on!",
-    comment:
-      "I input 163 cm and was suggested size 56. The hemline rests gracefully at the ankles without dragging. Effortless elegance for travel and daily wear.",
-    verified: true,
-    sizePurchased: "56",
-    helpfulCount: 6,
-  },
-];
-
-const INITIAL_REVIEWS_TR: ReviewItem[] = [
-  {
-    id: "rev-tr-1",
-    author: "Zeynep K.",
-    rating: 5,
-    date: "3 gün önce",
-    title: "Kumaş dokusu ve dökümü olağanüstü",
-    comment:
-      "Saf keten kalitesi kendini hemen hissettiriyor; hafif, nefes alan ve zarif dökümlü. 56 beden tam boyuma göre oldu. Butik paketlemesi de çok özenliydi.",
-    verified: true,
-    sizePurchased: "56",
-    helpfulCount: 14,
-  },
-  {
-    id: "rev-tr-2",
-    author: "Elif Demir",
-    rating: 5,
-    date: "1 hafta önce",
-    title: "Zarif ve kusursuz işçilik",
-    comment:
-      "Dikiş kalitesi ve kol detayları tek kelimeyle kusursuz. Uyumlu şalın dokusu da çok rahat. Çok memnun kaldım, severek giyiyorum.",
-    verified: true,
-    sizePurchased: "54",
-    helpfulCount: 9,
-  },
-  {
-    id: "rev-tr-3",
-    author: "Merve A.",
-    rating: 5,
-    date: "2 hafta önce",
-    title: "Boy hesaplayıcı tam isabet oldu",
-    comment:
-      "Boyuma göre beden tavsiyesi çok yardımcı oldu. 54 beden bilek hizasında kusursuz durdu. Duruşu asil ve kumaşı asla terletmiyor.",
-    verified: true,
-    sizePurchased: "54",
-    helpfulCount: 6,
-  },
-];
+export type ReviewItem = ProductReview;
 
 interface ProductReviewsProps {
   product: Product;
+  initialReviews?: ProductReview[];
 }
 
-export function ProductReviews({ product }: ProductReviewsProps) {
+export function ProductReviews({
+  product,
+  initialReviews = [],
+}: ProductReviewsProps) {
   const locale = useLocale();
   const t = useTranslations("ProductDetails.reviewsSection");
 
-  const initialList =
-    locale === "ar"
-      ? INITIAL_REVIEWS_AR
-      : locale === "tr"
-        ? INITIAL_REVIEWS_TR
-        : INITIAL_REVIEWS_EN;
-
-  const [reviews, setReviews] = useState<ReviewItem[]>(initialList);
+  const [reviews, setReviews] = useState<ProductReview[]>(initialReviews);
   const [helpfulMap, setHelpfulMap] = useState<Record<string, boolean>>({});
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -181,7 +51,7 @@ export function ProductReviews({ product }: ProductReviewsProps) {
     e.preventDefault();
     if (!name.trim() || !comment.trim()) return;
 
-    const newReview: ReviewItem = {
+    const newReview: ProductReview = {
       id: `rev-user-${Date.now()}`,
       author: name.trim(),
       rating,
@@ -204,9 +74,15 @@ export function ProductReviews({ product }: ProductReviewsProps) {
     }, 1800);
   };
 
-  const totalReviews = reviews.length;
+  const totalReviews = Math.max(product.reviewsCount ?? 0, reviews.length);
+  const averageFromList =
+    reviews.length > 0
+      ? reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length
+      : 0;
   const averageRating = (
-    reviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
+    typeof product.rating === "number" && product.rating > 0
+      ? product.rating
+      : averageFromList
   ).toFixed(1);
 
   return (

@@ -87,7 +87,7 @@ export function ProductCard({
     flyToCart({
       origin: e.currentTarget,
       imageUrl,
-      alt: tProducts(product.nameKey),
+      alt: product.name ?? tProducts(product.nameKey),
     });
     onAddToCart?.(product, colorId);
     setIsAdded(true);
@@ -105,7 +105,7 @@ export function ProductCard({
   };
 
   const images = selectedColor?.images ?? [];
-  const productName = tProducts(product.nameKey);
+  const productName = product.name ?? tProducts(product.nameKey);
   const href = `/products/${product.slug}`;
   const rating = product.rating ?? 4.9;
   const reviewsCount = product.reviewsCount ?? 28;

@@ -13,14 +13,19 @@ import {
   Mail,
   Check,
   ChevronDown,
+  Phone,
+  MapPin,
 } from "lucide-react";
 import {
   SiWhatsapp,
   SiInstagram,
   SiTiktok,
-  SiPinterest,
   SiYoutube,
+  SiFacebook,
+  SiX,
+  SiSnapchat,
 } from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
@@ -28,16 +33,33 @@ import { Badge } from "@/components/ui/badge";
 import { NewsletterAnimation } from "./NewsletterAnimation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth";
+import { useCategories } from "@/features/categories";
+import { usePages } from "@/features/content";
+import { useSettings } from "@/features/settings";
 
 export function Footer() {
   const t = useTranslations("Footer");
   const { isAuthenticated } = useAuth();
+  const {
+    appName,
+    siteLogo,
+    contactEmail,
+    contactPhone,
+    contactAddress,
+    contactMapLocation,
+    whatsappUrl,
+    workingHours,
+    social,
+  } = useSettings();
+  const { supportPages, aboutPages, legalPages, otherPages } = usePages();
+  const { categories } = useCategories();
 
   // Mobile Accordion state for columns
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     collections: false,
     services: false,
     atelier: false,
+    more: false,
   });
 
   const toggleSection = (key: string) => {
@@ -53,6 +75,11 @@ export function Footer() {
       behavior: "smooth",
     });
   };
+
+  const email = contactEmail || t("concierge.email");
+  const hours = workingHours || t("concierge.hours");
+  const brandLabel = appName || "Linen Line";
+  const logoSrc = siteLogo || "/imgs/logo-4.webp";
 
   const perks = [
     {
@@ -77,59 +104,84 @@ export function Footer() {
     },
   ];
 
-  const collectionsLinks = [
-    { href: "/shop/new-in", label: t("links.newArrivals") },
-    { href: "/shop/linen", label: t("links.linenCollection") },
-    { href: "/shop/formal", label: t("links.formal") },
-    { href: "/shop/casual", label: t("links.casual") },
-    { href: "/shop/travel", label: t("links.travel") },
-    { href: "/shop/inners", label: t("links.inners") },
-    { href: "/shop/accessories", label: t("links.sheilas") },
-  ];
+  const collectionsLinks = categories.map((category) => ({
+    id: category.id,
+    href: category.href,
+    label: category.name,
+  }));
 
-  const servicesLinks = [
-    { href: "/size-guide", label: t("links.sizeGuide") },
-    { href: "/fabric-care", label: t("links.fabricCare") },
-    { href: "/track-order", label: t("links.orderTracking") },
-    { href: "/shipping", label: t("links.shippingInfo") },
-    { href: "/returns", label: t("links.returns") },
-    { href: "/faq", label: t("links.faq") },
-  ];
+  const servicesLinks = supportPages.map((page) => ({
+    href: page.href,
+    label: page.title,
+  }));
 
-  const atelierLinks = [
-    { href: "/about", label: t("links.aboutUs") },
-    { href: "/philosophy", label: t("links.linenPhilosophy") },
-    { href: "/sustainability", label: t("links.sustainability") },
-    { href: "/boutiques", label: t("links.boutiques") },
-    { href: "/contact", label: t("links.contact") },
-  ];
+  const atelierLinks = aboutPages.map((page) => ({
+    href: page.href,
+    label: page.title,
+  }));
 
-  const socialLinks = [
-    {
-      icon: SiInstagram,
-      href: "https://instagram.com",
-      name: "Instagram",
-      hoverClass: "hover:text-foreground hover:border-foreground/40",
-    },
-    {
-      icon: SiTiktok,
-      href: "https://tiktok.com",
-      name: "TikTok",
-      hoverClass: "hover:text-foreground hover:border-foreground/40",
-    },
-    {
-      icon: SiPinterest,
-      href: "https://pinterest.com",
-      name: "Pinterest",
-      hoverClass: "hover:text-foreground hover:border-foreground/40",
-    },
-    {
-      icon: SiYoutube,
-      href: "https://youtube.com",
-      name: "YouTube",
-      hoverClass: "hover:text-foreground hover:border-foreground/40",
-    },
-  ];
+  const moreLinks = otherPages.map((page) => ({
+    href: page.href,
+    label: page.title,
+  }));
+
+  const socialLinks = (
+    [
+      {
+        icon: SiInstagram,
+        href: social.instagram,
+        name: "Instagram",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: SiTiktok,
+        href: social.tiktok,
+        name: "TikTok",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: SiYoutube,
+        href: social.youtube,
+        name: "YouTube",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: SiFacebook,
+        href: social.facebook,
+        name: "Facebook",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: SiX,
+        href: social.twitter,
+        name: "X",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: FaLinkedin,
+        href: social.linkedin,
+        name: "LinkedIn",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+      {
+        icon: SiSnapchat,
+        href: social.snapchat,
+        name: "Snapchat",
+        hoverClass: "hover:text-foreground hover:border-foreground/40",
+      },
+    ] as const
+  ).flatMap((item) =>
+    item.href
+      ? [
+          {
+            icon: item.icon,
+            href: item.href,
+            name: item.name,
+            hoverClass: item.hoverClass,
+          },
+        ]
+      : [],
+  );
 
   return (
     <footer className="w-full border-t border-border/80 bg-muted/30 text-foreground">
@@ -282,21 +334,23 @@ export function Footer() {
           <div className="lg:col-span-4 space-y-6">
             <Link
               href="/"
-              className="flex items-center gap-3 group focus:outline-none transition-transform active:scale-95 shrink-0 inline-flex"
-              aria-label="Linen Line Home"
+              draggable={false}
+              className="flex items-center gap-3 group focus:outline-none transition-transform active:scale-95 shrink-0 inline-flex select-none"
+              aria-label={`${brandLabel} Home`}
             >
               <div className="relative h-10 w-auto flex items-center justify-center">
                 <Image
-                  src="/imgs/logo-4.webp"
-                  alt="Linen Line Store Logo"
+                  src={logoSrc}
+                  alt={`${brandLabel} Logo`}
                   width={150}
                   height={56}
+                  draggable={false}
                   className="h-10 w-auto object-contain"
                 />
               </div>
               <div className="flex flex-col">
                 <span className="font-heading font-bold text-lg tracking-wider text-foreground uppercase group-hover:text-secondary-700 dark:group-hover:text-secondary-300 transition-colors">
-                  Linen Line
+                  {brandLabel}
                 </span>
                 <span className="text-[10px] tracking-widest text-muted-foreground uppercase -mt-0.5 font-medium">
                   Abaya Boutique
@@ -324,50 +378,86 @@ export function Footer() {
                   variant="secondary"
                   className="text-[10px] font-normal px-2 py-0.5 bg-secondary-50 text-secondary-900 dark:bg-secondary-950/60 dark:text-secondary-200"
                 >
-                  Live Support
+                  {t("concierge.liveSupport")}
                 </Badge>
               </div>
 
               <p className="text-xs text-muted-foreground">
-                {t("concierge.hours")}
+                {hours}
               </p>
 
+              {(contactAddress || contactMapLocation) && (
+                <div className="space-y-1.5 text-xs text-muted-foreground">
+                  {contactAddress ? (
+                    <p className="leading-relaxed flex items-start gap-2">
+                      <MapPin className="size-3.5 shrink-0 mt-0.5 text-foreground/70" />
+                      <span>{contactAddress}</span>
+                    </p>
+                  ) : null}
+                  {contactMapLocation ? (
+                    <a
+                      href={contactMapLocation}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-foreground/80 hover:text-foreground underline-offset-4 hover:underline transition-colors ps-5"
+                    >
+                      {t("concierge.viewMap")}
+                    </a>
+                  ) : null}
+                </div>
+              )}
+
               <div className="pt-1 flex flex-col gap-2">
-                <a
-                  href="https://wa.me/905550192834"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 h-9 px-4 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium transition-all hover:bg-secondary-600 hover:shadow-xs active:scale-98"
-                >
-                  <SiWhatsapp className="size-4" />
-                  <span>{t("concierge.whatsapp")}</span>
-                </a>
+                {whatsappUrl ? (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 h-9 px-4 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium transition-all hover:bg-secondary-600 hover:shadow-xs active:scale-98"
+                  >
+                    <SiWhatsapp className="size-4" />
+                    <span>{t("concierge.whatsapp")}</span>
+                  </a>
+                ) : null}
+
+                {contactPhone ? (
+                  <a
+                    href={`tel:${contactPhone.replace(/\s+/g, "")}`}
+                    className="flex items-center justify-center gap-2 h-8 px-3 rounded-lg border border-border/80 bg-background/60 text-xs text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
+                  >
+                    <Phone className="size-3.5" />
+                    <span className="text-[11px] font-mono" dir="ltr">
+                      {contactPhone}
+                    </span>
+                  </a>
+                ) : null}
 
                 <a
-                  href={`mailto:${t("concierge.email")}`}
+                  href={`mailto:${email}`}
                   className="flex items-center justify-center gap-2 h-8 px-3 rounded-lg border border-border/80 bg-background/60 text-xs text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
                 >
                   <Mail className="size-3.5" />
-                  <span className="text-[11px] font-mono">{t("concierge.email")}</span>
+                  <span className="text-[11px] font-mono">{email}</span>
                 </a>
               </div>
             </div>
 
             {/* Social Links */}
+            {socialLinks.length > 0 ? (
             <div className="flex items-center gap-2.5 pt-1">
-              {socialLinks.map((social, i) => {
-                const Icon = social.icon;
+              {socialLinks.map((socialItem, i) => {
+                const Icon = socialItem.icon;
                 return (
                   <a
                     key={i}
-                    href={social.href}
+                    href={socialItem.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={social.name}
+                    aria-label={socialItem.name}
                     className={cn(
                       "flex size-9 items-center justify-center rounded-lg border border-border/80 bg-card text-muted-foreground transition-all duration-200",
                       "hover:-translate-y-0.5 hover:shadow-xs",
-                      social.hoverClass
+                      socialItem.hoverClass
                     )}
                   >
                     <Icon className="size-4" />
@@ -375,132 +465,182 @@ export function Footer() {
                 );
               })}
             </div>
+            ) : null}
           </div>
 
-          {/* Navigation Links Columns (Desktop: 3 columns, Mobile: Responsive Collapsibles) */}
+          {/* Navigation Links Columns (Desktop: dynamic columns, Mobile: Responsive Collapsibles) */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 pt-4 lg:pt-0">
-            {/* Column: Collections */}
-            <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
-              <button
-                type="button"
-                onClick={() => toggleSection("collections")}
-                className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
-                aria-expanded={openSections.collections}
-              >
-                <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
-                  {t("columns.collections")}
-                </h3>
-                <ChevronDown
+            {/* Column: Collections ← GET /api/v1/categories */}
+            {collectionsLinks.length > 0 ? (
+              <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("collections")}
+                  className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
+                  aria-expanded={openSections.collections}
+                >
+                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                    {t("columns.collections")}
+                  </h3>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
+                      openSections.collections && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                <div
                   className={cn(
-                    "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
-                    openSections.collections && "rotate-180"
+                    "pt-3 space-y-2.5",
+                    "hidden md:block",
+                    openSections.collections && "block"
                   )}
-                />
-              </button>
-
-              <div
-                className={cn(
-                  "pt-3 space-y-2.5",
-                  "hidden md:block",
-                  openSections.collections && "block"
-                )}
-              >
-                <ul className="space-y-2.5 list-none p-0 m-0">
-                  {collectionsLinks.map((link, idx) => (
-                    <li key={idx}>
-                      <Link
-                        href={link.href}
-                        className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                >
+                  <ul className="space-y-2.5 list-none p-0 m-0">
+                    {collectionsLinks.map((link) => (
+                      <li key={link.id}>
+                        <Link
+                          href={link.href}
+                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ) : null}
 
-            {/* Column: Client Care */}
-            <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
-              <button
-                type="button"
-                onClick={() => toggleSection("services")}
-                className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
-                aria-expanded={openSections.services}
-              >
-                <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
-                  {t("columns.services")}
-                </h3>
-                <ChevronDown
+            {/* Column: Client Care ← GET /api/v1/pages group=support */}
+            {servicesLinks.length > 0 ? (
+              <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("services")}
+                  className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
+                  aria-expanded={openSections.services}
+                >
+                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                    {t("columns.services")}
+                  </h3>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
+                      openSections.services && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                <div
                   className={cn(
-                    "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
-                    openSections.services && "rotate-180"
+                    "pt-3 space-y-2.5",
+                    "hidden md:block",
+                    openSections.services && "block"
                   )}
-                />
-              </button>
-
-              <div
-                className={cn(
-                  "pt-3 space-y-2.5",
-                  "hidden md:block",
-                  openSections.services && "block"
-                )}
-              >
-                <ul className="space-y-2.5 list-none p-0 m-0">
-                  {servicesLinks.map((link, idx) => (
-                    <li key={idx}>
-                      <Link
-                        href={link.href}
-                        className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                >
+                  <ul className="space-y-2.5 list-none p-0 m-0">
+                    {servicesLinks.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ) : null}
 
-            {/* Column: The Atelier */}
-            <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
-              <button
-                type="button"
-                onClick={() => toggleSection("atelier")}
-                className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
-                aria-expanded={openSections.atelier}
-              >
-                <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
-                  {t("columns.atelier")}
-                </h3>
-                <ChevronDown
+            {/* Column: The Atelier ← GET /api/v1/pages group=about */}
+            {atelierLinks.length > 0 ? (
+              <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("atelier")}
+                  className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
+                  aria-expanded={openSections.atelier}
+                >
+                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                    {t("columns.atelier")}
+                  </h3>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
+                      openSections.atelier && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                <div
                   className={cn(
-                    "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
-                    openSections.atelier && "rotate-180"
+                    "pt-3 space-y-2.5",
+                    "hidden md:block",
+                    openSections.atelier && "block"
                   )}
-                />
-              </button>
-
-              <div
-                className={cn(
-                  "pt-3 space-y-2.5",
-                  "hidden md:block",
-                  openSections.atelier && "block"
-                )}
-              >
-                <ul className="space-y-2.5 list-none p-0 m-0">
-                  {atelierLinks.map((link, idx) => (
-                    <li key={idx}>
-                      <Link
-                        href={link.href}
-                        className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                >
+                  <ul className="space-y-2.5 list-none p-0 m-0">
+                    {atelierLinks.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ) : null}
+
+            {/* Extra CMS groups (not about/support/legal) — shown in footer body when present */}
+            {moreLinks.length > 0 ? (
+              <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0 md:col-span-3 lg:col-span-1">
+                <button
+                  type="button"
+                  onClick={() => toggleSection("more")}
+                  className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
+                  aria-expanded={openSections.more}
+                >
+                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                    {t("columns.more")}
+                  </h3>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-200 md:hidden",
+                      openSections.more && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                <div
+                  className={cn(
+                    "pt-3 space-y-2.5",
+                    "hidden md:block",
+                    openSections.more && "block"
+                  )}
+                >
+                  <ul className="space-y-2.5 list-none p-0 m-0">
+                    {moreLinks.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -563,35 +703,32 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Bottom sub-bar: Copyright, Legal Links, Back to top */}
+          {/* Bottom sub-bar: Copyright, Legal Links (from CMS when present), Back to top */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Copyright & Legal Links */}
             <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-5 text-xs text-muted-foreground text-center sm:text-start">
               <span>
-                &copy; {new Date().getFullYear()} Linen Line Store. {t("allRightsReserved")}
+                &copy; {new Date().getFullYear()} {brandLabel}. {t("allRightsReserved")}
               </span>
-              <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
-                <Link
-                  href="/privacy"
-                  className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
-                >
-                  {t("links.privacyPolicy")}
-                </Link>
-                <span className="text-border">|</span>
-                <Link
-                  href="/terms"
-                  className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
-                >
-                  {t("links.termsOfService")}
-                </Link>
-                <span className="text-border">|</span>
-                <Link
-                  href="/cookies"
-                  className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
-                >
-                  {t("links.cookiePolicy")}
-                </Link>
-              </div>
+              {legalPages.length > 0 ? (
+                <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
+                  {legalPages.map((page, index) => (
+                    <span key={page.href} className="contents">
+                      {index > 0 ? (
+                        <span className="text-border" aria-hidden>
+                          |
+                        </span>
+                      ) : null}
+                      <Link
+                        href={page.href}
+                        className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+                      >
+                        {page.title}
+                      </Link>
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             {/* Back to Top Floating/Inline Action */}

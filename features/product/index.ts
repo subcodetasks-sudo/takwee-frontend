@@ -10,9 +10,13 @@ export * from "./components/ProductReviews";
 export * from "./components/ProductStickyBottomBar";
 export * from "./context/ProductDetailsContext";
 export * from "./types";
+export * from "./api/get-product-by-id";
 export * from "./utils/sample-products";
 export * from "./utils/shop-filters";
 export * from "./utils/format-price";
 export * from "./utils/get-product";
+export * from "./utils/get-product-page";
 export * from "./utils/get-related-products";
+export * from "./utils/map-product";
+export * from "./utils/slugify";
 

@@ -5,39 +5,49 @@ import { useTranslations, useLocale } from "next-intl";
 import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { ShopFilter } from "@/features/product/utils/shop-filters";
+import { useHomePage } from "@/features/home/hooks/useHomePage";
+import { useCategories } from "@/features/categories/hooks/useCategories";
+import type { StorefrontCategory } from "@/features/categories/types";
+import { isShopFilter } from "@/features/product/utils/shop-filters";
+import { findCategoryForFilter } from "../utils/resolve-shop-path";
 
 const LUXURY_EASE = [0.16, 1, 0.3, 1] as const;
 
-const HERO_IMAGES: Record<ShopFilter | "default", string> = {
-  default: "/imgs/hero-slide-1.jpg",
-  "new-in": "/imgs/hero-slide-3.jpg",
-  abayas: "/imgs/hero-slide-1.jpg",
-  linen: "/imgs/hero-slide-1.jpg",
-  casual: "/imgs/hero-slide-2.jpg",
-  formal: "/imgs/hero-slide-3.jpg",
-  travel: "/imgs/hero-slide-2.jpg",
-  inners: "/imgs/hero-slide-1.jpg",
-  accessories: "/imgs/hero-slide-2.jpg",
-  sale: "/imgs/hero-slide-3.jpg",
-};
+const HERO_FALLBACK_IMAGE = "/imgs/hero-slide-1.jpg";
 
 interface ShopHeroProps {
-  pathFilter?: ShopFilter;
+  pathFilter?: string;
+  /** RSC-resolved category (preferred); client hook used as fallback. */
+  category?: StorefrontCategory | null;
 }
 
-export function ShopHero({ pathFilter }: ShopHeroProps) {
+export function ShopHero({ pathFilter, category: categoryProp }: ShopHeroProps) {
   const t = useTranslations("ShopPage");
   const locale = useLocale();
   const isRtl = locale === "ar";
+  const { heroes } = useHomePage();
+  const { categories } = useCategories();
 
-  const title = pathFilter
-    ? t(`filters.${pathFilter}.title`)
-    : t("hero.title");
+  const category =
+    categoryProp ?? findCategoryForFilter(pathFilter, categories) ?? null;
+
+  const title = category
+    ? category.name
+    : pathFilter && isShopFilter(pathFilter)
+      ? t(`filters.${pathFilter}.title`)
+      : t("hero.title");
+
   const subtitle = pathFilter
-    ? t(`filters.${pathFilter}.subtitle`)
+    ? !category && isShopFilter(pathFilter)
+      ? t(`filters.${pathFilter}.subtitle`)
+      : null
     : t("hero.subtitle");
-  const image = HERO_IMAGES[pathFilter ?? "default"];
+
+  // All-products `/shop`: prefer the first home hero image.
+  // Category routes: prefer the category image from `useCategories` / RSC.
+  const homeHeroImage = !pathFilter ? heroes[0]?.image?.trim() : undefined;
+  const categoryImage = category?.image?.trim() || undefined;
+  const image = homeHeroImage || categoryImage || HERO_FALLBACK_IMAGE;
 
   return (
     <section
@@ -55,7 +65,7 @@ export function ShopHero({ pathFilter }: ShopHeroProps) {
 
       {/* Background Image with Ambient Scrim & Ken Burns zoom entrance */}
       <motion.div
-        key={`bg-${pathFilter ?? "default"}`}
+        key={`bg-${pathFilter ?? "default"}-${category?.id ?? "none"}`}
         className="absolute inset-0 z-0 select-none overflow-hidden"
         initial={{ scale: 1.12, opacity: 0.5 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -64,14 +74,18 @@ export function ShopHero({ pathFilter }: ShopHeroProps) {
           opacity: { duration: 0.8, ease: "easeOut" },
         }}
       >
-        <Image
-          src={image}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-muted" aria-hidden />
+        )}
         {/* Directional scrim for optimal contrast and readability */}
         <div
           className={cn(
@@ -106,7 +120,7 @@ export function ShopHero({ pathFilter }: ShopHeroProps) {
 
           {/* Hero Title */}
           <motion.h1
-            key={`title-${pathFilter ?? "default"}`}
+            key={`title-${pathFilter ?? "default"}-${title}`}
             id="shop-hero-heading"
             initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -117,15 +131,17 @@ export function ShopHero({ pathFilter }: ShopHeroProps) {
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p
-            key={`sub-${pathFilter ?? "default"}`}
-            initial={{ opacity: 0, y: 22, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.75, delay: 0.5, ease: LUXURY_EASE }}
-            className="mx-auto max-w-xl text-sm font-medium leading-relaxed text-foreground/85 dark:text-foreground/90 sm:text-base md:text-lg drop-shadow-xs"
-          >
-            {subtitle}
-          </motion.p>
+          {subtitle ? (
+            <motion.p
+              key={`sub-${pathFilter ?? "default"}`}
+              initial={{ opacity: 0, y: 22, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 0.75, delay: 0.5, ease: LUXURY_EASE }}
+              className="mx-auto max-w-xl text-sm font-medium leading-relaxed text-foreground/85 dark:text-foreground/90 sm:text-base md:text-lg drop-shadow-xs"
+            >
+              {subtitle}
+            </motion.p>
+          ) : null}
 
           {/* Decorative luxury accent line */}
           <motion.div

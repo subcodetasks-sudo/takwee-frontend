@@ -6,7 +6,12 @@ import {
   type ProductSwatchId,
 } from "@/features/product/types";
 import type { ShopFilter } from "@/features/product/utils/shop-filters";
-import type { ShopFilterState, ShopPriceBounds, ShopSort } from "../types";
+import type {
+  ShopCategoryOption,
+  ShopFilterState,
+  ShopPriceBounds,
+  ShopSort,
+} from "../types";
 
 export const ABAYA_SIZES: AbayaSize[] = ["52", "54", "56", "58", "60"];
 
@@ -20,6 +25,7 @@ export function createDefaultFilterState(
   bounds: ShopPriceBounds,
 ): ShopFilterState {
   return {
+    categories: [],
     sizes: [],
     colors: [],
     badges: [],
@@ -35,6 +41,7 @@ export function countActiveFilters(
   bounds: ShopPriceBounds,
 ): number {
   let count = 0;
+  if (filters.categories.length > 0) count += 1;
   if (filters.sizes.length > 0) count += 1;
   if (filters.colors.length > 0) count += 1;
   if (filters.badges.length > 0) count += 1;
@@ -47,6 +54,28 @@ export function countActiveFilters(
   if (filters.inStockOnly) count += 1;
   if (filters.includesSheila) count += 1;
   return count;
+}
+
+/** Build unique category options (with counts) from the loaded product list. */
+export function getCategoryOptions(products: Product[]): ShopCategoryOption[] {
+  const counts = new Map<string, ShopCategoryOption>();
+
+  for (const product of products) {
+    const id = product.categoryId?.trim();
+    const name = product.categoryName?.trim();
+    if (!id || !name) continue;
+
+    const existing = counts.get(id);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      counts.set(id, { id, name, count: 1 });
+    }
+  }
+
+  return [...counts.values()].sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  );
 }
 
 /** Soft path presets until products carry explicit category fields. */
@@ -95,6 +124,14 @@ export function applyShopPathFilter(
 }
 
 function matchesFilters(product: Product, filters: ShopFilterState): boolean {
+  if (
+    filters.categories.length > 0 &&
+    (!product.categoryId ||
+      !filters.categories.includes(product.categoryId))
+  ) {
+    return false;
+  }
+
   if (
     filters.sizes.length > 0 &&
     !filters.sizes.some((size) => product.sizes.includes(size))

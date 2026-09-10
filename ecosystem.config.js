@@ -1,6 +1,6 @@
 /**
  * PM2 process file for linen-line-store.
- * Used by deploy/deploy/deploy.sh — keep `name` in sync with APP_NAME there.
+ * Used by deploy/deploy.sh — keep `name` in sync with APP_NAME there.
  *
  * Start:   pm2 start ecosystem.config.js
  * Reload:  pm2 reload ecosystem.config.js --update-env

@@ -1,29 +1,48 @@
 import type { Product } from "@/features/product";
 
+export type {
+  ApiAdvertisementTape,
+  ApiHomeCategory,
+  ApiHomeHero,
+  ApiHomePageData,
+  ApiHomePageResponse,
+  ApiHomeProduct,
+  ApiHomeProductCategory,
+} from "./api";
+
+export interface AdvertisementTape {
+  id: string;
+  text: string;
+}
+
 export interface HeroSlide {
   id: string;
   image: string;
-  tagKey: "slide1Tag" | "slide2Tag" | "slide3Tag";
-  titleKey: "slide1Title" | "slide2Title" | "slide3Title";
-  descriptionKey: "slide1Description" | "slide2Description" | "slide3Description";
-  ctaKey: "slide1Cta" | "slide2Cta" | "slide3Cta";
+  title: string;
+  description: string;
+  /** Optional badge above the title. */
+  tag?: string;
   href: string;
 }
 
 export interface CategoryItem {
   id: string;
-  image: string;
-  titleKey: string;
+  name: string;
+  image: string | null;
   href: string;
 }
 
-/** Curated home blocks managed from the dashboard later. */
+/** Curated home blocks — from API category + product groupings or mocks. */
 export interface AdditionalSection {
   id: string;
-  /** URL segment for the section page (`/collections/[slug]` later). */
+  /** URL segment for the section page (`/shop/...` or collections later). */
   slug: string;
-  /** Message key under `AdditionalSections.sections.<key>`. */
-  messageKey: string;
+  /** Display title from the API (preferred over `messageKey`). */
+  title?: string;
+  /** Display description from the API (preferred over `messageKey`). */
+  description?: string;
+  /** Message key under `AdditionalSections.sections.<key>` for mock/i18n fallback. */
+  messageKey?: string;
   /** Optional hero banner; omit when the section has no image. */
   bannerImage?: string;
   /** Brand blend tone for the banner overlay. Defaults to primary. */
@@ -34,4 +53,12 @@ export interface AdditionalSection {
   products: Product[];
   sortOrder: number;
   isActive: boolean;
+}
+
+export interface HomePageData {
+  heroes: HeroSlide[];
+  advertisementTapes: AdvertisementTape[];
+  categories: CategoryItem[];
+  sections: AdditionalSection[];
+  products: Product[];
 }

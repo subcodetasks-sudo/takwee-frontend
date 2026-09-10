@@ -84,9 +84,11 @@ export async function ContentPageView({ page, locale }: ContentPageViewProps) {
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {page.title}
               </h1>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                {page.description}
-              </p>
+              {page.description ? (
+                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                  {page.description}
+                </p>
+              ) : null}
               <p className="mt-4 text-xs text-muted-foreground">
                 {t("lastUpdated", { date: formattedDate })}
               </p>

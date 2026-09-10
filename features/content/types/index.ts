@@ -1,3 +1,11 @@
+export type {
+  ApiPage,
+  ApiPageGroup,
+  ApiPageResponse,
+  ApiPagesResponse,
+} from "./api";
+
+/** Legacy mock-era allowlist — kept for generateStaticParams / mock fallback. */
 export const CONTENT_PAGE_SLUGS = [
   "terms",
   "privacy",
@@ -26,11 +34,24 @@ export type ContentBlock =
   | { type: "size-chart" };
 
 export type ContentPage = {
-  slug: ContentPageSlug;
+  /** API or mock slug (e.g. `our-story`, `privacy`). */
+  slug: string;
   title: string;
   description: string;
   updatedAt: string;
   blocks: ContentBlock[];
+  /** Present when loaded from `GET /api/v1/pages`. */
+  group?: string;
+};
+
+/** Lightweight link model for footer / nav lists. */
+export type StorefrontPageLink = {
+  id: number;
+  slug: string;
+  href: `/${string}`;
+  title: string;
+  group: string;
+  sortOrder: number;
 };
 
 export function isContentPageSlug(slug: string): slug is ContentPageSlug {

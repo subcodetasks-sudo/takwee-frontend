@@ -13,7 +13,6 @@ import { CurrencyDropdown } from "./CurrencyDropdown";
 import { LanguageDropdown } from "./LanguageDropdown";
 import TextLoop from "@/components/TextLoop";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -21,8 +20,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/features/auth";
+import { useCategories } from "@/features/categories";
+import { useHomePage } from "@/features/home/hooks/useHomePage";
+import { useSettings } from "@/features/settings";
 import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
 import { useCart, useCartFly } from "@/features/cart";
+import { NotificationsPopover } from "@/features/notifications";
 import { cn } from "@/lib/utils";
 
 const slideTransition = { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
@@ -33,6 +36,9 @@ export function Header() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
   const { isAuthenticated } = useAuth();
+  const { announcementText } = useHomePage();
+  const { categories } = useCategories();
+  const { appName, siteLogo } = useSettings();
   const { itemCount: favoriteItemCount, isHydrated: isWishlistHydrated } =
     useWishlist();
   const { itemCount: cartItemCount, isHydrated: isCartHydrated } = useCart();
@@ -42,6 +48,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDesktopNav, setIsDesktopNav] = useState(false);
 
+  const ribbonText = announcementText || t("announcement");
   const showFavoriteCount = isWishlistHydrated && favoriteItemCount > 0;
   const showCartCount = isCartHydrated && cartItemCount > 0;
 
@@ -49,46 +56,46 @@ export function Header() {
   const hideMainBar = hidden && !isDesktopNav;
   const hideCategoryNav = hidden && isDesktopNav;
 
-  const navLinks = [
-    { href: "/", label: t("home") },
-    { href: "/shop/new-in", label: t("newArrivals"), badge: "New", highlight: true },
-    { href: "/shop", label: t("allAbayas") },
-    { href: "/shop/linen", label: t("linenCollection") },
-    { href: "/shop/casual", label: t("casualAbayas") },
-    { href: "/shop/formal", label: t("formalAbayas") },
-    { href: "/shop/travel", label: t("travelAbayas") },
-    { href: "/shop/inners", label: t("dressesAndInners") },
-    { href: "/shop/accessories", label: t("accessories") },
-    { href: "/shop/sale", label: t("sale"), highlight: true },
-  ];
-
-  const mobileNavCards = React.useMemo<CardNavItem[]>(
+  // Home + all-products stay static; remaining tabs come from GET /api/v1/categories.
+  const navLinks = React.useMemo(
     () => [
+      { id: "home", href: "/" as const, label: t("home") },
+      { id: "shop", href: "/shop" as const, label: t("allAbayas") },
+      ...categories.map((category) => ({
+        id: category.id,
+        href: category.href,
+        label: category.name,
+      })),
+    ],
+    [categories, t],
+  );
+
+  const mobileNavCards = React.useMemo<CardNavItem[]>(() => {
+    const cards: CardNavItem[] = [
       {
         label: t("navExplore"),
         className: "bg-primary text-primary-foreground",
         links: [
           { label: t("home"), href: "/", ariaLabel: t("home") },
-          { label: t("newArrivals"), href: "/shop/new-in", ariaLabel: t("newArrivals") },
           { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
-          { label: t("linenCollection"), href: "/shop/linen", ariaLabel: t("linenCollection") },
-          { label: t("sale"), href: "/shop/sale", ariaLabel: t("sale") },
         ],
       },
-      {
+    ];
+
+    if (categories.length > 0) {
+      cards.push({
         label: t("navCategories"),
         className: "bg-secondary text-secondary-foreground",
-        links: [
-          { label: t("casualAbayas"), href: "/shop/casual", ariaLabel: t("casualAbayas") },
-          { label: t("formalAbayas"), href: "/shop/formal", ariaLabel: t("formalAbayas") },
-          { label: t("travelAbayas"), href: "/shop/travel", ariaLabel: t("travelAbayas") },
-          { label: t("dressesAndInners"), href: "/shop/inners", ariaLabel: t("dressesAndInners") },
-          { label: t("accessories"), href: "/shop/accessories", ariaLabel: t("accessories") },
-        ],
-      },
-    ],
-    [t],
-  );
+        links: categories.map((category) => ({
+          label: category.name,
+          href: category.href,
+          ariaLabel: category.name,
+        })),
+      });
+    }
+
+    return cards;
+  }, [categories, t]);
 
   useEffect(() => {
     const mql = window.matchMedia(
@@ -136,8 +143,8 @@ export function Header() {
       {/* Always pinned */}
       <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary">
         <TextLoop
-          key={`${locale}-${t("announcement")}`}
-          text={t("announcement")}
+          key={`${locale}-${ribbonText}`}
+          text={ribbonText}
           dir={locale === "ar" ? "rtl" : "ltr"}
           shape="line"
           separator="❖"
@@ -173,22 +180,24 @@ export function Header() {
 
             <Link
               href="/"
-              className="flex shrink-0 items-center gap-2 transition-transform focus:outline-none active:scale-95 group sm:gap-3"
-              aria-label="Linen Line Home"
+              draggable={false}
+              className="flex shrink-0 items-center gap-2 transition-transform focus:outline-none active:scale-95 group sm:gap-3 select-none"
+              aria-label={`${appName} Home`}
             >
               <div className="relative flex h-7 w-auto items-center justify-center sm:h-12">
                 <Image
-                  src="/imgs/logo-2.webp"
-                  alt="Linen Line Store Logo"
+                  src={siteLogo || "/imgs/logo-2.webp"}
+                  alt={`${appName} Logo`}
                   width={150}
                   height={56}
                   priority
+                  draggable={false}
                   className="h-7 w-auto object-contain transition-transform duration-300 sm:h-11"
                 />
               </div>
               <div className="hidden flex-col sm:flex">
                 <span className="font-heading text-base font-bold tracking-wider text-foreground uppercase transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-300 sm:text-lg">
-                  Linen Line
+                  {appName}
                 </span>
                 <span className="text-[10px] -mt-0.5 font-medium tracking-widest text-muted-foreground uppercase">
                   Abaya Boutique
@@ -227,6 +236,8 @@ export function Header() {
               </Button>
 
               <TooltipProvider delay={100}>
+                <NotificationsPopover />
+
                 <Tooltip>
                   <TooltipTrigger
                     render={
@@ -361,25 +372,12 @@ export function Header() {
       >
         {navLinks.map((link) => (
           <Link
-            key={link.href}
+            key={link.id}
             href={link.href}
-            className={cn(
-              "relative text-xs lg:text-sm font-medium px-2.5 py-1.5 rounded-md transition-colors whitespace-nowrap group",
-              link.highlight
-                ? "text-primary-800 dark:text-primary-300 font-semibold hover:bg-primary-50 dark:hover:bg-primary-950/40"
-                : "text-foreground/80 hover:text-foreground hover:bg-muted/70",
-            )}
+            className="relative text-xs lg:text-sm font-medium px-2.5 py-1.5 rounded-md transition-colors whitespace-nowrap group text-foreground/80 hover:text-foreground hover:bg-muted/70"
           >
             <span className="relative z-10 flex items-center gap-1.5">
               {link.label}
-              {link.badge && (
-                <Badge
-                  variant="secondary"
-                  className="text-[9px] px-1.5 py-0 h-3.5 leading-none font-semibold uppercase tracking-wider"
-                >
-                  {link.badge}
-                </Badge>
-              )}
             </span>
             <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 ease-out" />
           </Link>

@@ -1,3 +1,14 @@
+export type {
+  ApiProduct,
+  ApiProductCategory,
+  ApiProductDetailResponse,
+  ApiProductRating,
+  ApiProductsLinks,
+  ApiProductsMeta,
+  ApiProductsPage,
+  ApiProductsResponse,
+} from "./api";
+
 export const PRODUCT_SWATCH_CLASSES = {
   black: "bg-foreground",
   olive: "bg-secondary-600",
@@ -31,7 +42,14 @@ export interface ProductSpec {
 export interface Product {
   id: string;
   slug: string;
+  /**
+   * API / CMS display name. When set, UI uses this instead of
+   * `Products.{nameKey}` from next-intl.
+   */
+  name?: string;
   nameKey: string;
+  /** Long-form description from the product API when present. */
+  description?: string;
   priceTRY: number;
   compareAtPriceTRY?: number;
   badge?: ProductBadge;
@@ -45,8 +63,14 @@ export interface Product {
   /** Spec sections shown under Product details. */
   specs: ProductSpec[];
   includesSheila?: boolean;
+  /** Catalog category id from the products API (when present). */
+  categoryId?: string;
+  /** Localized / API category display name. */
+  categoryName?: string;
   /** Customer rating (0-5 scale). */
   rating?: number;
   /** Total review count. */
   reviewsCount?: number;
 }
+
+export type { ProductReview } from "./review";

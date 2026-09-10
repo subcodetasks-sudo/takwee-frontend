@@ -288,6 +288,7 @@
   "Categories": {
     "title": "Kategoriye Göre Alışveriş",
     "subtitle": "Günlük ketenden özel gün silüetlerine kadar özenle seçilmiş abaya ve temel parçaları keşfedin.",
+    "loading": "Kategoriler yükleniyor",
     "linen": "Keten Koleksiyonu",
     "casual": "Günlük Abayalar",
     "formal": "Özel Gün & Abiye",
@@ -296,6 +297,10 @@
     "accessories": "Şal & Aksesuarlar"
   },
   "Hero": {
+    "cta": "Koleksiyonu keşfedin",
+    "ordersCta": "Siparişlerinizi takip edin",
+    "loading": "Öne çıkan koleksiyon yükleniyor",
+    "goToSlide": "{index}. slayta git",
     "slide1Tag": "Saf Doğal Keten",
     "slide1Title": "Doğal Ketende Kusursuz Zarafet",
     "slide1Description": "Hafif, nefes alabilen keten dokuları ve çağdaş mütevazı lüks için tasarlanmış mimari kesimler.",
@@ -307,8 +312,7 @@
     "slide3Tag": "Özel Gün Şıklığı",
     "slide3Title": "İpek & Keten Gece Işıltısı",
     "slide3Description": "Özel davetleriniz için tasarlanmış, zarif altın işlemeli dökümlü asil abaya tasarımı.",
-    "slide3Cta": "Abiyeleri Keşfet",
-    "ordersCta": "Siparişlerinizi takip edin"
+    "slide3Cta": "Abiyeleri Keşfet"
   },
   "Navigation": {
     "home": "Ana Sayfa",
@@ -336,9 +340,32 @@
     "menu": "Menü",
     "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf Keten Koleksiyonumuzu Keşfedin"
   },
+  "Notifications": {
+    "title": "Bildirimler",
+    "ariaLabel": "Bildirimler",
+    "ariaLabelUnread": "Bildirimler, {count} okunmamış",
+    "unreadSummary": "{count, plural, one {# okunmamış güncelleme} other {# okunmamış güncelleme}}",
+    "allCaughtUp": "Her şey güncel",
+    "markAllRead": "Tümünü okundu işaretle",
+    "markRead": "Okundu işaretle",
+    "unread": "Okunmamış",
+    "emptyTitle": "Henüz bildirim yok",
+    "emptyDescription": "Sipariş güncellemeleri ve seçili fırsatlar burada görünecektir.",
+    "items": {
+      "orderShippedTitle": "Sipariş yolda",
+      "orderShippedBody": "LL-2048 numaralı siparişiniz kargoya verildi. Teslimatı siparişlerinizden takip edebilirsiniz.",
+      "linenEditTitle": "Keten Seçkisi’nde yeniler",
+      "linenEditBody": "Yeni saf keten kesimler geldi — sıcak günler için nefes alan parçalar.",
+      "orderDeliveredTitle": "Sipariş teslim edildi",
+      "orderDeliveredBody": "LL-2031 numaralı siparişiniz teslim edildi. Umarız zevkinize uygun olur.",
+      "wishlistReminderTitle": "Kaydedilen parçalar sizi bekliyor",
+      "wishlistReminderBody": "Favorilerinizdeki ürünler hâlâ mevcut. İstediğiniz zaman inceleyebilirsiniz."
+    }
+  },
   "AdditionalSections": {
     "viewMore": "Daha fazla gör",
     "shopCollection": "Koleksiyonu keşfet",
+    "loading": "Koleksiyonlar yükleniyor",
     "sections": {
       "newArrivals": {
         "title": "Yeni Gelenler",
@@ -705,7 +732,7 @@
     },
     "hero": {
       "title": "Koleksiyon",
-      "subtitle": "Saf keten ve zarif kumaşlardan seçilmiş abayeler — günlük zarafet için beden, renk ve bitiş seçenekleriyle."
+      "subtitle": "Her kategoriden özenle seçilmiş parçalar — keten, abaye, elbise ve aksesuarlar günlük zarafet için tamamlandı."
     },
     "filters": {
       "new-in": {
@@ -763,6 +790,7 @@
     },
     "panel": {
       "title": "Daralt",
+      "category": "Kategoriler",
       "size": "Beden",
       "color": "Renk",
       "selectColor": "{color} ile filtrele",
@@ -827,6 +855,7 @@
       "collections": "Koleksiyonlar",
       "services": "Müşteri Hizmetleri",
       "atelier": "Hakkımızda",
+      "more": "Daha fazla",
       "connect": "İletişim & Butik"
     },
     "links": {
@@ -856,7 +885,9 @@
       "title": "Doğrudan Danışmanlık",
       "hours": "Pzt - Cmt: 09:00 - 21:00 (TSİ)",
       "whatsapp": "WhatsApp ile İletişime Geçin",
-      "email": "concierge@linenlinestore.com"
+      "email": "concierge@linenlinestore.com",
+      "liveSupport": "Canlı Destek",
+      "viewMap": "Haritada görüntüle"
     },
     "backToTop": "Yukarı Çık",
     "allRightsReserved": "Tüm hakları saklıdır.",
@@ -872,6 +903,14 @@
     "description": "Bu sayfa kullanılamıyor veya bağlantı hatalı olabilir. Ana sayfaya dönebilir veya koleksiyona göz atabilirsiniz.",
     "backHome": "Ana sayfaya dönün",
     "browseShop": "Mağazaya göz atın"
+  },
+  "MaintenancePage": {
+    "title": "Atölye geçici olarak kapalı",
+    "description": "Koleksiyonumuzu yeniliyoruz ve kısa süre içinde yeniden açılacağız. Sabrınız için teşekkür ederiz.",
+    "contactHint": "Yardıma mı ihtiyacınız var?",
+    "whatsapp": "WhatsApp ile iletişime geçin",
+    "email": "E-posta gönderin",
+    "hoursLabel": "Danışmanlık saatleri"
   },
   "Auth": {
     "brandHeadline": "Ketenle sakin bir lüks",

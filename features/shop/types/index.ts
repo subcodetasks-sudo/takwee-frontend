@@ -17,6 +17,7 @@ export interface ShopPriceBounds {
 }
 
 export interface ShopFilterState {
+  categories: string[];
   sizes: AbayaSize[];
   colors: ProductSwatchId[];
   badges: ProductBadge[];
@@ -24,6 +25,13 @@ export interface ShopFilterState {
   inStockOnly: boolean;
   includesSheila: boolean;
   sort: ShopSort;
+}
+
+/** Category checkbox options derived from the loaded catalog. */
+export interface ShopCategoryOption {
+  id: string;
+  name: string;
+  count: number;
 }
 
 export interface ShopViewProps {

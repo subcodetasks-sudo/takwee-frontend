@@ -237,19 +237,34 @@ export function ProductDetailsHero({
           <div className="flex items-center gap-1.5">
             <div
               className="flex items-center gap-0.5 text-warning"
-              aria-label="4.9 out of 5 stars"
+              aria-label={`${(product.rating ?? 0).toFixed(1)} out of 5 stars`}
             >
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star
-                  key={s}
-                  className="size-4 fill-warning stroke-warning"
-                  aria-hidden
-                />
-              ))}
+              {[1, 2, 3, 4, 5].map((s) => {
+                const value = product.rating ?? 0;
+                const filled = value >= s - 0.25;
+                return (
+                  <Star
+                    key={s}
+                    className={cn(
+                      "size-4",
+                      filled
+                        ? "fill-warning stroke-warning"
+                        : "fill-transparent stroke-warning/50",
+                    )}
+                    aria-hidden
+                  />
+                );
+              })}
             </div>
             <span className="text-xs font-bold tabular-nums text-foreground sm:text-sm">
-              4.9
+              {(product.rating ?? 0).toFixed(1)}
             </span>
+            {typeof product.reviewsCount === "number" &&
+            product.reviewsCount > 0 ? (
+              <span className="text-xs text-muted-foreground tabular-nums">
+                ({product.reviewsCount})
+              </span>
+            ) : null}
           </div>
         </StaggerItem>
 

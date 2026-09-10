@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,17 +9,35 @@ import { Link } from "@/i18n/routing";
 import { ProductCard } from "@/features/product";
 import { cn } from "@/lib/utils";
 import type { AdditionalSection } from "../types";
+import { useHomePage } from "../hooks/useHomePage";
 import { getActiveAdditionalSections } from "../utils/additional-sections";
 
-interface AdditionalSectionsProps {
-  sections?: AdditionalSection[];
-}
-
-export async function AdditionalSections({
-  sections,
-}: AdditionalSectionsProps) {
-  const t = await getTranslations("AdditionalSections");
+export function AdditionalSections() {
+  const t = useTranslations("AdditionalSections");
+  const { sections, isLoading } = useHomePage();
   const activeSections = getActiveAdditionalSections(sections);
+
+  if (isLoading && activeSections.length === 0) {
+    return (
+      <section
+        className="w-full bg-background py-10 sm:py-12 md:py-16"
+        aria-busy="true"
+        aria-label={t("loading")}
+      >
+        <div className="page-shell space-y-8">
+          <div className="mx-auto h-8 w-48 animate-pulse rounded bg-muted" />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="aspect-3/4 animate-pulse rounded-xl bg-muted sm:rounded-2xl"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (activeSections.length === 0) {
     return null;
@@ -25,21 +45,34 @@ export async function AdditionalSections({
 
   return (
     <div className="flex w-full flex-col">
-      {activeSections.map((section) => (
-        <AdditionalSectionBlock
-          key={section.id}
-          section={section}
-          viewMoreLabel={t("viewMore")}
-          shopCollectionLabel={t("shopCollection")}
-          title={t(`sections.${section.messageKey}.title`)}
-          description={t(`sections.${section.messageKey}.description`)}
-          bannerAlt={
-            section.bannerImage
-              ? t(`sections.${section.messageKey}.bannerAlt`)
-              : undefined
-          }
-        />
-      ))}
+      {activeSections.map((section) => {
+        const title =
+          section.title ??
+          (section.messageKey
+            ? t(`sections.${section.messageKey}.title`)
+            : section.slug);
+        const description =
+          section.description ??
+          (section.messageKey
+            ? t(`sections.${section.messageKey}.description`)
+            : "");
+        const bannerAlt = section.bannerImage
+          ? section.messageKey
+            ? t(`sections.${section.messageKey}.bannerAlt`)
+            : title
+          : undefined;
+
+        return (
+          <AdditionalSectionBlock
+            key={section.id}
+            section={section}
+            viewMoreLabel={t("viewMore")}
+            title={title}
+            description={description}
+            bannerAlt={bannerAlt}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -50,7 +83,6 @@ interface AdditionalSectionBlockProps {
   description: string;
   bannerAlt?: string;
   viewMoreLabel: string;
-  shopCollectionLabel: string;
 }
 
 function AdditionalSectionBlock({
@@ -59,10 +91,10 @@ function AdditionalSectionBlock({
   description,
   bannerAlt,
   viewMoreLabel,
-  shopCollectionLabel,
 }: AdditionalSectionBlockProps) {
   const hasBanner = Boolean(section.bannerImage);
   const tone = section.bannerTone ?? "primary";
+  const hasDescription = Boolean(description?.trim());
 
   return (
     <section className="w-full bg-background py-10 sm:py-12 md:py-16">
@@ -78,7 +110,6 @@ function AdditionalSectionBlock({
                 className="object-cover object-center"
               />
 
-              {/* Brand color blend — softer directional wash + light vertical depth */}
               <div
                 className={cn(
                   "pointer-events-none absolute inset-0",
@@ -100,22 +131,11 @@ function AdditionalSectionBlock({
                 <h2 className="text-2xl font-bold tracking-tight text-primary-50 drop-shadow-sm sm:text-3xl md:text-4xl">
                   {title}
                 </h2>
-                <p className="text-sm leading-relaxed text-primary-50/90 drop-shadow-sm sm:text-base">
-                  {description}
-                </p>
-                <Link
-                  href={section.href}
-                  className={cn(
-                    buttonVariants({
-                      variant: tone === "secondary" ? "default" : "secondary",
-                      size: "lg",
-                    }),
-                    "mt-1 gap-2 px-5 shadow-md transition-shadow hover:shadow-lg sm:mt-2",
-                  )}
-                >
-                  {shopCollectionLabel}
-                  <ArrowRight className="size-4 rtl:rotate-180" />
-                </Link>
+                {hasDescription ? (
+                  <p className="text-sm leading-relaxed text-primary-50/90 drop-shadow-sm sm:text-base">
+                    {description}
+                  </p>
+                ) : null}
               </div>
             </div>
           ) : (
@@ -123,9 +143,11 @@ function AdditionalSectionBlock({
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                 {title}
               </h2>
-              <p className="text-sm text-muted-foreground sm:text-base">
-                {description}
-              </p>
+              {hasDescription ? (
+                <p className="text-sm text-muted-foreground sm:text-base">
+                  {description}
+                </p>
+              ) : null}
             </div>
           )}
         </FadeIn>
@@ -136,9 +158,7 @@ function AdditionalSectionBlock({
         >
           {section.products.map((product) => (
             <StaggerItem key={`${section.id}-${product.id}`}>
-              <ProductCard
-                product={product}
-              />
+              <ProductCard product={product} />
             </StaggerItem>
           ))}
         </StaggerContainer>

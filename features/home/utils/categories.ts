@@ -1,41 +1,41 @@
-import { CategoryItem } from "../types";
+import type { CategoryItem } from "../types";
 
-/** Placeholder imagery reuses hero assets until dedicated category photos exist. */
+/** Local fallback categories when the home API has not returned categories yet. */
 export const HOME_CATEGORIES: CategoryItem[] = [
   {
     id: "linen",
+    name: "Linen",
     image: "/imgs/hero-slide-1.jpg",
-    titleKey: "linen",
     href: "/shop/linen",
   },
   {
     id: "casual",
+    name: "Casual",
     image: "/imgs/hero-slide-2.jpg",
-    titleKey: "casual",
     href: "/shop/casual",
   },
   {
     id: "formal",
+    name: "Formal",
     image: "/imgs/hero-slide-3.jpg",
-    titleKey: "formal",
     href: "/shop/formal",
   },
   {
     id: "travel",
+    name: "Travel",
     image: "/imgs/hero-slide-2.jpg",
-    titleKey: "travel",
     href: "/shop/travel",
   },
   {
     id: "inners",
+    name: "Inners",
     image: "/imgs/hero-slide-1.jpg",
-    titleKey: "inners",
     href: "/shop/inners",
   },
   {
     id: "accessories",
+    name: "Accessories",
     image: "/imgs/hero-slide-3.jpg",
-    titleKey: "accessories",
     href: "/shop/accessories",
   },
 ];

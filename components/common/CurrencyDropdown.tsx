@@ -26,14 +26,14 @@ interface CurrencyOption {
   icon: IconType;
 }
 
-const CURRENCIES: CurrencyOption[] = [
-  { code: "TRY", icon: TbCurrencyLira },
-  { code: "SAR", icon: TbCurrencyRiyal },
-  { code: "AED", icon: TbCurrencyDirham },
-  { code: "USD", icon: TbCurrencyDollar },
-  { code: "QAR", icon: TbCurrencyRiyal },
-  { code: "KWD", icon: TbCurrencyDinar },
-];
+const CURRENCY_ICONS: Record<CurrencyCode, IconType> = {
+  TRY: TbCurrencyLira,
+  SAR: TbCurrencyRiyal,
+  AED: TbCurrencyDirham,
+  USD: TbCurrencyDollar,
+  QAR: TbCurrencyRiyal,
+  KWD: TbCurrencyDinar,
+};
 
 export function CurrencyDropdown({
   className,
@@ -43,10 +43,18 @@ export function CurrencyDropdown({
   contentClassName?: string;
 }) {
   const t = useTranslations("Currencies");
-  const { currency, setCurrency } = useCurrency();
+  const { currency, setCurrency, supportedCurrencies } = useCurrency();
 
-  const selectedCurrencyOption = CURRENCIES.find((c) => c.code === currency) ?? CURRENCIES[0];
-  const SelectedIcon = selectedCurrencyOption.icon;
+  const options = supportedCurrencies.map((code) => ({
+    code,
+    icon: CURRENCY_ICONS[code],
+  }));
+
+  const selectedCurrencyOption =
+    options.find((c) => c.code === currency) ?? options[0];
+  const SelectedIcon = selectedCurrencyOption?.icon ?? TbCurrencyLira;
+
+  if (options.length === 0) return null;
 
   return (
     <DropdownMenu>
@@ -73,7 +81,7 @@ export function CurrencyDropdown({
         align="end"
         className={cn("w-48 p-1", contentClassName)}
       >
-        {CURRENCIES.map(({ code, icon: IconComponent }) => {
+        {options.map(({ code, icon: IconComponent }) => {
           const isSelected = currency === code;
           return (
             <DropdownMenuItem

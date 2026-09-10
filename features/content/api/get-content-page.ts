@@ -1,35 +1,42 @@
+import { ApiError } from "@/lib/api-client";
 import type { Locale } from "@/i18n/routing";
 import type { ContentPage } from "../types";
+import { fetchPageBySlug } from "./get-pages";
+import { mapApiPageToContentPage } from "../utils/map-pages";
 import { getMockContentPage } from "../utils/mock-content";
 
 /**
  * Fetches a boutique content page by slug + locale.
  *
- * Returns `null` when the page does not exist. The route
- * `app/[locale]/(root)/[slug]/page.tsx` MUST call `notFound()` on null so
- * the `[slug]/not-found` (and `(root)/not-found`) UI is shown — including
- * for random URLs caught by the dynamic `[slug]` segment.
+ * Preference order:
+ * 1. Live `GET /api/v1/pages/{slug}` (localized via Accept-Language)
+ * 2. Legacy mock catalog for old storefront slugs (bookmarks / SEO)
  *
- * Today this returns mock data. When wiring the CMS/API:
- *
- * ```ts
- * const res = await fetch(
- *   `${process.env.CONTENT_API_URL}/pages/${slug}?locale=${locale}`,
- *   { next: { tags: [`content:${slug}`, `content:${slug}:${locale}`], revalidate: 3600 } },
- * );
- *
- * // Important: treat 404 (and optionally 404-like empty bodies) as null.
- * // Do NOT throw for "not found" — let the page call notFound() instead.
- * if (res.status === 404) return null;
- * if (!res.ok) throw new Error(`Content API error ${res.status}`); // real failures → error.js
- *
- * const data = (await res.json()) as ContentPage | null;
- * return data ?? null;
- * ```
+ * Returns `null` when neither source has the page — the route MUST call
+ * `notFound()` so `[slug]/not-found` renders.
  */
 export async function getContentPage(
   slug: string,
   locale: Locale,
 ): Promise<ContentPage | null> {
+  try {
+    const apiPage = await fetchPageBySlug(slug, locale);
+    if (apiPage) {
+      return mapApiPageToContentPage(apiPage);
+    }
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      // fall through to mock
+    } else if (error instanceof ApiError) {
+      console.error(
+        `[getContentPage] ${error.status} ${error.statusText}`,
+        error.data,
+      );
+      // Soft-fail to mock for transient API errors on known mock slugs.
+    } else {
+      console.error("[getContentPage] request failed", error);
+    }
+  }
+
   return getMockContentPage(slug, locale);
 }

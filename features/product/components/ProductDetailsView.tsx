@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import type { Product } from "../types";
+import type { Product, ProductReview } from "../types";
 import { ProductDetailsHero } from "./ProductDetailsHero";
 import { ProductDetailsTabs } from "./ProductDetailsTabs";
 import { RelatedProducts } from "./RelatedProducts";
@@ -10,12 +10,16 @@ import { ProductDetailsProvider } from "../context/ProductDetailsContext";
 
 interface ProductDetailsViewProps {
   product: Product;
+  reviews?: ProductReview[];
 }
 
-export async function ProductDetailsView({ product }: ProductDetailsViewProps) {
+export async function ProductDetailsView({
+  product,
+  reviews = [],
+}: ProductDetailsViewProps) {
   const tProducts = await getTranslations("Products");
   const tDetails = await getTranslations("ProductDetails");
-  const productName = tProducts(product.nameKey);
+  const productName = product.name ?? tProducts(product.nameKey);
 
   return (
     <ProductDetailsProvider product={product} productName={productName}>
@@ -33,7 +37,7 @@ export async function ProductDetailsView({ product }: ProductDetailsViewProps) {
           </Link>
         </nav>
         <ProductDetailsHero product={product} productName={productName} />
-        <ProductDetailsTabs product={product} />
+        <ProductDetailsTabs product={product} reviews={reviews} />
         <RelatedProducts productId={product.id} />
       </article>
 

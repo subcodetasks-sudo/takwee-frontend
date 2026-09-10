@@ -44,12 +44,47 @@ features/
 - **`app/`**: Only routing, page entries, layouts, and route handlers. Keep page files thin; compose them from feature modules (e.g. `<CartDrawer />`, `<ProductDetails />`).
 - **`components/ui/`**: Base atomic design system / shadcn primitives (`button`, `dialog`, `input`, etc.). Do not put domain logic here.
 - **`components/common/`**: Shared non-domain components (e.g. `<Header />`, `<Footer />`, `<Navbar />`, `<Logo />`).
-- **`lib/`**: Global utility functions, shared clients, and core config (e.g. `lib/utils.ts`).
+- **`lib/`**: Global utility functions, shared clients, and core config:
+  - [`lib/utils.ts`](lib/utils.ts) — `cn` helpers
+  - [`lib/api-client.ts`](lib/api-client.ts) — browser + isomorphic HTTP client
+  - [`lib/api-server.ts`](lib/api-server.ts) — server actions / `serverFetch` helpers
+  - [`lib/images/`](lib/images/) — image URL resolution & proxy helpers
+  - [`lib/zod-resolver.ts`](lib/zod-resolver.ts) — Zod ↔ react-hook-form
 - **`hooks/`**: Global reusable hooks (e.g. `useMediaQuery`, `useDebounce`).
 
 ---
 
-## 2. App Route Structure (Catalog & PDP)
+## 2. Backend API Client & Environment
+
+### Environment variables
+Template: [`.env.example`](.env.example). Local secrets: `.env.local` (gitignored).
+
+| Variable | Scope | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_API_BASE_URL` | Client + server | Public API origin (required for browser calls) |
+| `API_BASE_URL` | Server only | Optional private API origin; preferred on the server when set |
+| `API_TIMEOUT_MS` | Client + server | Request timeout for `lib/api-client` (default `15000`) |
+
+Do **not** invent parallel base-URL env names. Image media shares the same API host (see §5).
+
+### HTTP clients — always use these, never ad-hoc `fetch` to the API
+- **Client / isomorphic**: [`lib/api-client.ts`](lib/api-client.ts)
+  - `getApiBaseUrl()`, `ApiError`, `apiRequest`, `http.get|post|put|patch|delete`
+  - Auto JSON body/Accept headers, query params, bearer `token`, abort timeout
+- **Server Actions / RSC helpers**: [`lib/api-server.ts`](lib/api-server.ts)
+  - `createServerAction`, `safeServerAction`, `serverFetch` (optional cookie session token + Zod response schema)
+  - Builds on `api-client`; prefer this for authenticated server-only calls
+
+Feature fetchers live in `features/<name>/api/` and **must** call `http.*` or `serverFetch` — do not duplicate base-URL / error handling.
+
+### React Query (client server-state)
+- Provider: [`components/providers/QueryProvider.tsx`](components/providers/QueryProvider.tsx) (defaults: long `staleTime`, no refetch-on-focus/mount).
+- Feature hooks in `features/<name>/hooks/` wrap `useQuery` / `useMutation`.
+- Pattern: `queryFn` calls the feature `api/` fetcher (which uses `http` / `serverFetch`); components read cached slices from the hook — **do not** re-fetch the same endpoint ad hoc in each component.
+
+---
+
+## 3. App Route Structure (Catalog & PDP)
 
 All locale routes live under `app/[locale]/…` (default locale `ar` uses `localePrefix: "as-needed"` — no `/ar` prefix).
 
@@ -61,24 +96,139 @@ All locale routes live under `app/[locale]/…` (default locale `ar` uses `local
 | `/products/[slug]` | [`app/[locale]/products/[slug]/page.tsx`](app/[locale]/products/[slug]/page.tsx) | Product details (PDP) — one product by SEO slug |
 | `/[slug]` (content) | [`app/[locale]/(root)/[slug]/page.tsx`](app/[locale]/(root)/[slug]/page.tsx) | Static boutique pages (terms, privacy, client care, atelier) |
 
-**Content page slugs** are defined in [`features/content/types/index.ts`](features/content/types/index.ts) (`CONTENT_PAGE_SLUGS`, `isContentPageSlug`). Content is loaded via [`getContentPage`](features/content/api/get-content-page.ts) (mock today; swap for CMS/API later). Unknown / missing `[slug]` values must call `notFound()` so [`(root)/not-found.tsx`](app/[locale]/(root)/not-found.tsx) / [`[slug]/not-found.tsx`](app/[locale]/(root)/[slug]/not-found.tsx) render — never leave the dynamic segment empty. When wiring the API, return `null` on HTTP 404 and keep calling `notFound()` from the page.
+**Content pages** are loaded from **`GET /api/v1/pages`** (list) and **`GET /api/v1/pages/{slug}`** (detail), with Accept-Language localization. Footer **Client Care** (`group: support`) and **The Atelier** (`group: about`) columns come from the list; `group: legal` (or terms/privacy/cookies slugs) appear in the footer bottom bar when present. Legacy mock slugs remain as a fallback in [`getContentPage`](features/content/api/get-content-page.ts). Unknown / missing `[slug]` values must call `notFound()` so [`(root)/not-found.tsx`](app/[locale]/(root)/not-found.tsx) / [`[slug]/not-found.tsx`](app/[locale]/(root)/[slug]/not-found.tsx) render — never leave the dynamic segment empty.
 
-Current content slugs: `terms`, `privacy`, `cookies`, `size-guide`, `fabric-care`, `track-order`, `shipping`, `returns`, `faq`, `about`, `philosophy`, `sustainability`, `boutiques`, `contact`.
+| Layer | Path | Role |
+|---|---|---|
+| List fetcher | [`features/content/api/get-pages.ts`](features/content/api/get-pages.ts) | `fetchPages` / `fetchPageBySlug` via `http.get` |
+| Detail | [`features/content/api/get-content-page.ts`](features/content/api/get-content-page.ts) | API first, mock fallback for old slugs |
+| Hook | [`features/content/hooks/usePages.ts`](features/content/hooks/usePages.ts) | React Query — key `["content-pages", locale]` |
+| Mapper | [`features/content/utils/map-pages.ts`](features/content/utils/map-pages.ts) | API → footer links + `ContentPage` |
 
-**Shop filter slugs** are defined in [`features/product/utils/shop-filters.ts`](features/product/utils/shop-filters.ts) (`SHOP_FILTERS`, `isShopFilter`, `shopPath`). Unknown `[filter]` values must `notFound()`.
+Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `boutique-locations`, `contact-us`), `support` (`size-guide`, `linen-care`, `track-order`, `shipping-delivery`, `return-policy`).
 
-Current filters: `new-in`, `abayas`, `linen`, `casual`, `formal`, `travel`, `inners`, `accessories`, `sale`.
+**Shop `/shop/[filter]` resolution** ([`resolveShopPath`](features/shop/utils/resolve-shop-path.ts)):
+1. Match an API category slug from `GET /api/v1/categories` (via [`categorySlug`](features/categories/utils/category-href.ts) / `StorefrontCategory.slug`) → products filtered by `product.categoryId`.
+2. Else match a legacy promo / soft filter from [`SHOP_FILTERS`](features/product/utils/shop-filters.ts) (`new-in`, `sale`, `casual`, …).
+3. Else `notFound()`.
+
+Nav / footer / home category tiles use unique `/shop/{slug}` hrefs from [`categoryHref`](features/categories/utils/category-href.ts) (one slug per API category — not shared buckets).
 
 **Rules:**
 - Category / occasion / promo live under **`/shop/...`**, never as top-level paths like `/casual` or `/abayas`.
 - Product detail URLs stay **flat** at `/products/[slug]` (category is not part of the PDP path — products can belong to multiple filters).
 - Product cards and deep links use `/products/${product.slug}`.
-- Nav, footer, and home category tiles must use `shopPath(...)` / `/shop/...` hrefs from the shared filter list when pointing at catalog views.
-- Do not invent parallel listing routes (`/collections/...`, top-level category pages) without updating this section and `SHOP_FILTERS`.
+- Do not invent parallel listing routes (`/collections/...`, top-level category pages) without updating this section.
 
 ---
 
-## 3. Installed Packages & Stack Mapping
+## 4. Home Page Data (`features/home`)
+
+Home content is loaded from the backend **`GET /api/v1/home`**.
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/home/api/get-home-page.ts`](features/home/api/get-home-page.ts) | `fetchHomePage` via `http.get` from `lib/api-client`; maps payload with [`map-home-page.ts`](features/home/utils/map-home-page.ts) |
+| Hook | [`features/home/hooks/useHomePage.ts`](features/home/hooks/useHomePage.ts) | React Query cache — key `["home-page", locale]` |
+| Types | [`features/home/types/`](features/home/types/) | API DTOs (`types/api.ts`) + storefront view models (`HeroSlide`, `CategoryItem`, `HomePageData`, …) |
+
+**Consumers (all read the same query — one network call per locale session):**
+- [`HeroCarousel`](features/home/components/HeroCarousel.tsx) → `heroes`
+- [`CategoriesSection`](features/home/components/CategoriesSection.tsx) → `categories` (home page tiles only)
+- [`AdditionalSections`](features/home/components/AdditionalSections.tsx) → `sections` (products grouped by category)
+- [`Header`](components/common/Header.tsx) announcement ribbon → **`advertisement_tapes` only** (via `announcementText`); falls back to `Navigation.announcement` i18n when empty
+
+Header / footer **nav category lists** come from [`features/categories`](features/categories/) (`GET /api/v1/categories`), not from this home endpoint.
+
+API product display names: prefer optional `Product.name` from the API; fall back to i18n `Products.{nameKey}` when `name` is absent ([`features/product/types`](features/product/types/index.ts)).
+
+Resolve hero / category / product media with [`resolveImageUrl`](lib/images/resolve-image-url.ts) inside mappers (already done in home mappers).
+
+---
+
+## 4a. Categories (`features/categories`)
+
+Public catalog categories are loaded from **`GET /api/v1/categories`** (paginated; storefront requests `per_page=100`).
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/categories/api/get-categories.ts`](features/categories/api/get-categories.ts) | `fetchCategories` via `http.get`; maps with [`map-categories.ts`](features/categories/utils/map-categories.ts) |
+| Soft RSC | [`features/categories/utils/get-categories.ts`](features/categories/utils/get-categories.ts) | `getCategories` for shop path resolution / metadata |
+| Hook | [`features/categories/hooks/useCategories.ts`](features/categories/hooks/useCategories.ts) | React Query cache — key `["categories", locale]` |
+| Href helper | [`features/categories/utils/category-href.ts`](features/categories/utils/category-href.ts) | Unique `/shop/{slug}` per category name (+ id fallback) |
+
+**Consumers (shared query):**
+- [`Header`](components/common/Header.tsx) — desktop category tabs + mobile CardNav (Home + All Abayas stay static i18n; other tabs from API names)
+- [`Footer`](components/common/Footer.tsx) — Collections column
+- [`ShopHero`](features/shop/components/ShopHero.tsx) — category title / image on `/shop/[filter]` when the slug matches an API category
+
+---
+
+## 4a-ii. Shop catalog products (`features/shop`)
+
+All-products PLP (`/shop`) loads from **`GET /api/v1/products`** (paginated; storefront requests `per_page=100`).
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/shop/api/get-products.ts`](features/shop/api/get-products.ts) | `fetchProducts` via `http.get` |
+| Soft RSC loader | [`features/shop/utils/get-shop-products.ts`](features/shop/utils/get-shop-products.ts) | `getShopProducts` → products + categories; filter by `categoryId` or promo heuristics |
+| Path resolver | [`features/shop/utils/resolve-shop-path.ts`](features/shop/utils/resolve-shop-path.ts) | `[filter]` → category / promo / unknown |
+| Mapper | [`features/product/utils/map-product.ts`](features/product/utils/map-product.ts) | API → storefront `Product` (`resolveImageUrl`, rating, `categoryId`) |
+| Hook | [`features/shop/hooks/useProducts.ts`](features/shop/hooks/useProducts.ts) | React Query — key `["products", locale]`; optional `categoryId` client filter |
+| Hero | [`ShopHero`](features/shop/components/ShopHero.tsx) | `/shop` uses home hero image; category routes use category image/name (`useCategories` + RSC) |
+
+`ShopView` awaits `getShopProducts` in RSC; facet filters in `ShopCatalog` remain client-side on the loaded list.
+
+### Product detail (`GET /api/v1/products/{id}`)
+
+PDP stays slug-routed (`/products/[slug]`). Resolve slug via the products list, then load detail (with `ratings[]`) by id.
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/product/api/get-product-by-id.ts`](features/product/api/get-product-by-id.ts) | `fetchProductById` → product + mapped reviews |
+| Page loader | [`features/product/utils/get-product-page.ts`](features/product/utils/get-product-page.ts) | `getProductPageBySlug` (list match → detail; soft sample fallback) |
+| Mapper | [`mapProductDetail`](features/product/utils/map-product.ts) / `mapProductRatings` | `ratings[]` → `ProductReview` (`customer_name` → author, `size` → sizePurchased) |
+| UI | [`ProductReviews`](features/product/components/ProductReviews.tsx) | Seeds from API ratings; hero/tabs use `product.rating` / `reviewsCount` |
+
+---
+
+## 4b. App Settings (`features/settings`)
+
+Public boutique settings are loaded from **`GET /api/v1/settings`** (key/value list).
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/settings/api/get-settings.ts`](features/settings/api/get-settings.ts) | `fetchSettings` via `http.get`; soft `getSettings` for RSC |
+| Hook | [`features/settings/hooks/useSettings.ts`](features/settings/hooks/useSettings.ts) | React Query cache — key `["app-settings"]` |
+| Mapper | [`features/settings/utils/map-settings.ts`](features/settings/utils/map-settings.ts) | Key list → `AppSettings`; logos via `resolveImageUrl` |
+| Maintenance UI | [`features/settings/components/MaintenancePage.tsx`](features/settings/components/MaintenancePage.tsx) | Full-viewport page when `maintenance_mode` is true |
+
+**Consumers:**
+- Locale layout (`app/[locale]/layout.tsx`) — SEO defaults (`meta_title_*`, `meta_description_*`, `meta_keywords`, favicon, Open Graph), **maintenance gate**, currency provider seeds (`default_currency` / `supported_currencies`), Google Analytics (`google_analytics_id`), React Query hydration for settings
+- [`proxy.ts`](proxy.ts) — `default_language` drives next-intl `defaultLocale` for unprefixed routes (soft-fail to `ar`)
+- [`CurrencyProvider`](hooks/useCurrency.tsx) / [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — only list API-supported currencies; default when no localStorage pick
+- [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Atelier** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
+
+---
+
+## 5. Images & Media (`lib/images`)
+
+Product and CMS media are hosted on the **same origin as the API** (`API_BASE_URL` / `NEXT_PUBLIC_API_BASE_URL`).
+
+| Piece | Purpose |
+|---|---|
+| [`lib/images/config.ts`](lib/images/config.ts) | Normalized API base for media; `LOCAL_PUBLIC_IMAGE_PREFIXES` (`/imgs/…`) stay local |
+| [`lib/images/resolve-image-url.ts`](lib/images/resolve-image-url.ts) | `resolveImageUrl` — default **proxy** mode via `/api/images?src=…` |
+| [`app/api/images/route.ts`](app/api/images/route.ts) | Same-origin image proxy (SSRF allowlist from API hostnames) |
+| [`next.config.ts`](next.config.ts) | `images.remotePatterns` from API env hostnames |
+
+- Local boutique assets under `public/imgs/` are never proxied.
+- Absolute API URLs and `/storage/…` paths go through the proxy (or `mode: "direct"` when intentionally using `remotePatterns`).
+- Do **not** hardcode CDN env vars like `NEXT_PUBLIC_IMAGES_BASE_URL` unless reintroduced — media shares the API base.
+
+---
+
+## 6. Installed Packages & Stack Mapping
 
 Before reaching for any new package, **always leverage the already installed libraries**:
 
@@ -90,6 +240,7 @@ Before reaching for any new package, **always leverage the already installed lib
 | **Icons** | `lucide-react`, `react-icons` | Icons across features |
 | **Forms & Validation** | `react-hook-form`, `zod` | Form management and schema validation |
 | **Server State & Cache**| `@tanstack/react-query` | Data fetching, caching, optimistic updates, async state |
+| **HTTP / API** | [`lib/api-client.ts`](lib/api-client.ts), [`lib/api-server.ts`](lib/api-server.ts) | Typed API requests; server actions + session-aware `serverFetch` |
 | **Sliders / Carousels** | `embla-carousel-react` | Product carousels, image galleries, hero sliders |
 | **Charts** | `recharts` | Visualizations, admin sales charts, metric dashboards |
 | **Date Handling** | `date-fns`, `react-day-picker` | Date formatting, scheduling, date pickers |
@@ -100,7 +251,7 @@ Before reaching for any new package, **always leverage the already installed lib
 
 ---
 
-## 4. Strict Package Management Protocol
+## 7. Strict Package Management Protocol
 
 1. **Check First**: Verify if the requirement can be satisfied using the installed packages listed above or native Web/Next.js/React APIs.
 2. **Never Install Blindly**: Do NOT run `npm i` or `npm install` for any new package without consulting the user first.
@@ -111,7 +262,7 @@ Before reaching for any new package, **always leverage the already installed lib
 
 ---
 
-## 5. UI Styling & Color System Rules
+## 8. UI Styling & Color System Rules
 
 - **Zero Hardcoded Hex Codes**: Do **NOT** use raw hex colors (`#...`), arbitrary values (e.g. `bg-[#b4a094]`), or inline styles with hardcoded color values anywhere in UI components.
 - **Use Brand & Semantic Tokens from [`app/globals.css`](file:///c:/Loai/work/linen-line-store/app/globals.css)**:
@@ -129,3 +280,7 @@ Before reaching for any new package, **always leverage the already installed lib
 ## goey-toast
 
 See `*/skills/goey-toast/SKILL.md` for how to install and use goey-toast (gooey morphing React toasts). Mount `<GooeyToaster />` once and import `'goey-toast/styles.css'` at the app entry.
+
+## wire-api
+
+See [`.cursor/skills/wire-api/SKILL.md`](.cursor/skills/wire-api/SKILL.md) when connecting backend endpoints (Postman / API) into features: `lib/api-client` + React Query hooks + DTO mappers + `resolveImageUrl`.

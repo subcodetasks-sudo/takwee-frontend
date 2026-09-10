@@ -2,31 +2,40 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ProductDetailsView } from "@/features/product";
-import {
-  getAllProductSlugs,
-  getProductBySlug,
-} from "@/features/product/utils/get-product";
+import { fetchProducts } from "@/features/shop/api/get-products";
+import { getProductPageBySlug } from "@/features/product/utils/get-product-page";
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getAllProductSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  try {
+    const products = await fetchProducts();
+    return products.map((product) => ({ slug: product.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
-  const product = getProductBySlug(slug);
-  if (!product) return {};
+  const page = await getProductPageBySlug(slug, locale);
+  if (!page) return {};
 
+  const { product } = page;
   const tProducts = await getTranslations({ locale, namespace: "Products" });
   const tDetails = await getTranslations({
     locale,
     namespace: "ProductDetails",
   });
-  const name = tProducts(product.nameKey);
-  const description = tDetails(`products.${product.nameKey}.description`);
+
+  const name = product.name ?? tProducts(product.nameKey);
+  const description =
+    product.description?.trim() ||
+    (product.specs.length > 0
+      ? tDetails(`products.${product.nameKey}.description`)
+      : name);
 
   return {
     title: name,
@@ -38,14 +47,14 @@ export default async function ProductDetailsPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const product = getProductBySlug(slug);
-  if (!product) {
+  const page = await getProductPageBySlug(slug, locale);
+  if (!page) {
     notFound();
   }
 
   return (
     <main className="flex-1">
-      <ProductDetailsView product={product} />
+      <ProductDetailsView product={page.product} reviews={page.reviews} />
     </main>
   );
 }

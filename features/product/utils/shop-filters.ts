@@ -16,7 +16,8 @@ export function isShopFilter(value: string): value is ShopFilter {
   return (SHOP_FILTERS as readonly string[]).includes(value);
 }
 
-/** Locale-aware shop path helpers (hrefs for Link / redirect). */
-export function shopPath(filter?: ShopFilter): `/shop` | `/shop/${ShopFilter}` {
+export function shopPath(
+  filter?: string,
+): `/shop` | `/shop/${string}` {
   return filter ? `/shop/${filter}` : "/shop";
 }

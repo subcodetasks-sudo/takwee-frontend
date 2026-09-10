@@ -288,6 +288,7 @@
   "Categories": {
     "title": "Shop by Category",
     "subtitle": "Explore curated abayas and essentials, from everyday linen to occasion-ready silhouettes.",
+    "loading": "Loading categories",
     "linen": "Linen Collection",
     "casual": "Casual Abayas",
     "formal": "Occasion & Formal",
@@ -296,6 +297,10 @@
     "accessories": "Sheilas & Accessories"
   },
   "Hero": {
+    "cta": "Shop Collection",
+    "ordersCta": "Track your orders",
+    "loading": "Loading featured collection",
+    "goToSlide": "Go to slide {index}",
     "slide1Tag": "Pure Organic Linen",
     "slide1Title": "Bespoke Elegance in Natural Linen",
     "slide1Description": "Crafted with lightweight breathable linen textures and architectural silhouettes tailored for contemporary modest luxury.",
@@ -307,8 +312,7 @@
     "slide3Tag": "Evening Modesty",
     "slide3Title": "Silk & Linen Midnight Radiance",
     "slide3Description": "Flowing evening elegance adorned with subtle gold accents, designed for prestigious formal occasions.",
-    "slide3Cta": "Discover Eveningwear",
-    "ordersCta": "Track your orders"
+    "slide3Cta": "Discover Eveningwear"
   },
   "Navigation": {
     "home": "Home",
@@ -336,9 +340,32 @@
     "menu": "Menu",
     "announcement": "Worldwide & Regional Express Shipping | Discover Our Pure Linen Collection"
   },
+  "Notifications": {
+    "title": "Notifications",
+    "ariaLabel": "Notifications",
+    "ariaLabelUnread": "Notifications, {count} unread",
+    "unreadSummary": "{count, plural, one {# unread update} other {# unread updates}}",
+    "allCaughtUp": "You are up to date",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark read",
+    "unread": "Unread",
+    "emptyTitle": "No notifications yet",
+    "emptyDescription": "Order updates and curated offers will appear here.",
+    "items": {
+      "orderShippedTitle": "Order on the way",
+      "orderShippedBody": "Order LL-2048 has shipped. Track delivery from your orders.",
+      "linenEditTitle": "New in the Linen Edit",
+      "linenEditBody": "Fresh pure-linen cuts have arrived — breathable pieces for warmer days.",
+      "orderDeliveredTitle": "Order delivered",
+      "orderDeliveredBody": "Order LL-2031 was delivered. We hope it suits beautifully.",
+      "wishlistReminderTitle": "Saved pieces await",
+      "wishlistReminderBody": "Items on your wishlist are still available. Review them anytime."
+    }
+  },
   "AdditionalSections": {
     "viewMore": "View more",
     "shopCollection": "Shop collection",
+    "loading": "Loading collections",
     "sections": {
       "newArrivals": {
         "title": "New Arrivals",
@@ -705,7 +732,7 @@
     },
     "hero": {
       "title": "The Collection",
-      "subtitle": "Curated abayas in pure linen and refined fabrics — sized, coloured, and finished for everyday poise."
+      "subtitle": "Curated pieces across every category — linen, abayas, dresses, and accessories finished for everyday poise."
     },
     "filters": {
       "new-in": {
@@ -763,6 +790,7 @@
     },
     "panel": {
       "title": "Refine",
+      "category": "Categories",
       "size": "Size",
       "color": "Colour",
       "selectColor": "Filter by {color}",
@@ -827,6 +855,7 @@
       "collections": "Collections",
       "services": "Client Care",
       "atelier": "The Atelier",
+      "more": "More",
       "connect": "Concierge & Boutiques"
     },
     "links": {
@@ -856,7 +885,9 @@
       "title": "Direct Concierge",
       "hours": "Mon - Sat: 9:00 AM - 9:00 PM (GMT+3)",
       "whatsapp": "Chat on WhatsApp",
-      "email": "concierge@linenlinestore.com"
+      "email": "concierge@linenlinestore.com",
+      "liveSupport": "Live Support",
+      "viewMap": "View on map"
     },
     "backToTop": "Back to top",
     "allRightsReserved": "All rights reserved.",
@@ -872,6 +903,14 @@
     "description": "This page is unavailable or the link may be incorrect. Return home or browse the collection.",
     "backHome": "Back to home",
     "browseShop": "Browse the shop"
+  },
+  "MaintenancePage": {
+    "title": "The atelier is momentarily closed",
+    "description": "We are refining the collection and will reopen shortly. Thank you for your patience.",
+    "contactHint": "Need assistance?",
+    "whatsapp": "Chat on WhatsApp",
+    "email": "Send an email",
+    "hoursLabel": "Concierge hours"
   },
   "Auth": {
     "brandHeadline": "Quiet luxury in linen",

@@ -9,6 +9,14 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/features/auth";
 import { WishlistProvider } from "@/features/wishlist";
 import { CartFlyProvider, CartProvider } from "@/features/cart";
+import {
+  dehydrateSettings,
+  getSettings,
+  GoogleAnalytics,
+  localizedSetting,
+  MaintenancePage,
+  SettingsHydration,
+} from "@/features/settings";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
 import "../globals.css";
 
@@ -24,22 +32,76 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "Linen Line Store",
-  description: "Linen Line Store eCommerce",
+type LayoutProps = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
+
+const OG_LOCALE: Record<string, string> = {
+  ar: "ar_SA",
+  en: "en_US",
+  tr: "tr_TR",
 };
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export default async function LocaleLayout({
-  children,
+export async function generateMetadata({
   params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
+}: LayoutProps): Promise<Metadata> {
+  const { locale } = await params;
+  const settings = await getSettings();
+
+  const siteName = settings?.appName?.trim() || "Linen Line Store";
+  const title =
+    (settings && localizedSetting(settings.metaTitle, locale)) || siteName;
+  const description =
+    (settings && localizedSetting(settings.metaDescription, locale)) ||
+    "Linen Line Store eCommerce";
+
+  const keywords = settings?.metaKeywords
+    ? settings.metaKeywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean)
+    : undefined;
+
+  const icons = settings?.siteFavicon
+    ? { icon: [{ url: settings.siteFavicon }] }
+    : undefined;
+
+  const ogImages = settings?.siteLogo
+    ? [{ url: settings.siteLogo }]
+    : undefined;
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${siteName}`,
+    },
+    description,
+    applicationName: siteName,
+    ...(keywords?.length ? { keywords } : {}),
+    ...(icons ? { icons } : {}),
+    openGraph: {
+      type: "website",
+      siteName,
+      title,
+      description,
+      locale: OG_LOCALE[locale] ?? locale,
+      ...(ogImages ? { images: ogImages } : {}),
+    },
+    twitter: {
+      card: ogImages ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(ogImages ? { images: ogImages.map((img) => img.url) } : {}),
+    },
+  };
+}
+
+export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
 
   if (!routing.locales.includes(locale as Locale)) {
@@ -47,13 +109,19 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
-  const messages = await getMessages();
+  const [messages, settings] = await Promise.all([
+    getMessages(),
+    getSettings(),
+  ]);
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const activeFontClass =
     locale === "ar" ? notoKufiArabic.className : outfit.className;
   const activeFontVar =
     locale === "ar" ? "var(--font-noto-arabic)" : "var(--font-outfit)";
+
+  const inMaintenance = settings?.maintenanceMode === true;
+  const dehydratedSettings = dehydrateSettings(settings);
 
   return (
     <html
@@ -64,21 +132,32 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <QueryProvider>
-            <AuthProvider>
-              <WishlistProvider>
-                <CartProvider>
-                  <CartFlyProvider>
-                    <CurrencyProvider>{children}</CurrencyProvider>
-                  </CartFlyProvider>
-                </CartProvider>
-              </WishlistProvider>
-            </AuthProvider>
-          </QueryProvider>
-          <GooeyToaster
-            dir={dir}
-            position={"top-center"}
-          />
+          {inMaintenance && settings ? (
+            <MaintenancePage settings={settings} />
+          ) : (
+            <QueryProvider>
+              <SettingsHydration state={dehydratedSettings}>
+                <AuthProvider>
+                  <WishlistProvider>
+                    <CartProvider>
+                      <CartFlyProvider>
+                        <CurrencyProvider
+                          defaultCurrency={settings?.defaultCurrency}
+                          supportedCurrencies={settings?.supportedCurrencies}
+                        >
+                          {children}
+                        </CurrencyProvider>
+                      </CartFlyProvider>
+                    </CartProvider>
+                  </WishlistProvider>
+                </AuthProvider>
+              </SettingsHydration>
+            </QueryProvider>
+          )}
+          {settings?.googleAnalyticsId ? (
+            <GoogleAnalytics measurementId={settings.googleAnalyticsId} />
+          ) : null}
+          <GooeyToaster dir={dir} position={"top-center"} />
         </NextIntlClientProvider>
       </body>
     </html>

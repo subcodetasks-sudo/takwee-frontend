@@ -27,7 +27,7 @@ import {
   type ProductSwatchId,
 } from "@/features/product/types";
 import { ProductPrice } from "@/features/product";
-import type { ShopFilterState, ShopPriceBounds } from "../types";
+import type { ShopCategoryOption, ShopFilterState, ShopPriceBounds } from "../types";
 import {
   ABAYA_SIZES,
   PRODUCT_BADGES,
@@ -38,6 +38,7 @@ import {
 interface ShopFilterPanelProps {
   filters: ShopFilterState;
   bounds: ShopPriceBounds;
+  categories: ShopCategoryOption[];
   resultCount: number;
   onChange: (next: ShopFilterState) => void;
   onClear: () => void;
@@ -64,6 +65,7 @@ function clampPriceRange(
 export function ShopFilterPanel({
   filters,
   bounds,
+  categories,
   resultCount,
   onChange,
   onClear,
@@ -108,9 +110,51 @@ export function ShopFilterPanel({
 
       <Accordion
         multiple
-        defaultValue={["size", "color", "badge", "price"]}
+        defaultValue={["category", "size", "color", "badge", "price"]}
         className="w-full"
       >
+        {categories.length > 0 ? (
+          <AccordionItem value="category">
+            <AccordionTrigger>{t("panel.category")}</AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-3 pt-1">
+                {categories.map((category) => {
+                  const checked = filters.categories.includes(category.id);
+                  const id = `${idPrefix}-category-${category.id}`;
+                  return (
+                    <Label
+                      key={category.id}
+                      htmlFor={id}
+                      className="flex cursor-pointer items-center justify-between gap-2.5 font-normal"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <Checkbox
+                          id={id}
+                          checked={checked}
+                          onCheckedChange={(next) => {
+                            const isChecked = next === true;
+                            update({
+                              categories: isChecked
+                                ? [...filters.categories, category.id]
+                                : filters.categories.filter(
+                                    (item) => item !== category.id,
+                                  ),
+                            });
+                          }}
+                        />
+                        <span>{category.name}</span>
+                      </span>
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {category.count}
+                      </span>
+                    </Label>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
+
         <AccordionItem value="size">
           <AccordionTrigger>{t("panel.size")}</AccordionTrigger>
           <AccordionContent>
