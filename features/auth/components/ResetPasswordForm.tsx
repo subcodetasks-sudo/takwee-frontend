@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
+import { resetPasswordAction } from "../api/actions";
 import {
   createResetPasswordSchema,
   type ResetPasswordFormValues,
@@ -32,6 +33,7 @@ export function ResetPasswordForm({ token }: Props) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const schema = useMemo(
     () =>
@@ -56,16 +58,28 @@ export function ResetPasswordForm({ token }: Props) {
     },
   });
 
-  const onValidSubmit = async (_values: ResetPasswordFormValues) => {
+  const onValidSubmit = async (values: ResetPasswordFormValues) => {
     if (isSubmitting || !token) return;
     setIsSubmitting(true);
+    setServerError(null);
     try {
-      // Auth API / password-reset confirmation will be wired here.
-      await new Promise((resolve) => window.setTimeout(resolve, 500));
+      const res = await resetPasswordAction({
+        token,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+      });
+
+      if (!res.success) {
+        setServerError(res.message || "Failed to update password");
+        return;
+      }
+
       setIsSuccess(true);
       window.setTimeout(() => {
         router.push("/login");
       }, 1800);
+    } catch {
+      setServerError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -118,6 +132,14 @@ export function ResetPasswordForm({ token }: Props) {
       className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-md sm:space-y-6 sm:p-6 sm:shadow-lg"
       noValidate
     >
+      {serverError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive sm:text-sm"
+        >
+          {serverError}
+        </div>
+      )}
       <div className="space-y-1.5">
         <Label
           htmlFor="reset-password"

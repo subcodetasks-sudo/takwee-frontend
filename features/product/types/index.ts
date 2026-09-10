@@ -22,14 +22,24 @@ export type ProductSwatchId = keyof typeof PRODUCT_SWATCH_CLASSES;
 
 export type ProductBadge = "sale" | "new";
 
-/** Standard abaya length codes used for size selection. */
-export type AbayaSize = "52" | "54" | "56" | "58" | "60";
+/** Standard abaya length codes used for size selection (extensible to any product size). */
+export type AbayaSize = "52" | "54" | "56" | "58" | "60" | (string & {});
 
 export interface ProductColor {
   id: string;
   nameKey: string;
+  /** Display color name from the API (e.g. "Beige", "Navy Blue") */
+  name?: string;
   swatch: ProductSwatchId;
+  hex?: string;
   images: string[];
+}
+
+/** Feature / specification item from the API (e.g. fabric, wash care) */
+export interface ProductFeature {
+  id: string;
+  name: string;
+  value?: string;
 }
 
 /** Spec block rendered in the product details tab (copy lives in i18n). */
@@ -53,6 +63,8 @@ export interface Product {
   priceTRY: number;
   compareAtPriceTRY?: number;
   badge?: ProductBadge;
+  /** Primary gallery images (main_image + gallery) */
+  images?: string[];
   colors: ProductColor[];
   /** SKU / model number shown on the PDP. */
   sku: string;
@@ -62,6 +74,8 @@ export interface Product {
   sizes: AbayaSize[];
   /** Spec sections shown under Product details. */
   specs: ProductSpec[];
+  /** Structured features from API */
+  features?: ProductFeature[];
   includesSheila?: boolean;
   /** Catalog category id from the products API (when present). */
   categoryId?: string;

@@ -1,11 +1,9 @@
 import type { ProfileUser } from "../types";
-import { MOCK_AUTH_USER } from "@/features/auth/utils/mock-auth";
 
 export const MOCK_PROFILE_USER: ProfileUser = {
-  id: MOCK_AUTH_USER.id,
-  name: MOCK_AUTH_USER.name,
-  email: MOCK_AUTH_USER.email,
-  avatarUrl: MOCK_AUTH_USER.avatarUrl,
+  id: "user-demo-1",
+  name: "Loai Wael Hassan",
+  email: "loaiwael@example.com",
   initials: "LH",
   memberSince: "2024-03-12",
 };

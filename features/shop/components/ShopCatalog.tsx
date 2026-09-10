@@ -14,7 +14,10 @@ import {
   countActiveFilters,
   createDefaultFilterState,
   filterAndSortProducts,
+  getBadgeOptions,
   getCategoryOptions,
+  getColorOptions,
+  getSizeOptions,
 } from "../utils/filter-products";
 import { ShopFilterPanel } from "./ShopFilterPanel";
 import { ShopMobileFilterBar } from "./ShopMobileFilterBar";
@@ -42,6 +45,21 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
 
   const categoryOptions = useMemo(
     () => getCategoryOptions(products),
+    [products],
+  );
+
+  const sizeOptions = useMemo(
+    () => getSizeOptions(products),
+    [products],
+  );
+
+  const colorOptions = useMemo(
+    () => getColorOptions(products),
+    [products],
+  );
+
+  const badgeOptions = useMemo(
+    () => getBadgeOptions(products),
     [products],
   );
 
@@ -83,6 +101,9 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
             filters={filters}
             bounds={bounds}
             categories={categoryOptions}
+            sizes={sizeOptions}
+            colors={colorOptions}
+            badges={badgeOptions}
             resultCount={filteredProducts.length}
             onChange={handleFiltersChange}
             onClear={clearFilters}
@@ -125,6 +146,9 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
               filters={filters}
               bounds={bounds}
               categories={categoryOptions}
+              sizes={sizeOptions}
+              colors={colorOptions}
+              badges={badgeOptions}
               resultCount={filteredProducts.length}
               onChange={setFilters}
               onClear={clearFilters}

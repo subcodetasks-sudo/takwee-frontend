@@ -76,7 +76,7 @@ export function ProductDetailsProvider({
 
   const handleAddToCart = (origin?: HTMLElement | null) => {
     if (!product.inStock) return;
-    if (!selectedSize) {
+    if (product.sizes.length > 0 && !selectedSize) {
       const el = document.getElementById("size-selector");
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -91,11 +91,13 @@ export function ProductDetailsProvider({
     const imageUrl =
       selectedColor?.images[activeImageIndex] ??
       selectedColor?.images[0] ??
+      product.images?.[activeImageIndex] ??
+      product.images?.[0] ??
       product.colors[0]?.images[0] ??
       "";
     addItem(product, {
       selectedColorId: colorId,
-      selectedSize,
+      selectedSize: selectedSize ?? undefined,
       quantity,
     });
     if (origin) {
@@ -107,8 +109,8 @@ export function ProductDetailsProvider({
     }
     onAddToCart?.({
       product,
-      colorId,
-      size: selectedSize,
+      colorId: colorId ?? "",
+      size: (selectedSize ?? "") as AbayaSize,
       quantity,
     });
     setIsAdded(true);

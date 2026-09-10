@@ -4,7 +4,7 @@ import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { ArrowRight, Check, Minus, Plus, Star } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus, Sparkles, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
@@ -15,6 +15,7 @@ import {
   PRODUCT_SWATCH_CLASSES,
   type AbayaSize,
   type Product,
+  type ProductColor,
 } from "../types";
 import { ProductPrice } from "./ProductPrice";
 import { SizeGuideDialog } from "./SizeGuideDialog";
@@ -87,8 +88,19 @@ export function ProductDetailsHero({
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
     product.colors[0];
-  const images = selectedColor?.images ?? [];
+  const images =
+    selectedColor?.images && selectedColor.images.length > 0
+      ? selectedColor.images
+      : product.images && product.images.length > 0
+        ? product.images
+        : [];
   const activeImage = images[activeImageIndex] ?? images[0];
+
+  const getColorName = (color?: ProductColor) => {
+    if (!color) return "";
+    if (color.name?.trim()) return color.name.trim();
+    return tColors.has(color.nameKey) ? tColors(color.nameKey) : color.nameKey;
+  };
 
   const isOnSale =
     product.badge === "sale" ||
@@ -136,11 +148,11 @@ export function ProductDetailsHero({
       context.handleAddToCart(origin);
       return;
     }
-    if (!selectedSize || !product.inStock) return;
+    if ((product.sizes.length > 0 && !selectedSize) || !product.inStock) return;
     onAddToCart?.({
       product,
-      colorId: selectedColor?.id ?? product.colors[0]?.id,
-      size: selectedSize,
+      colorId: selectedColor?.id ?? product.colors[0]?.id ?? "",
+      size: (selectedSize ?? "") as AbayaSize,
       quantity,
     });
     setIsAdded(true);
@@ -211,7 +223,19 @@ export function ProductDetailsHero({
                       priority
                       className="size-full rounded-xl aspect-auto"
                     />
-                  ) : null}
+                  ) : (
+                    <div className="flex size-full flex-col items-center justify-center gap-3 bg-muted/40 p-6 text-center text-muted-foreground">
+                      <div className="flex size-14 items-center justify-center rounded-2xl border border-border/80 bg-background/80 shadow-xs">
+                        <Sparkles className="size-6 text-muted-foreground/60" />
+                      </div>
+                      <p className="text-xs font-medium text-foreground">
+                        {productName}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {t("noImagePlaceholder")}
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -234,38 +258,52 @@ export function ProductDetailsHero({
         </StaggerItem>
 
         <StaggerItem>
-          <div className="flex items-center gap-1.5">
-            <div
-              className="flex items-center gap-0.5 text-warning"
-              aria-label={`${(product.rating ?? 0).toFixed(1)} out of 5 stars`}
-            >
-              {[1, 2, 3, 4, 5].map((s) => {
-                const value = product.rating ?? 0;
-                const filled = value >= s - 0.25;
-                return (
-                  <Star
-                    key={s}
-                    className={cn(
-                      "size-4",
-                      filled
-                        ? "fill-warning stroke-warning"
-                        : "fill-transparent stroke-warning/50",
-                    )}
-                    aria-hidden
-                  />
-                );
-              })}
-            </div>
-            <span className="text-xs font-bold tabular-nums text-foreground sm:text-sm">
-              {(product.rating ?? 0).toFixed(1)}
-            </span>
-            {typeof product.reviewsCount === "number" &&
-            product.reviewsCount > 0 ? (
-              <span className="text-xs text-muted-foreground tabular-nums">
-                ({product.reviewsCount})
+          {(product.rating ?? 0) > 0 || (product.reviewsCount ?? 0) > 0 ? (
+            <div className="flex items-center gap-1.5">
+              <div
+                className="flex items-center gap-0.5 text-warning"
+                aria-label={`${(product.rating ?? 0).toFixed(1)} out of 5 stars`}
+              >
+                {[1, 2, 3, 4, 5].map((s) => {
+                  const value = product.rating ?? 0;
+                  const filled = value >= s - 0.25;
+                  return (
+                    <Star
+                      key={s}
+                      className={cn(
+                        "size-4",
+                        filled
+                          ? "fill-warning stroke-warning"
+                          : "fill-transparent stroke-warning/50",
+                      )}
+                      aria-hidden
+                    />
+                  );
+                })}
+              </div>
+              <span className="text-xs font-bold tabular-nums text-foreground sm:text-sm">
+                {(product.rating ?? 0).toFixed(1)}
               </span>
-            ) : null}
-          </div>
+              {typeof product.reviewsCount === "number" &&
+              product.reviewsCount > 0 ? (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  ({product.reviewsCount})
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary-100/80 px-2.5 py-0.5 text-xs font-medium text-secondary-900 dark:bg-secondary-950 dark:text-secondary-200">
+                <Sparkles className="size-3 text-secondary-600 dark:text-secondary-400" />
+                <span>{t("newRelease")}</span>
+              </span>
+              {product.categoryName ? (
+                <span className="text-xs text-muted-foreground">
+                  • {product.categoryName}
+                </span>
+              ) : null}
+            </div>
+          )}
         </StaggerItem>
 
         <StaggerItem>
@@ -326,19 +364,37 @@ export function ProductDetailsHero({
         </StaggerItem>
 
         <StaggerItem>
-          <dl className="grid grid-cols-2 gap-3 rounded-xl border border-border/70 bg-muted/25 p-3.5 text-xs sm:text-sm">
+          <dl
+            className={cn(
+              "grid gap-3 rounded-xl border border-border/70 bg-muted/25 p-3.5 text-xs sm:text-sm",
+              product.weightKg > 0 || product.categoryName
+                ? "grid-cols-2"
+                : "grid-cols-1",
+            )}
+          >
             <div className="flex flex-col gap-0.5">
               <dt className="text-muted-foreground">{t("modelNumber")}</dt>
               <dd className="font-semibold tabular-nums text-foreground">
                 {product.sku}
               </dd>
             </div>
-            <div className="flex flex-col gap-0.5">
-              <dt className="text-muted-foreground">{t("weight")}</dt>
-              <dd className="font-semibold text-foreground">
-                {t("weightValue", { value: product.weightKg })}
-              </dd>
-            </div>
+            {product.weightKg > 0 ? (
+              <div className="flex flex-col gap-0.5">
+                <dt className="text-muted-foreground">{t("weight")}</dt>
+                <dd className="font-semibold text-foreground">
+                  {t("weightValue", { value: product.weightKg })}
+                </dd>
+              </div>
+            ) : product.categoryName ? (
+              <div className="flex flex-col gap-0.5">
+                <dt className="text-muted-foreground">
+                  {t("category") || "Category"}
+                </dt>
+                <dd className="font-semibold text-foreground">
+                  {product.categoryName}
+                </dd>
+              </div>
+            ) : null}
           </dl>
         </StaggerItem>
 
@@ -352,7 +408,7 @@ export function ProductDetailsHero({
                   </span>
                   {selectedColor ? (
                     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
-                      {tColors(selectedColor.nameKey)}
+                      {getColorName(selectedColor)}
                     </span>
                   ) : null}
                 </div>
@@ -369,7 +425,7 @@ export function ProductDetailsHero({
               >
                 {product.colors.map((color) => {
                   const isSelected = color.id === selectedColor?.id;
-                  const colorName = tColors(color.nameKey);
+                  const colorName = getColorName(color);
                   return (
                     <StaggerItem key={color.id} role="listitem">
                       <button
@@ -388,9 +444,14 @@ export function ProductDetailsHero({
                         <span
                           className={cn(
                             "size-7 shrink-0 rounded-full ring-1 ring-black/15 transition-transform",
-                            PRODUCT_SWATCH_CLASSES[color.swatch],
+                            !color.hex && PRODUCT_SWATCH_CLASSES[color.swatch],
                             isSelected && "ring-1 ring-black/25",
                           )}
+                          style={
+                            color.hex
+                              ? { backgroundColor: color.hex }
+                              : undefined
+                          }
                         />
                       </button>
                     </StaggerItem>
@@ -401,76 +462,80 @@ export function ProductDetailsHero({
           </StaggerItem>
         ) : null}
 
-        <StaggerItem>
-          <HeightSizeCalculator
-            selectedSize={selectedSize}
-            onSelectSize={(size) => setSelectedSize(size)}
-          />
-        </StaggerItem>
-
-        <StaggerItem>
-          <div id="size-selector" className="space-y-3 scroll-mt-24">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-foreground">
-                  {t("selectSize")}
-                </span>
-                {selectedSize ? (
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold tabular-nums text-foreground">
-                    {selectedSize}
-                  </span>
-                ) : null}
-              </div>
-              <SizeGuideDialog
+        {product.sizes.length > 0 ? (
+          <>
+            <StaggerItem>
+              <HeightSizeCalculator
                 selectedSize={selectedSize}
                 onSelectSize={(size) => setSelectedSize(size)}
               />
-            </div>
+            </StaggerItem>
 
-            <StaggerContainer
-              staggerDelay={0.04}
-              delayChildren={0.05}
-              className="grid grid-cols-5 gap-2 sm:gap-2.5"
-            >
-              {product.sizes.map((size) => {
-                const isSelected = size === selectedSize;
-                const sizeRow = SIZE_ROWS.find((r) => r.size === size);
-                return (
-                  <StaggerItem key={size}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSize(size)}
-                      aria-pressed={isSelected}
-                      className={cn(
-                        "group flex w-full flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-center transition-all",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                        isSelected
-                          ? "border-foreground bg-foreground text-background shadow-xs ring-1 ring-foreground"
-                          : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60",
-                      )}
-                    >
-                      <span className="text-sm font-bold tabular-nums sm:text-base">
-                        {size}
+            <StaggerItem>
+              <div id="size-selector" className="space-y-3 scroll-mt-24">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-foreground">
+                      {t("selectSize")}
+                    </span>
+                    {selectedSize ? (
+                      <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold tabular-nums text-foreground">
+                        {selectedSize}
                       </span>
-                      {sizeRow ? (
-                        <span
+                    ) : null}
+                  </div>
+                  <SizeGuideDialog
+                    selectedSize={selectedSize}
+                    onSelectSize={(size) => setSelectedSize(size)}
+                  />
+                </div>
+
+                <StaggerContainer
+                  staggerDelay={0.04}
+                  delayChildren={0.05}
+                  className="grid grid-cols-5 gap-2 sm:gap-2.5"
+                >
+                  {product.sizes.map((size) => {
+                    const isSelected = size === selectedSize;
+                    const sizeRow = SIZE_ROWS.find((r) => r.size === size);
+                    return (
+                      <StaggerItem key={size}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          aria-pressed={isSelected}
                           className={cn(
-                            "mt-0.5 text-[10px] font-normal tabular-nums sm:text-[11px]",
+                            "group flex w-full flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-center transition-all",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             isSelected
-                              ? "text-background/80"
-                              : "text-muted-foreground",
+                              ? "border-foreground bg-foreground text-background shadow-xs ring-1 ring-foreground"
+                              : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60",
                           )}
                         >
-                          {sizeRow.length} cm
-                        </span>
-                      ) : null}
-                    </button>
-                  </StaggerItem>
-                );
-              })}
-            </StaggerContainer>
-          </div>
-        </StaggerItem>
+                          <span className="text-sm font-bold tabular-nums sm:text-base">
+                            {size}
+                          </span>
+                          {sizeRow ? (
+                            <span
+                              className={cn(
+                                "mt-0.5 text-[10px] font-normal tabular-nums sm:text-[11px]",
+                                isSelected
+                                  ? "text-background/80"
+                                  : "text-muted-foreground",
+                              )}
+                            >
+                              {sizeRow.length} cm
+                            </span>
+                          ) : null}
+                        </button>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+              </div>
+            </StaggerItem>
+          </>
+        ) : null}
 
         <StaggerItem>
           <div className="space-y-2.5">
@@ -528,7 +593,10 @@ export function ProductDetailsHero({
                 <Button
                   type="button"
                   size="lg"
-                  disabled={!product.inStock || !selectedSize}
+                  disabled={
+                    !product.inStock ||
+                    (product.sizes.length > 0 && !selectedSize)
+                  }
                   onClick={handleAddToCart}
                   className={cn(
                     "min-h-11 w-full rounded-xl px-6 text-sm font-semibold shadow-xs transition-all sm:min-w-44",

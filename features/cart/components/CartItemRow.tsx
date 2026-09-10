@@ -145,12 +145,13 @@ export function CartItemRow({
             {selectedColor ? (
               <span className="inline-flex items-center gap-1.5 rounded-md sm:rounded-lg border border-border/70 bg-muted/50 px-2 sm:px-2.5 py-0.5 text-muted-foreground">
                 <span
-                  className={cn("size-2 sm:size-2.5 rounded-full ring-1 ring-border/80", swatchClass)}
+                  className={cn("size-2 sm:size-2.5 rounded-full ring-1 ring-border/80", !selectedColor.hex && swatchClass)}
+                  style={selectedColor.hex ? { backgroundColor: selectedColor.hex } : undefined}
                   aria-hidden
                 />
                 <span className="font-medium me-0.5">{tItem("color")}:</span>
                 <span className="font-semibold text-foreground">
-                  {tColors(selectedColor.nameKey)}
+                  {selectedColor.nameKey || selectedColor.id}
                 </span>
               </span>
             ) : null}

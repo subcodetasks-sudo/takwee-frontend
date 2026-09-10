@@ -417,6 +417,7 @@
   },
   "ProductDetails": {
     "modelNumber": "رقم الموديل",
+    "category": "الفئة",
     "weight": "الوزن",
     "weightValue": "{value} كجم",
     "sizeGuideLabel": "دليل القياسات",
@@ -442,9 +443,16 @@
     "goToImage": "عرض الصورة {index}",
     "imageIndex": "الصورة {current} من {total}",
     "hoverToZoom": "مرر للتكبير",
-    "detailsHeading": "تفاصيلها",
+    "detailsHeading": "تفاصيل المنتج",
     "backToShop": "العودة إلى المتجر",
-    "reviewsEmpty": "لا توجد تقييمات بعد. كوني أول من تشارك تجربتها مع هذه العباية.",
+    "reviewsEmpty": "لا توجد تقييمات بعد. كن أول من يشارك تجربته مع هذا المنتج.",
+    "newRelease": "إصدار حديث",
+    "availability": "التوفر",
+    "craftGuarantee": "الجودة والحرفية",
+    "craftGuaranteeValue": "جودة فاخرة ومضمونة 100%",
+    "careGuideTitle": "العناية والاستخدام",
+    "careGuideDesc": "يُرجى التعامل مع القطعة بعناية. يُفضل الغسيل اليدوي اللطيف أو التنظيف الجاف للحفاظ على جودة النسيج ومظهره الأنيق.",
+    "noImagePlaceholder": "معاينة الصورة قريباً",
     "related": {
       "title": "قد يعجبك أيضاً",
       "subtitle": "قطع مختارة لتكمل هذه الإطلالة.",
@@ -453,26 +461,33 @@
     },
     "tabs": {
       "details": "تفاصيل المنتج",
-      "reviews": "تقييمات العميلات"
+      "reviews": "آراء العملاء"
     },
     "reviewsSection": {
       "overallScore": "4.9",
       "outOf": "من 5",
-      "basedOn": "بناءً على {count} تقييماً موثوقاً",
-      "recommendation": "98% من العميلات ينصحن بهذه العباية",
-      "writeReview": "أضيفي تقييمكِ",
+      "basedOn": "بناءً على {count} تقييم موثق",
+      "recommendation": "98% من العملاء يوصون بهذا المنتج",
+      "writeReview": "كتابة تقييم",
+      "noReviewsTitle": "لا توجد تقييمات بعد",
+      "noReviewsDesc": "كن أول من يشارك تجربته مع هذا المنتج.",
+      "verifiedReviewsOnly": "تقييمات مشتريات موثوقة",
+      "verifiedReviewsNotice": "جميع التقييمات مقدمة من مشترين موثقين لضمان الشفافية ومصداقية التجربة.",
+      "reviewsEmptyTitle": "شاركنا تجربتك",
+      "reviewsEmptyDesc": "هل اشتريت هذا المنتج؟ تقييمك يساعد العملاء الآخرين في اتخاذ القرار المناسب.",
+      "writeFirstReview": "كتابة أول تقييم",
       "cancel": "إلغاء",
       "submit": "إرسال التقييم",
-      "nameLabel": "الاسم الكريم",
-      "namePlaceholder": "مثال: فاطمة العامري",
-      "ratingLabel": "تقييمكِ الإجمالي",
+      "nameLabel": "الاسم الكامل",
+      "namePlaceholder": "مثال: أحمد محمد",
+      "ratingLabel": "التقييم العام",
       "titleLabel": "عنوان التقييم",
-      "titlePlaceholder": "مثال: قماش فاخر وخياطة متقنة للغاية",
-      "commentLabel": "تفاصيل تجربتكِ",
-      "commentPlaceholder": "شاركينا رأيكِ في جودة القماش، خفة الوزن، ومقاس الطول...",
-      "sizeLabel": "المقاس الذي اشتريتِه (اختياري)",
+      "titlePlaceholder": "مثال: خامة ممتازة وجودة عالية جداً",
+      "commentLabel": "تفاصيل التجربة",
+      "commentPlaceholder": "شارك تفاصيل تجربتك مع جودة القماش، المظهر، والمقاس...",
+      "sizeLabel": "المقاس المشترى (اختياري)",
       "sizePurchased": "المقاس: {size}",
-      "successMessage": "شكراً لكِ! تمت إضافة تقييمكِ بنجاح.",
+      "successMessage": "شكراً لك! تم إرسال تقييمك بنجاح.",
       "verifiedBuyer": "مشتري موثوق",
       "helpful": "مفيد",
       "filterAll": "جميع التقييمات ({count})",
@@ -939,7 +954,9 @@
         "emailInvalid": "أدخلوا بريداً إلكترونياً صالحاً",
         "passwordRequired": "كلمة المرور مطلوبة",
         "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل"
-      }
+      },
+      "welcomeBackTitle": "أهلاً بك مجدداً، \u2068{name}\u2069!",
+      "welcomeBackDescription": "يسعدنا لقاؤك من جديد. نتمنى لك تجربة تسوق ممتعة في بوتيك كتان لاين."
     },
     "register": {
       "metaTitle": "إنشاء حساب",
@@ -972,7 +989,9 @@
         "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
         "passwordMismatch": "كلمتا المرور غير متطابقتين",
         "termsRequired": "يجب الموافقة على الشروط والأحكام وسياسة الخصوصية"
-      }
+      },
+      "devCodeToastTitle": "رمز التحقق: \u2068{code}\u2069",
+      "devCodeToastDescription": "وضع التطوير: أدخلوا هذا الرمز المكوّن من 6 أرقام لإكمال التسجيل."
     },
     "verify": {
       "metaTitle": "تأكيد الحساب",
@@ -993,6 +1012,10 @@
       "changeEmail": "العودة للتسجيل",
       "successTitle": "تم تأكيد الحساب بنجاح!",
       "successSubtitle": "تم التحقق من حسابكم. جارٍ التوجيه…",
+      "devCodeToastTitle": "رمز التحقق: \u2068{code}\u2069",
+      "devCodeToastDescription": "وضع التطوير: تم ملء الرمز تلقائياً.",
+      "devResentCodeToastTitle": "رمز التحقق الجديد: \u2068{code}\u2069",
+      "devResentCodeToastDescription": "وضع التطوير: تم استلام رمز التحقق الجديد.",
       "errors": {
         "codeRequired": "رمز التحقق مطلوب",
         "codeLength": "يجب أن يتكون الرمز من 6 أرقام",

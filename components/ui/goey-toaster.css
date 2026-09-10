@@ -1,0 +1,69 @@
+/* RTL & Locale Support for Gooey Toast */
+
+[dir="rtl"] .gooey-wrapper,
+[dir="rtl"] [data-sonner-toaster] {
+  direction: rtl;
+  font-family: var(--font-sans), var(--font-noto-arabic), sans-serif;
+}
+
+[dir="rtl"] .gooey-header {
+  direction: rtl;
+}
+
+[dir="rtl"] .gooey-title {
+  direction: rtl;
+  unicode-bidi: isolate;
+  padding: 0 2px 2px 4px;
+}
+
+/* Fix description alignment in RTL */
+[dir="rtl"] .gooey-description {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+[dir="rtl"] .gooey-description > div {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Ensure timestamp never flips numbers or AM/PM regardless of dir */
+.gooey-timestamp {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+[dir="rtl"] .gooey-timestamp {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  padding-left: 0 !important;
+  padding-right: 6px !important;
+}
+
+[dir="rtl"] .gooey-header > .gooey-timestamp {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+/* Progress bar animation direction in RTL */
+[dir="rtl"] .gooey-progressBar {
+  transform-origin: right center !important;
+}
+
+/* Close button positioning in RTL */
+[dir="rtl"] .gooey-closeButton {
+  left: auto !important;
+  right: -6px !important;
+}
+
+[dir="rtl"] .gooey-closeButtonRight {
+  right: auto !important;
+  left: -1px !important;
+}
+
+/* Action buttons in RTL */
+[dir="rtl"] .gooey-actionButton {
+  direction: rtl;
+}

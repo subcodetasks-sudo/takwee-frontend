@@ -35,7 +35,7 @@ const DESKTOP_NAV_BREAKPOINT = 1117;
 export function Header() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { announcementText } = useHomePage();
   const { categories } = useCategories();
   const { appName, siteLogo } = useSettings();
@@ -71,14 +71,19 @@ export function Header() {
   );
 
   const mobileNavCards = React.useMemo<CardNavItem[]>(() => {
+    const exploreLinks = [
+      { label: t("home"), href: "/", ariaLabel: t("home") },
+      { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
+      isAuthenticated
+        ? { label: t("account"), href: "/me", ariaLabel: t("account") }
+        : { label: t("login"), href: "/login", ariaLabel: t("login") },
+    ];
+
     const cards: CardNavItem[] = [
       {
         label: t("navExplore"),
         className: "bg-primary text-primary-foreground",
-        links: [
-          { label: t("home"), href: "/", ariaLabel: t("home") },
-          { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
-        ],
+        links: exploreLinks,
       },
     ];
 
@@ -95,7 +100,7 @@ export function Header() {
     }
 
     return cards;
-  }, [categories, t]);
+  }, [categories, isAuthenticated, t]);
 
   useEffect(() => {
     const mql = window.matchMedia(
@@ -318,9 +323,9 @@ export function Header() {
                       }
                     >
                       <Avatar className="size-9 border border-border/80 transition-colors hover:border-primary-400 dark:hover:border-primary-600 sm:size-11">
-                        <AvatarImage src="" alt={t("account")} />
+                        <AvatarImage src={user?.avatarUrl || ""} alt={user?.name || t("account")} />
                         <AvatarFallback className="bg-primary-50 font-medium text-primary-800 dark:bg-primary-950/60 dark:text-primary-200">
-                          <User className="size-4 sm:size-5.5" />
+                          {user?.name ? user.name.slice(0, 2).toUpperCase() : <User className="size-4 sm:size-5.5" />}
                         </AvatarFallback>
                       </Avatar>
                     </TooltipTrigger>

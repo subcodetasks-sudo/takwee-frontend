@@ -1,14 +1,4 @@
-export const SHOP_FILTERS = [
-  "new-in",
-  "abayas",
-  "linen",
-  "casual",
-  "formal",
-  "travel",
-  "inners",
-  "accessories",
-  "sale",
-] as const;
+export const SHOP_FILTERS = ["new-in", "sale"] as const;
 
 export type ShopFilter = (typeof SHOP_FILTERS)[number];
 

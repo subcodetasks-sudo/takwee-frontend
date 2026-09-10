@@ -417,6 +417,7 @@
   },
   "ProductDetails": {
     "modelNumber": "Model No.",
+    "category": "Category",
     "weight": "Weight",
     "weightValue": "{value} kg",
     "sizeGuideLabel": "Size guide",
@@ -444,7 +445,14 @@
     "hoverToZoom": "Hover to zoom",
     "detailsHeading": "Details",
     "backToShop": "Back to boutique",
-    "reviewsEmpty": "No reviews yet. Be the first to share how this abaya feels and fits.",
+    "reviewsEmpty": "No reviews yet. Be the first to share your experience with this product.",
+    "newRelease": "New Release",
+    "availability": "Availability",
+    "craftGuarantee": "Quality & Craft",
+    "craftGuaranteeValue": "100% Premium Quality Guaranteed",
+    "careGuideTitle": "Care & Handling",
+    "careGuideDesc": "Treat with care. We recommend gentle hand washing or professional dry cleaning to maintain fabric softness, drape, and texture.",
+    "noImagePlaceholder": "Image preview coming soon",
     "related": {
       "title": "You may also like",
       "subtitle": "Complementary pieces chosen to pair with this look.",
@@ -458,18 +466,25 @@
     "reviewsSection": {
       "overallScore": "4.9",
       "outOf": "out of 5",
-      "basedOn": "Based on {count} verified reviews",
-      "recommendation": "98% of customers recommend this abaya",
+      "basedOn": "Based on {count, plural, one {# verified review} other {# verified reviews}}",
+      "recommendation": "98% of customers recommend this product",
       "writeReview": "Write a Review",
+      "noReviewsTitle": "No reviews yet",
+      "noReviewsDesc": "Be the first to share your experience with this product.",
+      "verifiedReviewsOnly": "Verified Client Reviews",
+      "verifiedReviewsNotice": "All reviews are submitted by verified purchasers to ensure authentic client experiences.",
+      "reviewsEmptyTitle": "Share Your Experience",
+      "reviewsEmptyDesc": "Have you purchased this product? Your review helps other customers make the right decision.",
+      "writeFirstReview": "Write the First Review",
       "cancel": "Cancel",
       "submit": "Submit Review",
       "nameLabel": "Your Name",
-      "namePlaceholder": "e.g. Layla M.",
+      "namePlaceholder": "e.g. Alex M.",
       "ratingLabel": "Overall Rating",
       "titleLabel": "Review Headline",
-      "titlePlaceholder": "e.g., Exquisite drape & perfect length",
+      "titlePlaceholder": "e.g., Exceptional quality & great finish",
       "commentLabel": "Review Comment",
-      "commentPlaceholder": "Share details about the fabric feel, drape, and sizing...",
+      "commentPlaceholder": "Share details about the product quality, feel, and craftsmanship...",
       "sizeLabel": "Size Purchased (optional)",
       "sizePurchased": "Size: {size}",
       "successMessage": "Thank you! Your review has been published.",
@@ -939,7 +954,9 @@
         "emailInvalid": "Enter a valid email address",
         "passwordRequired": "Password is required",
         "passwordMinLength": "Password must be at least 8 characters"
-      }
+      },
+      "welcomeBackTitle": "Welcome back, {name}!",
+      "welcomeBackDescription": "It's wonderful to have you with us again. Enjoy exploring our luxury linen boutique."
     },
     "register": {
       "metaTitle": "Create an account",
@@ -972,7 +989,9 @@
         "confirmPasswordRequired": "Please confirm your password",
         "passwordMismatch": "Passwords do not match",
         "termsRequired": "You must agree to the Terms of Service and Privacy Policy"
-      }
+      },
+      "devCodeToastTitle": "Verification Code: {code}",
+      "devCodeToastDescription": "Development: Enter this 6-digit code to complete your registration."
     },
     "verify": {
       "metaTitle": "Verify your account",
@@ -993,6 +1012,10 @@
       "changeEmail": "Back to signup",
       "successTitle": "Email verified!",
       "successSubtitle": "Your account has been confirmed. Redirecting…",
+      "devCodeToastTitle": "Verification Code: {code}",
+      "devCodeToastDescription": "Development: Code prefilled automatically.",
+      "devResentCodeToastTitle": "New Verification Code: {code}",
+      "devResentCodeToastDescription": "Development: Resent verification code.",
       "errors": {
         "codeRequired": "Verification code is required",
         "codeLength": "Code must be exactly 6 digits",

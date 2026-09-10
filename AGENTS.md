@@ -109,7 +109,7 @@ Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `
 
 **Shop `/shop/[filter]` resolution** ([`resolveShopPath`](features/shop/utils/resolve-shop-path.ts)):
 1. Match an API category slug from `GET /api/v1/categories` (via [`categorySlug`](features/categories/utils/category-href.ts) / `StorefrontCategory.slug`) → products filtered by `product.categoryId`.
-2. Else match a legacy promo / soft filter from [`SHOP_FILTERS`](features/product/utils/shop-filters.ts) (`new-in`, `sale`, `casual`, …).
+2. Else match a promo filter from [`SHOP_FILTERS`](features/product/utils/shop-filters.ts) (`new-in`, `sale`).
 3. Else `notFound()`.
 
 Nav / footer / home category tiles use unique `/shop/{slug}` hrefs from [`categoryHref`](features/categories/utils/category-href.ts) (one slug per API category — not shared buckets).
@@ -208,6 +208,26 @@ Public boutique settings are loaded from **`GET /api/v1/settings`** (key/value l
 - [`proxy.ts`](proxy.ts) — `default_language` drives next-intl `defaultLocale` for unprefixed routes (soft-fail to `ar`)
 - [`CurrencyProvider`](hooks/useCurrency.tsx) / [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — only list API-supported currencies; default when no localStorage pick
 - [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Atelier** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
+
+---
+
+## 4c. Currencies (`features/currencies`)
+
+Public storefront currencies, symbols, and exchange rates are loaded from **`GET /api/v1/currencies`**.
+
+| Layer | Path | Role |
+|---|---|---|
+| Fetcher | [`features/currencies/api/get-currencies.ts`](features/currencies/api/get-currencies.ts) | `fetchCurrencies` via `http.get`; soft `getCurrencies` for RSC |
+| Hook | [`features/currencies/hooks/useCurrencies.ts`](features/currencies/hooks/useCurrencies.ts) | React Query cache — key `["currencies", locale]` |
+| Types | [`features/currencies/types/`](features/currencies/types/) | API DTOs (`ApiCurrencyItem`) + storefront view model (`Currency`) |
+| Mapper | [`features/currencies/utils/map-currencies.ts`](features/currencies/utils/map-currencies.ts) | `mapCurrencies` → parses exchange rates, symbols, codes |
+| Dehydration | [`features/currencies/utils/dehydrate-currencies.ts`](features/currencies/utils/dehydrate-currencies.ts) | React Query hydration prefill |
+
+**Consumers:**
+- Locale layout (`app/[locale]/layout.tsx`) — RSC prefetch with `getCurrencies(locale)` passed as `initialCurrencies` to `<CurrencyProvider>`
+- [`CurrencyProvider`](hooks/useCurrency.tsx) — dynamically merges live API exchange rates and symbols with default fallbacks; computes active currency config and supported currencies
+- [`ProductPrice`](features/product/components/ProductPrice.tsx) — converts base TRY product amounts using the dynamic `rateAgainstTRY` and renders appropriate icon / textual symbol
+- [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — lists all active supported currencies with dynamic symbols and icons
 
 ---
 

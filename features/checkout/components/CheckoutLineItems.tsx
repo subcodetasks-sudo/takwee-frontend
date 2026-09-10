@@ -66,10 +66,11 @@ export function CheckoutLineItems({ items }: CheckoutLineItemsProps) {
                 {selectedColor ? (
                   <span className="inline-flex items-center gap-1">
                     <span
-                      className={cn("size-2.5 rounded-full border border-border/60", swatchClass)}
+                      className={cn("size-2.5 rounded-full border border-border/60", !selectedColor.hex && swatchClass)}
+                      style={selectedColor.hex ? { backgroundColor: selectedColor.hex } : undefined}
                       aria-hidden
                     />
-                    {tColors(selectedColor.nameKey)}
+                    {selectedColor.nameKey || selectedColor.id}
                   </span>
                 ) : null}
                 <span>{tSummary("qty", { count: item.quantity })}</span>

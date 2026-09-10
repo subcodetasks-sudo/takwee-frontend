@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, CheckCircle2, MessageSquarePlus, Star, ThumbsUp } from "lucide-react";
+import { Check, CheckCircle2, MessageSquarePlus, Sparkles, Star, ThumbsUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export function ProductReviews({
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [sizePurchased, setSizePurchased] = useState<string>(
-    product.sizes[0] ?? "56",
+    product.sizes[0] ?? "",
   );
 
   const handleToggleHelpful = (id: string) => {
@@ -56,10 +56,10 @@ export function ProductReviews({
       author: name.trim(),
       rating,
       date: locale === "ar" ? "الآن" : locale === "tr" ? "Şimdi" : "Just now",
-      title: title.trim() || (locale === "ar" ? "تقييم ممتاز" : locale === "tr" ? "Mükemmel" : "Wonderful abaya"),
+      title: title.trim() || (locale === "ar" ? "تقييم ممتاز" : locale === "tr" ? "Mükemmel" : "Wonderful piece"),
       comment: comment.trim(),
       verified: true,
-      sizePurchased,
+      sizePurchased: sizePurchased || undefined,
       helpfulCount: 0,
     };
 
@@ -90,60 +90,87 @@ export function ProductReviews({
       {/* Overview Card: Score, Stars, Breakdown, Action */}
       <div className="rounded-2xl border border-border/80 bg-card/60 p-6 shadow-xs sm:p-8">
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-3">
-          {/* Left: Score & Stars */}
-          <div className="flex flex-col items-center justify-center text-center lg:items-start lg:text-start">
-            <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                {averageRating}
-              </span>
-              <span className="text-sm font-medium text-muted-foreground">
-                {t("outOf")}
-              </span>
+          {totalReviews === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center lg:items-start lg:text-start">
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-secondary-100 text-secondary-800 dark:bg-secondary-900/60 dark:text-secondary-300">
+                <Star className="size-5 fill-secondary-300 stroke-secondary-700" />
+              </div>
+              <h4 className="mt-2.5 text-base font-semibold text-foreground">
+                {t("noReviewsTitle")}
+              </h4>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground max-w-xs">
+                {t("noReviewsDesc")}
+              </p>
             </div>
+          ) : (
+            /* Left: Score & Stars */
+            <div className="flex flex-col items-center justify-center text-center lg:items-start lg:text-start">
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                  {averageRating}
+                </span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  {t("outOf")}
+                </span>
+              </div>
 
-            {/* Stars row */}
-            <div className="mt-2 flex items-center gap-1 text-warning">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className="size-5 fill-current stroke-warning"
-                  aria-hidden
-                />
-              ))}
+              {/* Stars row */}
+              <div className="mt-2 flex items-center gap-1 text-warning">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className="size-5 fill-current stroke-warning"
+                    aria-hidden
+                  />
+                ))}
+              </div>
+
+              <p className="mt-2 text-xs font-medium text-muted-foreground">
+                {t("basedOn", { count: totalReviews })}
+              </p>
+              <p className="mt-1 text-[11px] font-semibold text-success">
+                {t("recommendation")}
+              </p>
             </div>
+          )}
 
-            <p className="mt-2 text-xs font-medium text-muted-foreground">
-              {t("basedOn", { count: totalReviews })}
-            </p>
-            <p className="mt-1 text-[11px] font-semibold text-success">
-              {t("recommendation")}
-            </p>
-          </div>
-
-          {/* Middle: Rating Breakdown Bars */}
-          <div className="space-y-2 border-y border-border/60 py-4 lg:border-y-0 lg:border-x lg:px-6 lg:py-0">
-            {[5, 4, 3, 2, 1].map((stars) => {
-              const count = reviews.filter((r) => r.rating === stars).length;
-              const percent = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
-              return (
-                <div key={stars} className="flex items-center gap-2 text-xs">
-                  <div className="flex w-12 shrink-0 items-center justify-end gap-1">
-                    <span className="font-semibold tabular-nums text-foreground">{stars}</span>
-                    <Star className="size-3 fill-warning text-warning" />
+          {totalReviews === 0 ? (
+            /* Middle: Verified Notice */
+            <div className="flex flex-col items-center justify-center gap-2 border-y border-border/60 py-4 text-center text-xs text-muted-foreground lg:border-y-0 lg:border-x lg:px-6 lg:py-0">
+              <Sparkles className="size-5 text-secondary-500" />
+              <p className="font-semibold text-foreground">
+                {t("verifiedReviewsOnly")}
+              </p>
+              <p className="text-[11px] leading-relaxed max-w-xs">
+                {t("verifiedReviewsNotice")}
+              </p>
+            </div>
+          ) : (
+            /* Middle: Rating Breakdown Bars */
+            <div className="space-y-2 border-y border-border/60 py-4 lg:border-y-0 lg:border-x lg:px-6 lg:py-0">
+              {[5, 4, 3, 2, 1].map((stars) => {
+                const count = reviews.filter((r) => r.rating === stars).length;
+                const percent = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
+                return (
+                  <div key={stars} className="flex items-center gap-2 text-xs">
+                    <div className="flex w-12 shrink-0 items-center justify-end gap-1">
+                      <span className="font-semibold tabular-nums text-foreground">{stars}</span>
+                      <Star className="size-3 fill-warning text-warning" />
+                    </div>
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-warning transition-all"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <span className="w-9 shrink-0 text-end text-[11px] tabular-nums text-muted-foreground">
+                      {percent}%
+                    </span>
                   </div>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-warning transition-all"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-                  <span className="w-9 shrink-0 text-end text-[11px] tabular-nums text-muted-foreground">
-                    {percent}%
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Right: Write Review Trigger */}
           <div className="flex flex-col items-center justify-center gap-3 text-center lg:items-end lg:text-end">
@@ -153,11 +180,19 @@ export function ProductReviews({
               className="gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-xs"
             >
               <MessageSquarePlus className="size-4" />
-              <span>{isFormOpen ? t("cancel") : t("writeReview")}</span>
+              <span>
+                {isFormOpen
+                  ? t("cancel")
+                  : totalReviews === 0
+                    ? t("writeFirstReview")
+                    : t("writeReview")}
+              </span>
             </Button>
-            <span className="text-xs text-muted-foreground">
-              {t("filterAll", { count: totalReviews })}
-            </span>
+            {totalReviews > 0 ? (
+              <span className="text-xs text-muted-foreground">
+                {t("filterAll", { count: totalReviews })}
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -221,36 +256,54 @@ export function ProductReviews({
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">
-                      {t("sizeLabel")}
-                    </label>
-                    <select
-                      value={sizePurchased}
-                      onChange={(e) => setSizePurchased(e.target.value)}
-                      className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    >
-                      {product.sizes.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {product.sizes.length > 0 ? (
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-foreground">
+                        {t("sizeLabel")}
+                      </label>
+                      <select
+                        value={sizePurchased}
+                        onChange={(e) => setSizePurchased(e.target.value)}
+                        className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="">{t("sizeLabel")}</option>
+                        {product.sizes.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-foreground">
+                        {t("titleLabel")}
+                      </label>
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder={t("titlePlaceholder")}
+                        className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">
-                    {t("titleLabel")}
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder={t("titlePlaceholder")}
-                    className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
+                {product.sizes.length > 0 ? (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-foreground">
+                      {t("titleLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder={t("titlePlaceholder")}
+                      className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                ) : null}
 
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-foreground">
@@ -290,13 +343,37 @@ export function ProductReviews({
 
       {/* Reviews Comments List */}
       <div className="space-y-4">
-        {reviews.map((rev) => {
-          const isHelpful = helpfulMap[rev.id];
-          return (
-            <article
-              key={rev.id}
-              className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card p-5 sm:p-6 shadow-2xs transition-all hover:border-border"
+        {reviews.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/80 bg-card/40 p-8 text-center sm:p-10">
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <MessageSquarePlus className="size-6" />
+            </div>
+            <div className="max-w-md space-y-1">
+              <h5 className="text-sm font-semibold text-foreground">
+                {t("reviewsEmptyTitle")}
+              </h5>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {t("reviewsEmptyDesc")}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFormOpen(true)}
+              className="mt-1 rounded-xl text-xs font-semibold"
             >
+              {t("writeFirstReview")}
+            </Button>
+          </div>
+        ) : (
+          reviews.map((rev) => {
+            const isHelpful = helpfulMap[rev.id];
+            return (
+              <article
+                key={rev.id}
+                className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card p-5 sm:p-6 shadow-2xs transition-all hover:border-border"
+              >
               {/* Top Row: Author, Verified Badge, Rating, Date */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -380,7 +457,8 @@ export function ProductReviews({
               </div>
             </article>
           );
-        })}
+        })
+      )}
       </div>
     </div>
   );

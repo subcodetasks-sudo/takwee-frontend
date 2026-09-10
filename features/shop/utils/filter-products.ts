@@ -1,25 +1,15 @@
-import {
-  PRODUCT_SWATCH_CLASSES,
-  type AbayaSize,
-  type Product,
-  type ProductBadge,
-  type ProductSwatchId,
+import type {
+  Product,
+  ProductBadge,
 } from "@/features/product/types";
 import type { ShopFilter } from "@/features/product/utils/shop-filters";
 import type {
   ShopCategoryOption,
+  ShopColorOption,
   ShopFilterState,
   ShopPriceBounds,
   ShopSort,
 } from "../types";
-
-export const ABAYA_SIZES: AbayaSize[] = ["52", "54", "56", "58", "60"];
-
-export const PRODUCT_SWATCH_IDS = Object.keys(
-  PRODUCT_SWATCH_CLASSES,
-) as ProductSwatchId[];
-
-export const PRODUCT_BADGES: ProductBadge[] = ["sale", "new"];
 
 export function createDefaultFilterState(
   bounds: ShopPriceBounds,
@@ -31,7 +21,6 @@ export function createDefaultFilterState(
     badges: [],
     priceRange: [bounds.min, bounds.max],
     inStockOnly: false,
-    includesSheila: false,
     sort: "featured",
   };
 }
@@ -52,7 +41,6 @@ export function countActiveFilters(
     count += 1;
   }
   if (filters.inStockOnly) count += 1;
-  if (filters.includesSheila) count += 1;
   return count;
 }
 
@@ -78,7 +66,75 @@ export function getCategoryOptions(products: Product[]): ShopCategoryOption[] {
   );
 }
 
-/** Soft path presets until products carry explicit category fields. */
+/** Derive unique available sizes from the loaded product list. */
+export function getSizeOptions(products: Product[]): string[] {
+  const sizes = new Set<string>();
+
+  for (const product of products) {
+    if (Array.isArray(product.sizes)) {
+      for (const size of product.sizes) {
+        if (typeof size === "string" && size.trim()) {
+          sizes.add(size.trim());
+        }
+      }
+    }
+  }
+
+  return [...sizes].sort((a, b) =>
+    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
+  );
+}
+
+/** Derive unique available colors from the loaded product list. */
+export function getColorOptions(products: Product[]): ShopColorOption[] {
+  const map = new Map<string, ShopColorOption>();
+
+  for (const product of products) {
+    if (Array.isArray(product.colors)) {
+      for (const color of product.colors) {
+        const name = color.nameKey?.trim() || "";
+        const hex = color.hex?.trim() || "";
+        // Group by normalized name if available, otherwise by normalized hex, otherwise by swatch
+        const groupKey = (name || hex || color.swatch || "").toLowerCase();
+        if (!groupKey) continue;
+
+        const existing = map.get(groupKey);
+        if (!existing) {
+          map.set(groupKey, {
+            id: groupKey,
+            name: name || hex || groupKey,
+            swatch: color.swatch,
+            hex: color.hex,
+          });
+        } else if (!existing.hex && color.hex) {
+          existing.hex = color.hex;
+        }
+      }
+    }
+  }
+
+  return [...map.values()].sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  );
+}
+
+/** Derive available badges from the loaded product list. */
+export function getBadgeOptions(products: Product[]): ProductBadge[] {
+  const badges = new Set<ProductBadge>();
+
+  for (const product of products) {
+    const isOnSale =
+      product.badge === "sale" ||
+      (product.compareAtPriceTRY != null &&
+        product.compareAtPriceTRY > product.priceTRY);
+    if (isOnSale) badges.add("sale");
+    if (product.badge === "new") badges.add("new");
+  }
+
+  return [...badges];
+}
+
+/** Filter products for promo routes (/shop/new-in, /shop/sale). */
 export function applyShopPathFilter(
   products: Product[],
   pathFilter?: ShopFilter,
@@ -95,29 +151,6 @@ export function applyShopPathFilter(
           (product.compareAtPriceTRY != null &&
             product.compareAtPriceTRY > product.priceTRY),
       );
-    case "linen":
-      return products.filter((product) =>
-        /linen|silk/i.test(`${product.slug} ${product.nameKey}`),
-      );
-    case "travel":
-      return products.filter((product) =>
-        /travel|kimono/i.test(`${product.slug} ${product.nameKey}`),
-      );
-    case "casual":
-      return products.filter((product) =>
-        /aline|kimono|travel|linen/i.test(`${product.slug} ${product.nameKey}`),
-      );
-    case "formal":
-      return products.filter((product) =>
-        /heritage|silk|midnight|jacquard|embroider/i.test(
-          `${product.slug} ${product.nameKey}`,
-        ),
-      );
-    case "abayas":
-      return products;
-    case "inners":
-    case "accessories":
-      return [];
     default:
       return products;
   }
@@ -141,8 +174,21 @@ function matchesFilters(product: Product, filters: ShopFilterState): boolean {
 
   if (
     filters.colors.length > 0 &&
-    !filters.colors.some((swatch) =>
-      product.colors.some((color) => color.swatch === swatch),
+    !filters.colors.some((filterColorKey) =>
+      product.colors.some((color) => {
+        const name = (color.nameKey || "").trim().toLowerCase();
+        const hex = (color.hex || "").trim().toLowerCase();
+        const swatch = (color.swatch || "").trim().toLowerCase();
+        const id = (color.id || "").trim().toLowerCase();
+        const filter = filterColorKey.trim().toLowerCase();
+
+        return (
+          name === filter ||
+          hex === filter ||
+          swatch === filter ||
+          id === filter
+        );
+      }),
     )
   ) {
     return false;
@@ -168,10 +214,6 @@ function matchesFilters(product: Product, filters: ShopFilterState): boolean {
   }
 
   if (filters.inStockOnly && !product.inStock) {
-    return false;
-  }
-
-  if (filters.includesSheila && !product.includesSheila) {
     return false;
   }
 

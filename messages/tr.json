@@ -417,6 +417,7 @@
   },
   "ProductDetails": {
     "modelNumber": "Model No.",
+    "category": "Kategori",
     "weight": "Ağırlık",
     "weightValue": "{value} kg",
     "sizeGuideLabel": "Beden rehberi",
@@ -444,7 +445,14 @@
     "hoverToZoom": "Yakınlaştırmak için üzerine gelin",
     "detailsHeading": "Detaylar",
     "backToShop": "Koleksiyona dön",
-    "reviewsEmpty": "Henüz yorum yok. Bu abayanın dokusunu ve kalıbını ilk siz paylaşın.",
+    "reviewsEmpty": "Henüz değerlendirme yok. Bu ürün hakkındaki ilk deneyiminizi siz paylaşın.",
+    "newRelease": "Yeni Çıkan",
+    "availability": "Stok Durumu",
+    "craftGuarantee": "Kalite & İşçilik",
+    "craftGuaranteeValue": "%100 Üstün Kalite Güvencesi",
+    "careGuideTitle": "Bakım & Kullanım",
+    "careGuideDesc": "Özenle kullanınız. Kumaş yumuşaklığını ve dökümünü korumak için narin elde yıkama veya kuru temizleme önerilir.",
+    "noImagePlaceholder": "Ürün görseli yakında eklenecek",
     "related": {
       "title": "Bunları da beğenebilirsiniz",
       "subtitle": "Bu görünümü tamamlayan seçilmiş parçalar.",
@@ -459,17 +467,24 @@
       "overallScore": "4.9",
       "outOf": "/ 5",
       "basedOn": "{count} doğrulanmış değerlendirmeye göre",
-      "recommendation": "Müşterilerin %98'i bu modeli tavsiye ediyor",
+      "recommendation": "Müşterilerin %98'i bu ürünü tavsiye ediyor",
       "writeReview": "Değerlendirme Yaz",
+      "noReviewsTitle": "Henüz değerlendirme yok",
+      "noReviewsDesc": "Bu ürün hakkındaki ilk deneyiminizi siz paylaşın.",
+      "verifiedReviewsOnly": "Doğrulanmış Müşteri Yorumları",
+      "verifiedReviewsNotice": "Tüm yorumlar, şeffaf bir deneyim için doğrulanmış alıcılar tarafından yapılmaktadır.",
+      "reviewsEmptyTitle": "Deneyiminizi Paylaşın",
+      "reviewsEmptyDesc": "Bu ürünü satın aldınız mı? Değerlendirmeniz diğer müşterilerimize rehberlik eder.",
+      "writeFirstReview": "İlk Yorumu Siz Yazın",
       "cancel": "İptal",
       "submit": "Değerlendirmeyi Gönder",
       "nameLabel": "Adınız",
-      "namePlaceholder": "Örn. Zeynep K.",
+      "namePlaceholder": "Örn. Can Y.",
       "ratingLabel": "Puanınız",
       "titleLabel": "Başlık",
-      "titlePlaceholder": "Örn. Kumaş kalitesi ve dökümü mükemmel",
+      "titlePlaceholder": "Örn. Üstün kalite ve harika işçilik",
       "commentLabel": "Yorumunuz",
-      "commentPlaceholder": "Kumaş dokusu, kalıp ve döküm hakkındaki deneyimlerinizi paylaşın...",
+      "commentPlaceholder": "Ürün kalitesi, dokusu ve deneyimlerinizi paylaşın...",
       "sizeLabel": "Satın Alınan Beden (isteğe bağlı)",
       "sizePurchased": "Beden: {size}",
       "successMessage": "Teşekkürler! Değerlendirmeniz yayınlandı.",
@@ -939,7 +954,9 @@
         "emailInvalid": "Geçerli bir e-posta adresi girin",
         "passwordRequired": "Şifre gereklidir",
         "passwordMinLength": "Şifre en az 8 karakter olmalıdır"
-      }
+      },
+      "welcomeBackTitle": "Tekrar hoş geldiniz, {name}!",
+      "welcomeBackDescription": "Sizi aramızda yeniden görmek harika. Linen Line ile ayrıcalıklı butik koleksiyonlarımızı keşfedin."
     },
     "register": {
       "metaTitle": "Hesap oluşturun",
@@ -972,7 +989,9 @@
         "confirmPasswordRequired": "Lütfen şifrenizi onaylayın",
         "passwordMismatch": "Şifreler eşleşmiyor",
         "termsRequired": "Kullanım Koşulları ve Gizlilik Politikası’nı kabul etmelisiniz"
-      }
+      },
+      "devCodeToastTitle": "Doğrulama Kodu: {code}",
+      "devCodeToastDescription": "Geliştirme: Kaydınızı tamamlamak için bu 6 haneli kodu girin."
     },
     "verify": {
       "metaTitle": "Hesabınızı doğrulayın",
@@ -993,6 +1012,10 @@
       "changeEmail": "Kayda geri dön",
       "successTitle": "E-posta doğrulandı!",
       "successSubtitle": "Hesabınız başarıyla doğrulandı. Yönlendiriliyorsunuz…",
+      "devCodeToastTitle": "Doğrulama Kodu: {code}",
+      "devCodeToastDescription": "Geliştirme: Kod otomatik olarak dolduruldu.",
+      "devResentCodeToastTitle": "Yeni Doğrulama Kodu: {code}",
+      "devResentCodeToastDescription": "Geliştirme: Yeniden gönderilen doğrulama kodu.",
       "errors": {
         "codeRequired": "Doğrulama kodu gereklidir",
         "codeLength": "Kod tam olarak 6 haneli olmalıdır",

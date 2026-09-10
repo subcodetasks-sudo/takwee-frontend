@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
+import { gooeyToast } from "@/components/ui/goey-toaster";
+import { registerAction } from "../api/actions";
 import {
   createRegisterSchema,
   type RegisterFormValues,
@@ -27,6 +29,7 @@ export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const schema = useMemo(
     () =>
@@ -68,10 +71,39 @@ export function RegisterForm() {
   const onValidSubmit = async (values: RegisterFormValues) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setServerError(null);
     try {
-      // Simulate registration submission / API mutation
-      await new Promise((resolve) => window.setTimeout(resolve, 500));
-      router.push(`/verify?email=${encodeURIComponent(values.email)}`);
+      const res = await registerAction({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+      });
+
+      if (!res.success) {
+        const fieldMsg = res.fieldErrors
+          ? Object.values(res.fieldErrors).flat().join(" ")
+          : null;
+        setServerError(fieldMsg || res.message || "Registration failed");
+        return;
+      }
+
+      const verificationCode = res.data?.verificationCode;
+      if (verificationCode) {
+        try {
+          gooeyToast.info(t("devCodeToastTitle", { code: verificationCode }), {
+            description: t("devCodeToastDescription"),
+            duration: 15000,
+          });
+        } catch {
+          // Ignore
+        }
+      }
+
+      const codeQuery = verificationCode ? `&devCode=${encodeURIComponent(verificationCode)}` : "";
+      router.push(`/verify?email=${encodeURIComponent(values.email)}${codeQuery}`);
+    } catch {
+      setServerError("An error occurred during registration. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -83,6 +115,14 @@ export function RegisterForm() {
       className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-md sm:space-y-6 sm:p-6 sm:shadow-lg"
       noValidate
     >
+      {serverError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive sm:text-sm"
+        >
+          {serverError}
+        </div>
+      )}
       <div className="space-y-1.5">
         <Label htmlFor="register-name" className="text-xs font-medium sm:text-sm">
           {t("name")}

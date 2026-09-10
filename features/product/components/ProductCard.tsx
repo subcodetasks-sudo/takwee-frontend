@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 import { gooeyToast } from "@/components/ui/goey-toaster";
 import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
 import { useCart, useCartFly } from "@/features/cart";
-import { PRODUCT_SWATCH_CLASSES, type Product } from "../types";
+import { PRODUCT_SWATCH_CLASSES, type Product, type ProductColor } from "../types";
 import { ProductPrice } from "./ProductPrice";
 import { Check } from "@/components/animate-ui/icons/check";
 
@@ -60,6 +60,12 @@ export function ProductCard({
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
     product.colors[0];
+
+  const getColorName = (color?: ProductColor) => {
+    if (!color) return "";
+    if (color.name?.trim()) return color.name.trim();
+    return tColors.has(color.nameKey) ? tColors(color.nameKey) : color.nameKey || color.id;
+  };
 
   const [isAdded, setIsAdded] = useState(false);
   const isWishlisted = isProductWishlisted(product.id);
@@ -346,31 +352,50 @@ export function ProductCard({
           </TooltipProvider>
 
           {product.colors.length > 0 && (
-            <ul className="flex flex-wrap items-center justify-end gap-1.5" role="list">
-              {product.colors.map((color) => {
-                const isSelected = color.id === selectedColor?.id;
-                const colorName = tColors(color.nameKey);
+            <TooltipProvider delay={100}>
+              <ul className="flex flex-wrap items-center justify-end gap-1.5" role="list">
+                {product.colors.map((color) => {
+                  const isSelected = color.id === selectedColor?.id;
+                  const colorName = getColorName(color);
 
-                return (
-                  <li key={color.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedColorId(color.id)}
-                      aria-label={t("selectColor", { color: colorName })}
-                      aria-pressed={isSelected}
-                      title={colorName}
-                      className={cn(
-                        "size-4 sm:size-5 rounded-full ring-1 ring-border transition-all duration-200",
-                        "hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
-                        PRODUCT_SWATCH_CLASSES[color.swatch],
-                        isSelected &&
-                          "ring-2 ring-ring ring-offset-2 ring-offset-card",
-                      )}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
+                  return (
+                    <li key={color.id}>
+                      <Tooltip>
+                        <TooltipTrigger
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSelectedColorId(color.id);
+                          }}
+                          aria-label={t("selectColor", { color: colorName })}
+                          aria-pressed={isSelected}
+                          className={cn(
+                            "size-4 sm:size-5 rounded-full ring-1 ring-border transition-all duration-200 cursor-pointer",
+                            "hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+                            !color.hex && PRODUCT_SWATCH_CLASSES[color.swatch],
+                            isSelected &&
+                              "ring-2 ring-ring ring-offset-2 ring-offset-card",
+                          )}
+                          style={
+                            color.hex
+                              ? { backgroundColor: color.hex }
+                              : undefined
+                          }
+                        />
+                        <TooltipContent
+                          side="top"
+                          sideOffset={6}
+                          className="text-xs font-medium"
+                        >
+                          {colorName}
+                        </TooltipContent>
+                      </Tooltip>
+                    </li>
+                  );
+                })}
+              </ul>
+            </TooltipProvider>
           )}
         </div>
       </div>

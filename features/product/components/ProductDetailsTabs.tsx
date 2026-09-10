@@ -11,6 +11,7 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import type { Product, ProductReview } from "../types";
 import { ProductReviews } from "./ProductReviews";
+import { ProductRichText } from "./ProductRichText";
 
 interface ProductDetailsTabsProps {
   product: Product;
@@ -37,17 +38,10 @@ export function ProductDetailsTabs({
   reviews = [],
 }: ProductDetailsTabsProps) {
   const t = useTranslations("ProductDetails");
-  const hasMockCopy = product.specs.length > 0;
-  const tProduct = useTranslations(
-    hasMockCopy
-      ? `ProductDetails.products.${product.nameKey}`
-      : "ProductDetails",
-  );
 
-  const description =
-    product.description?.trim() ||
-    (hasMockCopy ? tProduct("description") : null);
-
+  const description = product.description?.trim() || null;
+  const features =
+    product.features && product.features.length > 0 ? product.features : [];
   const ratingBadge = formatRatingBadge(product, reviews);
 
   return (
@@ -93,13 +87,11 @@ export function ProductDetailsTabs({
         >
           {description ? (
             <StaggerItem>
-              <p className="text-base leading-relaxed text-muted-foreground">
-                {description}
-              </p>
+              <ProductRichText content={description} />
             </StaggerItem>
           ) : null}
 
-          {hasMockCopy ? (
+          {features.length > 0 ? (
             <StaggerItem>
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -111,34 +103,23 @@ export function ProductDetailsTabs({
                   delayChildren={0.05}
                   className="grid gap-3 sm:grid-cols-2"
                 >
-                  {product.specs.map((spec) => {
-                    const title = tProduct(`specs.${spec.id}.title`);
-                    const body = tProduct(`specs.${spec.id}.body`);
-
-                    return (
-                      <StaggerItem key={spec.id}>
-                        <div className="flex h-full flex-col gap-1.5 rounded-xl border border-border/70 bg-card/60 p-4 transition-all">
-                          <p className="text-sm font-semibold text-foreground">
-                            {title}
-                          </p>
+                  {features.map((feature) => (
+                    <StaggerItem key={feature.id}>
+                      <div className="flex h-full flex-col gap-1.5 rounded-xl border border-border/70 bg-card/60 p-4 transition-all">
+                        <p className="text-sm font-semibold text-foreground">
+                          {feature.name}
+                        </p>
+                        {feature.value ? (
                           <div className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                            {body}
-                            {spec.hasBullets ? (
-                              <ul className="mt-2.5 list-disc space-y-1 ps-4 text-xs leading-relaxed text-muted-foreground">
-                                {(
-                                  tProduct.raw(
-                                    `specs.${spec.id}.bullets`,
-                                  ) as string[]
-                                ).map((bullet) => (
-                                  <li key={bullet}>{bullet}</li>
-                                ))}
-                              </ul>
-                            ) : null}
+                            <ProductRichText
+                              content={feature.value}
+                              className="text-xs leading-relaxed sm:text-sm [&_p]:mb-1.5 [&_p:last-child]:mb-0"
+                            />
                           </div>
-                        </div>
-                      </StaggerItem>
-                    );
-                  })}
+                        ) : null}
+                      </div>
+                    </StaggerItem>
+                  ))}
                 </StaggerContainer>
               </div>
             </StaggerItem>

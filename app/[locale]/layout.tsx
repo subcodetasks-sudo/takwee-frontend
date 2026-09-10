@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { CurrencyProvider } from "@/hooks/useCurrency";
 import { QueryProvider } from "@/components/providers/QueryProvider";
-import { AuthProvider } from "@/features/auth";
 import { WishlistProvider } from "@/features/wishlist";
 import { CartFlyProvider, CartProvider } from "@/features/cart";
 import {
@@ -17,6 +16,7 @@ import {
   MaintenancePage,
   SettingsHydration,
 } from "@/features/settings";
+import { getCurrencies } from "@/features/currencies";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
 import "../globals.css";
 
@@ -109,9 +109,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   }
 
   setRequestLocale(locale);
-  const [messages, settings] = await Promise.all([
+  const [messages, settings, initialCurrencies] = await Promise.all([
     getMessages(),
     getSettings(),
+    getCurrencies(locale),
   ]);
   const dir = locale === "ar" ? "rtl" : "ltr";
 
@@ -137,20 +138,19 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           ) : (
             <QueryProvider>
               <SettingsHydration state={dehydratedSettings}>
-                <AuthProvider>
-                  <WishlistProvider>
-                    <CartProvider>
-                      <CartFlyProvider>
-                        <CurrencyProvider
-                          defaultCurrency={settings?.defaultCurrency}
-                          supportedCurrencies={settings?.supportedCurrencies}
-                        >
-                          {children}
-                        </CurrencyProvider>
-                      </CartFlyProvider>
-                    </CartProvider>
-                  </WishlistProvider>
-                </AuthProvider>
+                <WishlistProvider>
+                  <CartProvider>
+                    <CartFlyProvider>
+                      <CurrencyProvider
+                        defaultCurrency={settings?.defaultCurrency}
+                        supportedCurrencies={settings?.supportedCurrencies}
+                        initialCurrencies={initialCurrencies}
+                      >
+                        {children}
+                      </CurrencyProvider>
+                    </CartFlyProvider>
+                  </CartProvider>
+                </WishlistProvider>
               </SettingsHydration>
             </QueryProvider>
           )}

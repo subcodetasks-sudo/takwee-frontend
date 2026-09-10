@@ -1,14 +1,26 @@
-import { getTranslations } from "next-intl/server";
-import { getRelatedProducts } from "../utils/get-related-products";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useProducts } from "@/features/shop/hooks/useProducts";
 import { RelatedProductsCarousel } from "./RelatedProductsCarousel";
 
 interface RelatedProductsProps {
   productId: string;
+  categoryId?: string;
 }
 
-export async function RelatedProducts({ productId }: RelatedProductsProps) {
-  const t = await getTranslations("ProductDetails.related");
-  const products = getRelatedProducts(productId);
+export function RelatedProducts({ productId, categoryId }: RelatedProductsProps) {
+  const t = useTranslations("ProductDetails.related");
+  const { allProducts } = useProducts();
+
+  // Show products in the same category first, followed by other catalog products
+  const sameCategory = categoryId
+    ? allProducts.filter((p) => p.id !== productId && p.categoryId === categoryId)
+    : [];
+  const otherProducts = allProducts.filter(
+    (p) => p.id !== productId && (!categoryId || p.categoryId !== categoryId),
+  );
+  const products = [...sameCategory, ...otherProducts].slice(0, 8);
 
   if (products.length === 0) {
     return null;

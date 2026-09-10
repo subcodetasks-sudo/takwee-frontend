@@ -1,12 +1,17 @@
 import { format, parseISO } from "date-fns";
 import { ar, enUS, tr } from "date-fns/locale";
 import type { Locale as DateLocale } from "date-fns";
-import type { AbayaSize, Product, ProductColor, ProductReview } from "../types";
+import {
+  PRODUCT_SWATCH_CLASSES,
+  type AbayaSize,
+  type Product,
+  type ProductColor,
+  type ProductReview,
+  type ProductSwatchId,
+} from "../types";
 import { resolveImageUrl } from "@/lib/images";
 import type { ApiProduct, ApiProductRating } from "../types/api";
 import { slugify } from "./slugify";
-
-const ABAYA_SIZES: AbayaSize[] = ["52", "54", "56", "58", "60"];
 
 const DATE_LOCALES: Record<string, DateLocale> = {
   ar,
@@ -44,44 +49,85 @@ function mapColors(
   product: ApiProduct,
   fallbackImages: string[],
 ): ProductColor[] {
-  // Color payload shape is still evolving; until it is typed, use a single
-  // default swatch when we at least have gallery images.
-  if (!Array.isArray(product.colors) || product.colors.length === 0) {
-    if (fallbackImages.length === 0) return [];
-    return [
-      {
-        id: "default",
-        nameKey: "black",
-        swatch: "black",
+  if (Array.isArray(product.colors) && product.colors.length > 0) {
+    const list: ProductColor[] = [];
+    for (let i = 0; i < product.colors.length; i++) {
+      const item = product.colors[i];
+      if (!item || typeof item !== "object") continue;
+      const c = item as { id?: number | string; name?: string; value?: string };
+      const id = c.id != null ? String(c.id) : `color-${i}`;
+      const name = c.name?.trim() || "";
+      const swatchCandidate = name.toLowerCase() as ProductSwatchId;
+      const swatch: ProductSwatchId =
+        swatchCandidate in PRODUCT_SWATCH_CLASSES
+          ? swatchCandidate
+          : "black";
+
+      list.push({
+        id,
+        nameKey: name || id,
+        name: name || undefined,
+        swatch,
+        hex: c.value?.trim() || undefined,
         images: fallbackImages,
-      },
-    ];
+      });
+    }
+    return list;
   }
 
   return [];
 }
 
+function mapFeatures(raw: unknown[] | undefined): Product["features"] {
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+
+  const list: NonNullable<Product["features"]> = [];
+  for (let i = 0; i < raw.length; i++) {
+    const item = raw[i];
+    if (typeof item === "string") {
+      const s = item.trim();
+      if (s) list.push({ id: `feat-${i}`, name: s });
+    } else if (item && typeof item === "object") {
+      const obj = item as {
+        id?: string | number;
+        name?: string;
+        title?: string;
+        value?: string;
+        description?: string;
+      };
+      const name = obj.name?.trim() || obj.title?.trim() || "";
+      const value = obj.value?.trim() || obj.description?.trim() || "";
+      if (name || value) {
+        list.push({
+          id: obj.id != null ? String(obj.id) : `feat-${i}`,
+          name: name || value,
+          value: name && value ? value : undefined,
+        });
+      }
+    }
+  }
+  return list;
+}
+
 function mapSizes(raw: unknown[]): AbayaSize[] {
-  if (!Array.isArray(raw) || raw.length === 0) return [...ABAYA_SIZES];
+  if (!Array.isArray(raw) || raw.length === 0) return [];
 
-  const sizes = raw
-    .map((item) => {
-      if (typeof item === "string" || typeof item === "number") {
-        return String(item);
+  const list: AbayaSize[] = [];
+  for (const item of raw) {
+    if (typeof item === "string" || typeof item === "number") {
+      const s = String(item).trim();
+      if (s) list.push(s);
+    } else if (item && typeof item === "object") {
+      if ("name" in item && typeof (item as { name: unknown }).name === "string") {
+        const s = (item as { name: string }).name.trim();
+        if (s) list.push(s);
+      } else if ("size" in item && typeof (item as { size: unknown }).size === "string") {
+        const s = (item as { size: string }).size.trim();
+        if (s) list.push(s);
       }
-      if (item && typeof item === "object" && "name" in item) {
-        return String((item as { name: unknown }).name);
-      }
-      if (item && typeof item === "object" && "size" in item) {
-        return String((item as { size: unknown }).size);
-      }
-      return null;
-    })
-    .filter((size): size is AbayaSize =>
-      ABAYA_SIZES.includes(size as AbayaSize),
-    );
-
-  return sizes.length > 0 ? sizes : [...ABAYA_SIZES];
+    }
+  }
+  return list;
 }
 
 function parseApiDate(value: string): Date | null {
@@ -176,6 +222,8 @@ export function mapProduct(product: ApiProduct): Product {
     inStock: product.status === "active",
     sizes: mapSizes(product.sizes),
     specs: [],
+    features: mapFeatures(product.features),
+    images,
     colors: mapColors(product, images),
     categoryId:
       product.category?.id != null ? String(product.category.id) : undefined,

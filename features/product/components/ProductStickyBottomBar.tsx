@@ -80,22 +80,28 @@ export function ProductStickyBottomBar({
 
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             {product.inStock ? (
-              selectedSize ? (
-                <button
-                  type="button"
-                  onClick={handleSizeClick}
-                  className="truncate font-medium text-foreground hover:text-primary transition-colors text-start"
-                >
-                  {tGuide("size")}: <span className="font-bold">{selectedSize}</span>
-                </button>
+              product.sizes.length > 0 ? (
+                selectedSize ? (
+                  <button
+                    type="button"
+                    onClick={handleSizeClick}
+                    className="truncate font-medium text-foreground hover:text-primary transition-colors text-start"
+                  >
+                    {tGuide("size")}: <span className="font-bold">{selectedSize}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSizeClick}
+                    className="truncate text-primary underline underline-offset-2 text-start"
+                  >
+                    {t("selectSize")}
+                  </button>
+                )
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSizeClick}
-                  className="truncate text-primary underline underline-offset-2 text-start"
-                >
-                  {t("selectSize")}
-                </button>
+                <span className="font-medium text-success">
+                  {product.categoryName ?? t("inStock")}
+                </span>
               )
             ) : (
               <span className="font-semibold text-error">
@@ -139,7 +145,10 @@ export function ProductStickyBottomBar({
           <Button
             type="button"
             size="sm"
-            disabled={!product.inStock}
+            disabled={
+              !product.inStock ||
+              (product.sizes.length > 0 && !selectedSize)
+            }
             onClick={onAddToCartClick}
             className={cn(
               "h-9 sm:h-10 min-w-28 sm:min-w-32 rounded-xl px-3 sm:px-4 text-xs font-semibold shadow-xs transition-all",

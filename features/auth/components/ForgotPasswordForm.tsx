@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
+import { forgotPasswordAction } from "../api/actions";
 import {
   createForgotPasswordSchema,
   type ForgotPasswordFormValues,
@@ -17,6 +18,7 @@ export function ForgotPasswordForm() {
   const t = useTranslations("Auth.forgotPassword");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const schema = useMemo(
     () =>
@@ -41,10 +43,16 @@ export function ForgotPasswordForm() {
   const onValidSubmit = async (values: ForgotPasswordFormValues) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setServerError(null);
     try {
-      // Auth API / password-reset email will be wired here.
-      await new Promise((resolve) => window.setTimeout(resolve, 500));
+      const res = await forgotPasswordAction({ email: values.email });
+      if (!res.success) {
+        setServerError(res.message || "Failed to send reset instructions");
+        return;
+      }
       setSubmittedEmail(values.email.trim());
+    } catch {
+      setServerError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -72,6 +80,14 @@ export function ForgotPasswordForm() {
       className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-md sm:space-y-6 sm:p-6 sm:shadow-lg"
       noValidate
     >
+      {serverError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive sm:text-sm"
+        >
+          {serverError}
+        </div>
+      )}
       <div className="space-y-1.5">
         <Label
           htmlFor="forgot-password-email"

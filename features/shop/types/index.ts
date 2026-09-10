@@ -1,8 +1,4 @@
-import type {
-  AbayaSize,
-  ProductBadge,
-  ProductSwatchId,
-} from "@/features/product/types";
+import type { ProductBadge, ProductSwatchId } from "@/features/product/types";
 import type { ShopFilter } from "@/features/product/utils/shop-filters";
 
 export type ShopSort =
@@ -16,14 +12,20 @@ export interface ShopPriceBounds {
   max: number;
 }
 
+export interface ShopColorOption {
+  id: string;
+  name: string;
+  swatch?: ProductSwatchId;
+  hex?: string;
+}
+
 export interface ShopFilterState {
   categories: string[];
-  sizes: AbayaSize[];
-  colors: ProductSwatchId[];
+  sizes: string[];
+  colors: string[];
   badges: ProductBadge[];
   priceRange: [number, number];
   inStockOnly: boolean;
-  includesSheila: boolean;
   sort: ShopSort;
 }
 

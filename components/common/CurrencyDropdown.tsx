@@ -43,16 +43,22 @@ export function CurrencyDropdown({
   contentClassName?: string;
 }) {
   const t = useTranslations("Currencies");
-  const { currency, setCurrency, supportedCurrencies } = useCurrency();
+  const { currency, setCurrency, supportedCurrencies, currencies, currencyConfig } =
+    useCurrency();
 
-  const options = supportedCurrencies.map((code) => ({
-    code,
-    icon: CURRENCY_ICONS[code],
-  }));
+  const options = supportedCurrencies.map((code) => {
+    const meta = currencies.find((c) => c.code === code);
+    return {
+      code,
+      icon: CURRENCY_ICONS[code],
+      symbol: meta?.symbol || code,
+      name: meta?.name || code,
+    };
+  });
 
   const selectedCurrencyOption =
     options.find((c) => c.code === currency) ?? options[0];
-  const SelectedIcon = selectedCurrencyOption?.icon ?? TbCurrencyLira;
+  const SelectedIcon = selectedCurrencyOption?.icon;
 
   if (options.length === 0) return null;
 
@@ -65,13 +71,19 @@ export function CurrencyDropdown({
             size="sm"
             className={cn(
               "h-8 px-2 text-xs font-medium text-foreground hover:bg-muted hover:text-foreground gap-1.5 transition-colors",
-              className
+              className,
             )}
           />
         }
       >
         <span className="flex items-center gap-1">
-          <SelectedIcon className="size-4 text-primary-700 dark:text-primary-300 stroke-[2.2]" />
+          {SelectedIcon ? (
+            <SelectedIcon className="size-4 text-primary-700 dark:text-primary-300 stroke-[2.2]" />
+          ) : (
+            <span className="text-xs font-semibold text-primary-700 dark:text-primary-300">
+              {currencyConfig.symbol}
+            </span>
+          )}
           <span>{currency}</span>
         </span>
         <ChevronDown className="size-3 text-muted-foreground transition-transform duration-200" />
@@ -81,22 +93,33 @@ export function CurrencyDropdown({
         align="end"
         className={cn("w-48 p-1", contentClassName)}
       >
-        {options.map(({ code, icon: IconComponent }) => {
+        {options.map(({ code, icon: IconComponent, symbol, name }) => {
           const isSelected = currency === code;
+          const label = t.has(code) ? t(code) : `${name} (${symbol})`;
+
           return (
             <DropdownMenuItem
               key={code}
               onClick={() => setCurrency(code)}
               className={cn(
                 "flex items-center justify-between text-xs py-1.5 px-2 cursor-pointer rounded-md transition-colors",
-                isSelected && "bg-muted font-medium text-primary-800 dark:text-primary-200"
+                isSelected &&
+                  "bg-muted font-medium text-primary-800 dark:text-primary-200",
               )}
             >
               <div className="flex items-center gap-2">
-                <IconComponent className="size-4 text-primary-600 dark:text-primary-400 stroke-[2.2]" />
-                <span>{t(code)}</span>
+                {IconComponent ? (
+                  <IconComponent className="size-4 text-primary-600 dark:text-primary-400 stroke-[2.2]" />
+                ) : (
+                  <span className="w-4 text-center font-bold text-xs text-primary-600 dark:text-primary-400">
+                    {symbol}
+                  </span>
+                )}
+                <span>{label}</span>
               </div>
-              {isSelected && <Check className="size-3.5 text-primary-600 dark:text-primary-400" />}
+              {isSelected && (
+                <Check className="size-3.5 text-primary-600 dark:text-primary-400" />
+              )}
             </DropdownMenuItem>
           );
         })}

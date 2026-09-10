@@ -3,7 +3,6 @@ import {
   isShopFilter,
   type ShopFilter,
 } from "@/features/product/utils/shop-filters";
-import { LEGACY_CATEGORY_TO_FILTER } from "@/features/categories/utils/category-href";
 
 export type ResolvedShopPath =
   | { kind: "all" }
@@ -23,15 +22,6 @@ export function resolveShopPath(
   const bySlug = categories.find((category) => category.slug === pathFilter);
   if (bySlug) {
     return { kind: "category", category: bySlug };
-  }
-
-  // Legacy URLs like `/shop/linen` → first category that used to map there.
-  const byLegacyName = categories.find((category) => {
-    const key = category.name.trim().toLowerCase();
-    return LEGACY_CATEGORY_TO_FILTER[key] === pathFilter;
-  });
-  if (byLegacyName) {
-    return { kind: "category", category: byLegacyName };
   }
 
   if (isShopFilter(pathFilter)) {

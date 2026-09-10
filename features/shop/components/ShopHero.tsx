@@ -13,8 +13,6 @@ import { findCategoryForFilter } from "../utils/resolve-shop-path";
 
 const LUXURY_EASE = [0.16, 1, 0.3, 1] as const;
 
-const HERO_FALLBACK_IMAGE = "/imgs/hero-slide-1.jpg";
-
 interface ShopHeroProps {
   pathFilter?: string;
   /** RSC-resolved category (preferred); client hook used as fallback. */
@@ -47,7 +45,7 @@ export function ShopHero({ pathFilter, category: categoryProp }: ShopHeroProps) 
   // Category routes: prefer the category image from `useCategories` / RSC.
   const homeHeroImage = !pathFilter ? heroes[0]?.image?.trim() : undefined;
   const categoryImage = category?.image?.trim() || undefined;
-  const image = homeHeroImage || categoryImage || HERO_FALLBACK_IMAGE;
+  const image = homeHeroImage || categoryImage;
 
   return (
     <section
@@ -84,7 +82,10 @@ export function ShopHero({ pathFilter, category: categoryProp }: ShopHeroProps) 
             className="object-cover object-center"
           />
         ) : (
-          <div className="absolute inset-0 bg-muted" aria-hidden />
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-background to-secondary-100/40 dark:from-primary-950/20 dark:via-background dark:to-secondary-900/30"
+            aria-hidden
+          />
         )}
         {/* Directional scrim for optimal contrast and readability */}
         <div

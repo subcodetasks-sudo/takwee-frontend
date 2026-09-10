@@ -20,6 +20,7 @@ import {
   createVerifyOtpSchema,
   type VerifyOtpFormValues,
 } from "../schemas/verify-otp-schema";
+import { resendVerificationAction, verifyEmailAction } from "../api/actions";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -78,6 +79,22 @@ export function VerifyOtpForm({
     },
   });
 
+  // Prefill devCode from registration redirect if present
+  useEffect(() => {
+    const devCode = searchParams.get("devCode");
+    if (devCode) {
+      setValue("code", devCode);
+      try {
+        gooeyToast.info(t("devCodeToastTitle", { code: devCode }), {
+          description: t("devCodeToastDescription"),
+          duration: 15000,
+        });
+      } catch {
+        // Ignore
+      }
+    }
+  }, [searchParams, setValue, t]);
+
   // Countdown timer effect
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -98,8 +115,11 @@ export function VerifyOtpForm({
     setResendNotification(null);
 
     try {
-      // Mock API call to request a new OTP code
-      await new Promise((resolve) => window.setTimeout(resolve, 600));
+      const res = await resendVerificationAction({ email });
+      if (!res.success) {
+        setServerError(res.message || t("resendError"));
+        return;
+      }
 
       setTimeLeft(RESEND_COOLDOWN_SECONDS);
       setValue("code", "");
@@ -108,6 +128,12 @@ export function VerifyOtpForm({
 
       try {
         gooeyToast.success(msg);
+        if (res.data?.verificationCode) {
+          gooeyToast.info(t("devResentCodeToastTitle", { code: res.data.verificationCode }), {
+            description: t("devResentCodeToastDescription"),
+            duration: 15000,
+          });
+        }
       } catch {
         // Fallback gracefully if toast container isn't ready
       }
@@ -116,10 +142,10 @@ export function VerifyOtpForm({
     } finally {
       setIsResending(false);
     }
-  }, [timeLeft, isResending, t, setValue]);
+  }, [timeLeft, isResending, t, setValue, email]);
 
   // Handle Verify submit
-  const onValidSubmit = async (_values: VerifyOtpFormValues) => {
+  const onValidSubmit = async (values: VerifyOtpFormValues) => {
     if (isSubmitting || isSuccess) return;
 
     setIsSubmitting(true);
@@ -127,8 +153,16 @@ export function VerifyOtpForm({
     setResendNotification(null);
 
     try {
-      // Simulate verification API call
-      await new Promise((resolve) => window.setTimeout(resolve, 800));
+      const res = await verifyEmailAction({
+        email,
+        code: values.code,
+      });
+
+      if (!res.success) {
+        setServerError(res.message || t("errors.invalidCode"));
+        setIsSubmitting(false);
+        return;
+      }
 
       setIsSuccess(true);
 
@@ -140,9 +174,9 @@ export function VerifyOtpForm({
         // Fallback gracefully
       }
 
-      // Smooth transition to store or dashboard
+      // Transition to sign in or target
       window.setTimeout(() => {
-        router.push(redirectTo);
+        router.push(redirectTo || "/login");
       }, 1200);
     } catch {
       setServerError(t("errors.invalidCode"));

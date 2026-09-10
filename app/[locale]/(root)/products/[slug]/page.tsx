@@ -18,6 +18,10 @@ export async function generateStaticParams() {
   }
 }
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   const page = await getProductPageBySlug(slug, locale);
@@ -31,11 +35,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   const name = product.name ?? tProducts(product.nameKey);
-  const description =
-    product.description?.trim() ||
-    (product.specs.length > 0
-      ? tDetails(`products.${product.nameKey}.description`)
-      : name);
+  const rawDescription = product.description?.trim();
+  const description = rawDescription
+    ? stripHtml(rawDescription)
+    : (product.specs.length > 0
+        ? tDetails(`products.${product.nameKey}.description`)
+        : name);
 
   return {
     title: name,

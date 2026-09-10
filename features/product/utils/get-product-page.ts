@@ -18,13 +18,27 @@ export async function getProductPageBySlug(
   slug: string,
   locale?: string,
 ): Promise<ProductPageData | null> {
+  const decodedSlug = decodeURIComponent(slug);
+
   try {
     const list = await fetchProducts(locale);
     const summary = list.find(
-      (product) => product.slug === slug || product.id === slug,
+      (product) =>
+        product.slug === decodedSlug ||
+        product.id === decodedSlug ||
+        product.slug === slug ||
+        product.id === slug,
     );
 
     if (!summary) {
+      // If the slug is numeric, attempt direct fetch by ID
+      if (/^\d+$/.test(decodedSlug)) {
+        try {
+          return await fetchProductById(decodedSlug, locale);
+        } catch {
+          // not found
+        }
+      }
       return null;
     }
 
@@ -51,7 +65,15 @@ export async function getProductPageBySlug(
       console.error("[getProductPageBySlug] list failed", error);
     }
 
-    const sample = getSampleProductBySlug(slug);
+    if (/^\d+$/.test(decodedSlug)) {
+      try {
+        return await fetchProductById(decodedSlug, locale);
+      } catch {
+        // fall through
+      }
+    }
+
+    const sample = getSampleProductBySlug(decodedSlug);
     return sample ? { product: sample, reviews: [] } : null;
   }
 }

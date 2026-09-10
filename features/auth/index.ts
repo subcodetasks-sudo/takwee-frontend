@@ -1,4 +1,4 @@
-export { AuthProvider, useAuth } from "./components/AuthProvider";
+export { useAuth, AUTH_SESSION_QUERY_KEY, type UseAuthReturn } from "./hooks/useAuth";
 export * from "./components/AuthShell";
 export * from "./components/AuthCenteredShell";
 export * from "./components/LoginView";
@@ -13,7 +13,6 @@ export * from "./components/ResetPasswordView";
 export * from "./components/ResetPasswordForm";
 export * from "./types";
 export * from "./schemas";
-export * from "./utils/mock-auth";
 export * from "./utils/session-cookie";
 
 // Server session helpers live in `./api/session` — import that path from

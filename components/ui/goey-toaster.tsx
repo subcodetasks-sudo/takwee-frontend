@@ -3,6 +3,7 @@
 import { GooeyToaster as GooeyToasterPrimitive, gooeyToast } from "goey-toast"
 import type { GooeyToasterProps } from "goey-toast"
 import "goey-toast/styles.css"
+import "./goey-toaster.css"
 
 export { gooeyToast }
 export type { GooeyToasterProps }

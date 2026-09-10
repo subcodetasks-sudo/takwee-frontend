@@ -17,6 +17,20 @@ export interface ApiProductRating {
   updatedAt: string;
 }
 
+export interface ApiProductColor {
+  id: number;
+  name: string;
+  value: string;
+}
+
+export interface ApiProductFeature {
+  id?: number | string;
+  name?: string;
+  title?: string;
+  value?: string;
+  description?: string;
+}
+
 export interface ApiProduct {
   id: number;
   name: string;
@@ -35,9 +49,9 @@ export interface ApiProduct {
   ratings?: ApiProductRating[];
   main_image: string | null;
   images: string[];
-  colors: unknown[];
+  colors: ApiProductColor[] | unknown[];
   sizes: unknown[];
-  features: unknown[];
+  features: ApiProductFeature[] | unknown[];
   createdAt: string;
   updatedAt: string;
 }

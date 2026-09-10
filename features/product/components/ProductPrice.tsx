@@ -41,10 +41,16 @@ export function ProductPrice({
       className={cn("inline-flex items-center gap-0.5 tabular-nums", className)}
       aria-label={`${formatted} ${currency}`}
     >
-      <Icon
-        className={cn("size-4 shrink-0 stroke-[2.2]", iconClassName)}
-        aria-hidden
-      />
+      {Icon ? (
+        <Icon
+          className={cn("size-4 shrink-0 stroke-[2.2]", iconClassName)}
+          aria-hidden
+        />
+      ) : (
+        <span className={cn("text-xs font-semibold shrink-0", iconClassName)} aria-hidden>
+          {currencyConfig.symbol}
+        </span>
+      )}
       <span>{formatted}</span>
     </span>
   );

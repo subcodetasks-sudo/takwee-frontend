@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "@/i18n/routing";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,9 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
+import { gooeyToast } from "@/components/ui/goey-toaster";
+import { useAuth } from "../hooks/useAuth";
+import { loginAction } from "../api/actions";
 import {
   createLoginSchema,
   type LoginFormValues,
@@ -24,8 +28,11 @@ import {
 
 export function LoginForm() {
   const t = useTranslations("Auth.login");
+  const router = useRouter();
+  const { setSnapshot } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const schema = useMemo(
     () =>
@@ -52,12 +59,45 @@ export function LoginForm() {
     },
   });
 
-  const onValidSubmit = async (_values: LoginFormValues) => {
+  const onValidSubmit = async (values: LoginFormValues) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
+    setServerError(null);
     try {
-      // Auth API / session mutation will be wired here.
-      await new Promise((resolve) => window.setTimeout(resolve, 500));
+      const res = await loginAction({
+        email: values.email,
+        password: values.password,
+        rememberMe: values.rememberMe,
+      });
+
+      if (!res.success || !res.data) {
+        setServerError(res.message || "Invalid credentials");
+        return;
+      }
+
+      setSnapshot({
+        user: res.data.user,
+        session: {
+          token: res.data.accessToken,
+          userId: res.data.user.id,
+          expiresAt: new Date(Date.now() + 7200 * 1000).toISOString(),
+        },
+        isAuthenticated: true,
+      });
+
+      const firstName = res.data.user.name?.trim().split(/\s+/)[0] || res.data.user.name || "";
+      try {
+        gooeyToast.success(t("welcomeBackTitle", { name: firstName }), {
+          description: t("welcomeBackDescription"),
+          duration: 6000,
+        });
+      } catch {
+        // Fallback gracefully if toast container is not ready
+      }
+
+      router.push("/");
+    } catch {
+      setServerError("An error occurred during sign in. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -69,6 +109,15 @@ export function LoginForm() {
       className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-md sm:space-y-6 sm:p-6 sm:shadow-lg"
       noValidate
     >
+      {serverError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive sm:text-sm"
+        >
+          {serverError}
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <Label htmlFor="login-email" className="text-xs font-medium sm:text-sm">
           {t("email")}
