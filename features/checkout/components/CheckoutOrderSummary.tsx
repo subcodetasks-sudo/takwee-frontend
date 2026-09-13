@@ -1,17 +1,25 @@
 "use client";
 
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, Tag, Check, X } from "lucide-react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ProductPrice } from "@/features/product";
 import type { CartItem } from "@/features/cart/types";
 import { cn } from "@/lib/utils";
+import type { ApiCheckoutPricing } from "../types/api";
 import { CheckoutLineItems } from "./CheckoutLineItems";
 
 interface CheckoutOrderSummaryProps {
   items: CartItem[];
   itemCount: number;
   subtotalTRY: number;
+  pricing?: ApiCheckoutPricing | null;
+  isPreviewLoading?: boolean;
+  couponCode?: string;
+  onApplyCoupon?: (code: string) => void;
+  onRemoveCoupon?: () => void;
   isSubmitting?: boolean;
 }
 
@@ -19,11 +27,39 @@ export function CheckoutOrderSummary({
   items,
   itemCount,
   subtotalTRY,
+  pricing,
+  isPreviewLoading = false,
+  couponCode = "",
+  onApplyCoupon,
+  onRemoveCoupon,
   isSubmitting = false,
 }: CheckoutOrderSummaryProps) {
   const t = useTranslations("CheckoutPage.summary");
-  const estimatedTaxTRY = Math.round(subtotalTRY * 0.1);
-  const totalTRY = subtotalTRY + estimatedTaxTRY;
+  const tCart = useTranslations("CartPage.summary");
+
+  const [inputCoupon, setInputCoupon] = useState(couponCode);
+
+  // If live pricing from preview API is available, use exact API numbers
+  const subtotal = pricing ? pricing.subtotal : subtotalTRY;
+  const discount = pricing ? pricing.discount : 0;
+  const shippingFee = pricing ? pricing.shipping_cost : 0;
+  const tax = pricing ? pricing.tax : Math.round(subtotalTRY * 0.1);
+  const total = pricing ? pricing.total : subtotal + tax + shippingFee - discount;
+  const appliedCoupon = pricing?.coupon || couponCode;
+
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputCoupon.trim() && onApplyCoupon) {
+      onApplyCoupon(inputCoupon.trim());
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setInputCoupon("");
+    if (onRemoveCoupon) {
+      onRemoveCoupon();
+    }
+  };
 
   return (
     <div
@@ -34,48 +70,162 @@ export function CheckoutOrderSummary({
         <h2 className="text-base sm:text-xl font-semibold tracking-tight text-foreground">
           {t("title")}
         </h2>
-        <span className="text-xs font-medium text-muted-foreground">
-          {t("itemCount", { count: itemCount })}
-        </span>
+        <div className="flex items-center gap-2">
+          {isPreviewLoading ? (
+            <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+          ) : null}
+          <span className="text-xs font-medium text-muted-foreground">
+            {t("itemCount", { count: itemCount })}
+          </span>
+        </div>
       </div>
 
       <CheckoutLineItems items={items} />
 
-      <div className="space-y-2.5 sm:space-y-3.5 border-t border-border/60 pt-3 sm:pt-3.5 text-xs sm:text-sm">
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span>{t("subtotal")}</span>
-          <ProductPrice
-            amountTRY={subtotalTRY}
-            className="font-semibold text-foreground"
-          />
-        </div>
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span>{t("estimatedTax")}</span>
-          <ProductPrice
-            amountTRY={estimatedTaxTRY}
-            className="font-medium text-foreground"
-          />
-        </div>
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span>{t("shipping")}</span>
-          <span className="font-medium text-success">{t("shippingComplimentary")}</span>
-        </div>
-      </div>
+      {/* Coupon Code Input */}
+      {onApplyCoupon ? (
+        <form onSubmit={handleCouponSubmit} className="space-y-2 pt-1 border-t border-border/60">
+          <div className="flex items-center gap-2 pt-2">
+            <div className="relative flex-1">
+              <Tag className="absolute start-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+              <Input
+                type="text"
+                value={inputCoupon}
+                onChange={(e) => setInputCoupon(e.target.value)}
+                placeholder={tCart("promoCode.placeholder")}
+                disabled={Boolean(appliedCoupon) || isPreviewLoading || isSubmitting}
+                className="h-10 ps-9 pe-3 text-xs rounded-xl uppercase tracking-wider font-medium"
+              />
+            </div>
+            {appliedCoupon ? (
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                disabled={isPreviewLoading || isSubmitting}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "h-10 px-3 rounded-xl text-xs font-semibold shrink-0 text-muted-foreground hover:text-foreground",
+                )}
+                title="Remove coupon"
+              >
+                <X className="size-3.5" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!inputCoupon.trim() || isPreviewLoading || isSubmitting}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "h-10 px-4 rounded-xl text-xs font-semibold shrink-0 disabled:opacity-50",
+                )}
+              >
+                {tCart("promoCode.apply")}
+              </button>
+            )}
+          </div>
+          {appliedCoupon ? (
+            <p className="flex items-center gap-1.5 text-xs text-success font-medium">
+              <Check className="size-3.5" />
+              <span>{appliedCoupon}</span>
+            </p>
+          ) : null}
+        </form>
+      ) : null}
 
-      <div className="border-t border-border/70 pt-3 sm:pt-4 space-y-1">
-        <div className="flex items-baseline justify-between">
-          <span className="text-sm sm:text-base font-semibold text-foreground">
-            {t("total")}
-          </span>
-          <ProductPrice
-            amountTRY={totalTRY}
-            className="text-lg sm:text-2xl font-bold tracking-tight text-foreground"
-          />
+      {isPreviewLoading && !pricing ? (
+        <div className="space-y-3 border-t border-border/60 pt-3 sm:pt-3.5">
+          <div className="flex items-center justify-between">
+            <div className="h-4 w-20 rounded bg-muted/60 animate-pulse" />
+            <div className="h-4 w-16 rounded bg-muted/60 animate-pulse" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="h-4 w-24 rounded bg-muted/60 animate-pulse" />
+            <div className="h-4 w-12 rounded bg-muted/60 animate-pulse" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="h-4 w-16 rounded bg-muted/60 animate-pulse" />
+            <div className="h-4 w-20 rounded bg-muted/60 animate-pulse" />
+          </div>
+          <div className="border-t border-border/70 pt-3 flex items-center justify-between">
+            <div className="h-5 w-20 rounded bg-muted/60 animate-pulse" />
+            <div className="h-6 w-24 rounded bg-muted/60 animate-pulse" />
+          </div>
         </div>
-        <p className="text-[10px] sm:text-[11px] text-muted-foreground">
-          {t("totalNote")}
-        </p>
-      </div>
+      ) : (
+        <>
+          <div className="space-y-2.5 sm:space-y-3.5 border-t border-border/60 pt-3 sm:pt-3.5 text-xs sm:text-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>{t("subtotal")}</span>
+              {isPreviewLoading ? (
+                <div className="h-4 w-16 rounded bg-muted/60 animate-pulse" />
+              ) : (
+                <ProductPrice
+                  amountTRY={subtotal}
+                  className="font-semibold text-foreground"
+                />
+              )}
+            </div>
+
+            {discount > 0 ? (
+              <div className="flex items-center justify-between text-success">
+                <span>Discount {appliedCoupon ? `(${appliedCoupon})` : ""}</span>
+                {isPreviewLoading ? (
+                  <div className="h-4 w-14 rounded bg-muted/60 animate-pulse" />
+                ) : (
+                  <span className="font-semibold tabular-nums">- <ProductPrice amountTRY={discount} /></span>
+                )}
+              </div>
+            ) : null}
+
+            {tax > 0 ? (
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>{t("estimatedTax")}</span>
+                {isPreviewLoading ? (
+                  <div className="h-4 w-14 rounded bg-muted/60 animate-pulse" />
+                ) : (
+                  <ProductPrice
+                    amountTRY={tax}
+                    className="font-medium text-foreground"
+                  />
+                )}
+              </div>
+            ) : null}
+
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>{t("shipping")}</span>
+              {isPreviewLoading ? (
+                <div className="h-4 w-16 rounded bg-muted/60 animate-pulse" />
+              ) : shippingFee === 0 ? (
+                <span className="font-medium text-success">{t("shippingComplimentary")}</span>
+              ) : (
+                <ProductPrice
+                  amountTRY={shippingFee}
+                  className="font-medium text-foreground"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="border-t border-border/70 pt-3 sm:pt-4 space-y-1">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm sm:text-base font-semibold text-foreground">
+                {t("total")}
+              </span>
+              {isPreviewLoading ? (
+                <div className="h-7 w-24 rounded bg-muted/60 animate-pulse" />
+              ) : (
+                <ProductPrice
+                  amountTRY={total}
+                  className="text-lg sm:text-2xl font-bold tracking-tight text-foreground"
+                />
+              )}
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-muted-foreground">
+              {t("totalNote")}
+            </p>
+          </div>
+        </>
+      )}
 
       <button
         type="submit"

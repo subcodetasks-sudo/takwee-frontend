@@ -51,8 +51,8 @@ export function Footer() {
     workingHours,
     social,
   } = useSettings();
-  const { supportPages, aboutPages, legalPages, otherPages } = usePages();
-  const { categories } = useCategories();
+  const { supportPages, aboutPages, legalPages, otherPages, isLoading: isPagesLoading } = usePages();
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
 
   // Mobile Accordion state for columns
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -471,7 +471,7 @@ export function Footer() {
           {/* Navigation Links Columns (Desktop: dynamic columns, Mobile: Responsive Collapsibles) */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 pt-4 lg:pt-0">
             {/* Column: Collections ← GET /api/v1/categories */}
-            {collectionsLinks.length > 0 ? (
+            {collectionsLinks.length > 0 || (isCategoriesLoading && collectionsLinks.length === 0) ? (
               <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
                 <button
                   type="button"
@@ -497,24 +497,33 @@ export function Footer() {
                     openSections.collections && "block"
                   )}
                 >
-                  <ul className="space-y-2.5 list-none p-0 m-0">
-                    {collectionsLinks.map((link) => (
-                      <li key={link.id}>
-                        <Link
-                          href={link.href}
-                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {isCategoriesLoading && collectionsLinks.length === 0 ? (
+                    <div className="space-y-2.5" aria-hidden="true">
+                      <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-28 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-20 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
+                    </div>
+                  ) : (
+                    <ul className="space-y-2.5 list-none p-0 m-0">
+                      {collectionsLinks.map((link) => (
+                        <li key={link.id}>
+                          <Link
+                            href={link.href}
+                            className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ) : null}
 
             {/* Column: Client Care ← GET /api/v1/pages group=support */}
-            {servicesLinks.length > 0 ? (
+            {servicesLinks.length > 0 || (isPagesLoading && servicesLinks.length === 0) ? (
               <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
                 <button
                   type="button"
@@ -540,24 +549,33 @@ export function Footer() {
                     openSections.services && "block"
                   )}
                 >
-                  <ul className="space-y-2.5 list-none p-0 m-0">
-                    {servicesLinks.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {isPagesLoading && servicesLinks.length === 0 ? (
+                    <div className="space-y-2.5" aria-hidden="true">
+                      <div className="h-3.5 w-28 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-32 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-20 rounded bg-muted animate-pulse" />
+                    </div>
+                  ) : (
+                    <ul className="space-y-2.5 list-none p-0 m-0">
+                      {servicesLinks.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ) : null}
 
             {/* Column: The Atelier ← GET /api/v1/pages group=about */}
-            {atelierLinks.length > 0 ? (
+            {atelierLinks.length > 0 || (isPagesLoading && atelierLinks.length === 0) ? (
               <div className="border-b md:border-b-0 border-border/60 pb-4 md:pb-0">
                 <button
                   type="button"
@@ -583,18 +601,26 @@ export function Footer() {
                     openSections.atelier && "block"
                   )}
                 >
-                  <ul className="space-y-2.5 list-none p-0 m-0">
-                    {atelierLinks.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {isPagesLoading && atelierLinks.length === 0 ? (
+                    <div className="space-y-2.5" aria-hidden="true">
+                      <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-28 rounded bg-muted animate-pulse" />
+                      <div className="h-3.5 w-32 rounded bg-muted animate-pulse" />
+                    </div>
+                  ) : (
+                    <ul className="space-y-2.5 list-none p-0 m-0">
+                      {atelierLinks.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-all inline-block hover:translate-x-1 rtl:hover:-translate-x-1"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ) : null}
@@ -645,65 +671,10 @@ export function Footer() {
         </div>
       </div>
 
-      {/* 4. Bottom Bar: Payment Badges, Copyright, Legal, Back to Top */}
+      {/* 4. Bottom Bar: Copyright, Legal, Back to Top */}
       <div className="border-t border-border/60 bg-background/80 py-8">
-        <div className="page-shell space-y-6">
-          {/* Top sub-bar: Payment Methods & Secure Checkout indicator */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-border/40">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground text-center sm:text-start">
-              <ShieldCheck className="size-4 text-primary-600 dark:text-primary-400 shrink-0" />
-              <span className="font-medium">{t("paymentSecure")}</span>
-            </div>
-
-            {/* Payment Method Badges - Wrapping & Mobile Responsive */}
-            <div
-              className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center max-w-full"
-              aria-label={t("paymentSecure")}
-            >
-              {/* Apple Pay */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs">
-                <span className="font-heading text-[11px] font-semibold text-foreground tracking-tight">
-                  Apple Pay
-                </span>
-              </div>
-              {/* Visa */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs">
-                <span className="font-heading text-[11px] font-bold italic text-foreground tracking-tight">
-                  VISA
-                </span>
-              </div>
-              {/* Mastercard */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs gap-1">
-                <div className="flex -space-x-1.5 rtl:space-x-reverse">
-                  <div className="size-3 rounded-full bg-destructive/90" />
-                  <div className="size-3 rounded-full bg-warning/90" />
-                </div>
-                <span className="font-heading text-[10px] font-medium text-foreground">
-                  Mastercard
-                </span>
-              </div>
-              {/* Mada */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs">
-                <span className="font-heading text-[11px] font-bold text-secondary tracking-tight">
-                  mada
-                </span>
-              </div>
-              {/* Tabby */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs">
-                <span className="font-heading text-[10px] font-bold tracking-tight text-foreground">
-                  tabby
-                </span>
-              </div>
-              {/* Tamara */}
-              <div className="flex h-7 items-center justify-center rounded-md border border-border/70 bg-card px-2.5 shadow-2xs">
-                <span className="font-heading text-[10px] font-bold tracking-tight text-foreground">
-                  tamara
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom sub-bar: Copyright, Legal Links (from CMS when present), Back to top */}
+        <div className="page-shell">
+          {/* Copyright, Legal Links (from CMS when present), Back to top */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Copyright & Legal Links */}
             <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-5 text-xs text-muted-foreground text-center sm:text-start">

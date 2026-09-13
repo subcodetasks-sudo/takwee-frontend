@@ -84,3 +84,30 @@ export interface ApiProductDetailResponse {
   message: string;
   data: ApiProduct;
 }
+
+/** Raw shapes returned by `GET /api/v1/abaya-size-guide`. */
+export interface ApiAbayaSizeGuideRow {
+  size: string;
+  height_min: number;
+  height_max: number;
+  height_plus: boolean;
+  abaya_length: number;
+  chest_width: number;
+}
+
+export interface ApiAbayaSizeGuide {
+  title: string;
+  description: string;
+  how_to: string;
+  footer_note: string;
+  consultation_cta: string;
+  default_unit: string;
+  rows: ApiAbayaSizeGuideRow[];
+}
+
+export interface ApiAbayaSizeGuideResponse {
+  success: boolean;
+  message: string;
+  data: ApiAbayaSizeGuide;
+}
+

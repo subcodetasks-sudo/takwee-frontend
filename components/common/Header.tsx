@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { Heart, ShoppingBasket, Search, X, User } from "lucide-react";
+import { Heart, ShoppingBasket, Search, X, User, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/routing";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,9 +35,15 @@ const DESKTOP_NAV_BREAKPOINT = 1117;
 export function Header() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const { announcementText } = useHomePage();
-  const { categories } = useCategories();
+  const {
+    categories,
+    isPending: isCategoriesPending,
+    isLoading: isCategoriesQueryLoading,
+  } = useCategories();
+  const isCategoriesLoading =
+    isCategoriesPending || isCategoriesQueryLoading || categories.length === 0;
   const { appName, siteLogo } = useSettings();
   const { itemCount: favoriteItemCount, isHydrated: isWishlistHydrated } =
     useWishlist();
@@ -74,9 +80,13 @@ export function Header() {
     const exploreLinks = [
       { label: t("home"), href: "/", ariaLabel: t("home") },
       { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
-      isAuthenticated
-        ? { label: t("account"), href: "/me", ariaLabel: t("account") }
-        : { label: t("login"), href: "/login", ariaLabel: t("login") },
+      ...(isAuthLoading
+        ? []
+        : [
+            isAuthenticated
+              ? { label: t("account"), href: "/me", ariaLabel: t("account") }
+              : { label: t("login"), href: "/login", ariaLabel: t("login") },
+          ]),
     ];
 
     const cards: CardNavItem[] = [
@@ -100,7 +110,7 @@ export function Header() {
     }
 
     return cards;
-  }, [categories, isAuthenticated, t]);
+  }, [categories, isAuthLoading, isAuthenticated, t]);
 
   useEffect(() => {
     const mql = window.matchMedia(
@@ -146,7 +156,7 @@ export function Header() {
       className={cn("sticky top-0 z-40 w-full", isMenuOpen && "z-[70]")}
     >
       {/* Always pinned */}
-      <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary">
+      <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary text-secondary-foreground">
         <TextLoop
           key={`${locale}-${ribbonText}`}
           text={ribbonText}
@@ -159,7 +169,7 @@ export function Header() {
           letterSpacing={1.25}
           ribbon={false}
           color="currentColor"
-          className="bg-secondary py-1 text-white dark:text-secondary-300"
+          className="py-1 text-secondary-foreground"
         />
       </div>
 
@@ -176,6 +186,7 @@ export function Header() {
             <div className="flex items-center min-[1117px]:hidden">
               <CardNav
                 items={mobileNavCards}
+                isLoadingCategories={isCategoriesLoading && categories.length === 0}
                 onOpenChange={(open) => {
                   setIsMenuOpen(open);
                   if (open) setHidden(false);
@@ -247,6 +258,27 @@ export function Header() {
                   <TooltipTrigger
                     render={
                       <Link
+                        href="/settings"
+                        className="relative flex size-8 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted sm:size-10"
+                        aria-label={t("storeSettings")}
+                      />
+                    }
+                  >
+                    <Settings className="size-4 sm:size-5" />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {t("storeSettings")}
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Link
                         href="/wishlist"
                         className="relative flex size-8 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted sm:size-10"
                         aria-label={t("favorites")}
@@ -311,7 +343,13 @@ export function Header() {
                   </TooltipContent>
                 </Tooltip>
 
-                {isAuthenticated ? (
+                {isAuthLoading ? (
+                  <div
+                    className="ms-0.5 hidden h-8 w-16 rounded-md bg-muted/70 animate-pulse min-[1117px]:inline-flex sm:h-9 sm:w-20"
+                    aria-label="Loading authentication"
+                    aria-busy="true"
+                  />
+                ) : isAuthenticated ? (
                   <Tooltip>
                     <TooltipTrigger
                       render={
@@ -375,18 +413,35 @@ export function Header() {
           "border-b border-border/70 bg-background/95 backdrop-blur-md",
         )}
       >
-        {navLinks.map((link) => (
-          <Link
-            key={link.id}
-            href={link.href}
-            className="relative text-xs lg:text-sm font-medium px-2.5 py-1.5 rounded-md transition-colors whitespace-nowrap group text-foreground/80 hover:text-foreground hover:bg-muted/70"
+        {isCategoriesLoading ? (
+          <div
+            className="flex items-center justify-center gap-2 lg:gap-3 shrink-0"
+            aria-label="Loading navigation"
+            aria-busy="true"
           >
-            <span className="relative z-10 flex items-center gap-1.5">
-              {link.label}
-            </span>
-            <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 ease-out" />
-          </Link>
-        ))}
+            <span className="h-7 w-16 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-24 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-28 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-18 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-20 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-16 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-16 rounded-md bg-muted/70 animate-pulse" />
+            <span className="h-7 w-14 rounded-md bg-muted/70 animate-pulse" />
+          </div>
+        ) : (
+          navLinks.map((link) => (
+            <Link
+              key={link.id}
+              href={link.href}
+              className="relative text-xs lg:text-sm font-medium px-2.5 py-1.5 rounded-md transition-colors whitespace-nowrap group text-foreground/80 hover:text-foreground hover:bg-muted/70"
+            >
+              <span className="relative z-10 flex items-center gap-1.5">
+                {link.label}
+              </span>
+              <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 ease-out" />
+            </Link>
+          ))
+        )}
       </motion.nav>
     </header>
   );

@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import type { ProductColor } from "@/features/product/types";
 import type { CartItem } from "../types";
 
 interface CartItemRowProps {
@@ -75,7 +76,17 @@ export function CartItemRow({
     item.product.colors[0]?.images[0] ??
     "/imgs/hero-slide-1.jpg";
 
-  const productName = tProducts(item.product.nameKey);
+  const productName =
+    item.product.name?.trim() ||
+    (tProducts.has(item.product.nameKey)
+      ? tProducts(item.product.nameKey)
+      : item.product.nameKey);
+
+  const getColorName = (color?: ProductColor) => {
+    if (!color) return "";
+    if (tColors.has(color.nameKey)) return tColors(color.nameKey);
+    return color.name?.trim() || color.nameKey || color.id;
+  };
 
   return (
     <motion.div
@@ -151,7 +162,7 @@ export function CartItemRow({
                 />
                 <span className="font-medium me-0.5">{tItem("color")}:</span>
                 <span className="font-semibold text-foreground">
-                  {selectedColor.nameKey || selectedColor.id}
+                  {getColorName(selectedColor)}
                 </span>
               </span>
             ) : null}

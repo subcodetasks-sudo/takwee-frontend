@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { GoArrowUpRight } from "react-icons/go";
-import { Menu, Package, User, X } from "lucide-react";
+import { ChevronRight, Menu, Package, Settings, User, X } from "lucide-react";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { CurrencyDropdown } from "@/components/common/CurrencyDropdown";
@@ -32,6 +32,7 @@ export type CardNavItem = {
 export interface CardNavProps {
   /** Dynamic shop / catalog cards (language, currency, orders are built-in). */
   items: CardNavItem[];
+  isLoadingCategories?: boolean;
   className?: string;
   onOpenChange?: (open: boolean) => void;
 }
@@ -47,6 +48,7 @@ const cardTransition = { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const };
 
 export default function CardNav({
   items,
+  isLoadingCategories = false,
   className = "",
   onOpenChange,
 }: CardNavProps) {
@@ -54,7 +56,7 @@ export default function CardNav({
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const [panelTop, setPanelTop] = useState(0);
@@ -185,6 +187,27 @@ export default function CardNav({
                   </motion.div>
                 ))}
 
+                {isLoadingCategories && catalogCards.length <= 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ ...cardTransition, delay: 0.14 }}
+                    className={cn(
+                      "nav-card relative shrink-0 rounded-lg select-none",
+                      DEFAULT_CARD_SURFACES[1],
+                    )}
+                  >
+                    <div className="flex flex-col gap-2.5 p-3">
+                      <div className="h-5 w-24 rounded bg-secondary-foreground/25 animate-pulse" />
+                      <div className="flex flex-col gap-2 pt-1">
+                        <div className="h-4 w-32 rounded bg-secondary-foreground/15 animate-pulse" />
+                        <div className="h-4 w-28 rounded bg-secondary-foreground/15 animate-pulse" />
+                        <div className="h-4 w-36 rounded bg-secondary-foreground/15 animate-pulse" />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Fixed: account, orders, language, currency */}
                 <motion.div
                   initial={{ opacity: 0, y: 24 }}
@@ -200,10 +223,18 @@ export default function CardNav({
                 >
                   <div className="flex flex-col gap-3 p-3">
                     <div className="text-lg font-medium tracking-tight">
-                      {isAuthenticated ? t("account") : t("login")}
+                      {isAuthLoading ? (
+                        <div className="h-6 w-20 rounded bg-muted-foreground/20 animate-pulse" />
+                      ) : isAuthenticated ? (
+                        t("account")
+                      ) : (
+                        t("login")
+                      )}
                     </div>
 
-                    {isAuthenticated ? (
+                    {isAuthLoading ? (
+                      <div className="h-9 w-full rounded-md bg-muted-foreground/15 animate-pulse" />
+                    ) : isAuthenticated ? (
                       <div className="flex flex-col gap-0.5">
                         <Link
                           href="/me"
@@ -281,6 +312,20 @@ export default function CardNav({
                           {t("currency")}
                         </span>
                         <CurrencyDropdown className="h-7" />
+                      </div>
+
+                      <div className="border-t border-border/60 pt-2">
+                        <Link
+                          href="/settings"
+                          onClick={closeMenu}
+                          className="flex items-center justify-between py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <Settings className="size-3.5" />
+                            <span>{t("storeSettings")}</span>
+                          </span>
+                          <ChevronRight className="size-3.5 rtl:rotate-180" />
+                        </Link>
                       </div>
                     </div>
                   </div>

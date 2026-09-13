@@ -38,7 +38,7 @@ export async function ProfileQuickLinks() {
     <FadeIn direction="up" delay={0.08}>
       <StaggerContainer
         staggerDelay={0.08}
-        className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         {LINKS.map((link) => {
           const Icon = link.icon;
@@ -47,36 +47,38 @@ export async function ProfileQuickLinks() {
           const comingSoon = link.disabled ? t("wishlist.comingSoon") : null;
 
           const content = (
-            <>
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
-                <Icon className="size-5" aria-hidden />
-              </span>
-              <span className="min-w-0 flex-1 text-start">
-                <span className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground">
-                    {label}
-                  </span>
-                  {comingSoon && (
-                    <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                      {comingSoon}
-                    </span>
-                  )}
+            <div className="flex flex-col justify-between h-full min-h-[160px] p-6 sm:p-7">
+              <div className="flex items-start justify-between gap-4">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-muted/60 text-foreground transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/10 group-hover:text-primary">
+                  <Icon className="size-6" aria-hidden />
                 </span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">
+                {!link.disabled ? (
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground/50 transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 group-hover:text-foreground group-hover:bg-muted/50">
+                    <ChevronRight className="size-4 shrink-0 rtl:rotate-180" />
+                  </span>
+                ) : comingSoon ? (
+                  <span className="rounded-full border border-border/60 bg-muted/60 px-2.5 py-1 text-[11px] font-medium tracking-wide text-muted-foreground">
+                    {comingSoon}
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-6 space-y-1.5 text-start">
+                <span className="block text-base sm:text-lg font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                  {label}
+                </span>
+                <span className="block text-xs sm:text-sm leading-relaxed text-muted-foreground line-clamp-2">
                   {description}
                 </span>
-              </span>
-              {!link.disabled && (
-                <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" />
-              )}
-            </>
+              </div>
+            </div>
           );
 
           const className = cn(
-            "flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors",
+            "group relative block h-full w-full overflow-hidden rounded-2xl border border-border/80 bg-card text-card-foreground shadow-xs transition-all duration-300",
             link.disabled
               ? "cursor-not-allowed opacity-70"
-              : "hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              : "hover:-translate-y-1 hover:border-border hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           );
 
           return (

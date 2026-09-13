@@ -4,7 +4,10 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { ProductPrice } from "@/features/product";
-import { PRODUCT_SWATCH_CLASSES } from "@/features/product/types";
+import {
+  PRODUCT_SWATCH_CLASSES,
+  type ProductColor,
+} from "@/features/product/types";
 import type { CartItem } from "@/features/cart/types";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +33,16 @@ export function CheckoutLineItems({ items }: CheckoutLineItemsProps) {
           selectedColor?.images[0] ??
           item.product.colors[0]?.images[0] ??
           "/imgs/hero-slide-1.jpg";
-        const productName = tProducts(item.product.nameKey);
+        const productName =
+          item.product.name?.trim() ||
+          (tProducts.has(item.product.nameKey)
+            ? tProducts(item.product.nameKey)
+            : item.product.nameKey);
+        const getColorName = (color?: ProductColor) => {
+          if (!color) return "";
+          if (tColors.has(color.nameKey)) return tColors(color.nameKey);
+          return color.name?.trim() || color.nameKey || color.id;
+        };
         const lineTotal = item.product.priceTRY * item.quantity;
 
         return (
@@ -70,7 +82,7 @@ export function CheckoutLineItems({ items }: CheckoutLineItemsProps) {
                       style={selectedColor.hex ? { backgroundColor: selectedColor.hex } : undefined}
                       aria-hidden
                     />
-                    {selectedColor.nameKey || selectedColor.id}
+                    {getColorName(selectedColor)}
                   </span>
                 ) : null}
                 <span>{tSummary("qty", { count: item.quantity })}</span>

@@ -1,68 +1,61 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Check, ChevronDown, Globe, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  findCountryByCodeOrName,
-  getLocalizedCountryName,
-  getOrderedCountriesForSelect,
-  type PhoneCountry,
-} from "../utils/phone-codes";
+import { useCountries } from "../hooks/useCountries";
+import type { ShippingCountry } from "../types";
 
 interface CountrySelectFieldProps {
+  countryId?: number;
   countryCode?: string;
   countryName?: string;
-  onSelect: (country: PhoneCountry) => void;
+  onSelect: (country: ShippingCountry) => void;
   hasError?: boolean;
 }
 
 export function CountrySelectField({
+  countryId,
   countryCode,
   countryName,
   onSelect,
   hasError = false,
 }: CountrySelectFieldProps) {
   const t = useTranslations("ProfilePage.addresses");
-  const locale = useLocale();
+  const { countries, isLoading } = useCountries();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const countries = useMemo(
-    () => getOrderedCountriesForSelect(locale),
-    [locale]
-  );
-
   const selected = useMemo(() => {
-    return (
-      findCountryByCodeOrName(countryCode) ||
-      findCountryByCodeOrName(countryName)
-    );
-  }, [countryCode, countryName]);
+    if (countryId) {
+      const byId = countries.find((country) => country.id === countryId);
+      if (byId) return byId;
+    }
+    if (countryCode) {
+      const byCode = countries.find(
+        (country) => country.code.toLowerCase() === countryCode.toLowerCase(),
+      );
+      if (byCode) return byCode;
+    }
+    return undefined;
+  }, [countries, countryId, countryCode]);
 
-  const selectedLabel = selected
-    ? getLocalizedCountryName(selected, locale)
-    : null;
+  const selectedLabel = selected?.name || countryName || null;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return countries;
 
     return countries.filter((country) => {
-      const localized = getLocalizedCountryName(country, locale).toLowerCase();
       return (
-        localized.includes(q) ||
-        country.nameEn.toLowerCase().includes(q) ||
-        country.nameAr.toLowerCase().includes(q) ||
-        country.nameTr.toLowerCase().includes(q) ||
-        country.code.toLowerCase().includes(q) ||
-        country.phone_code.includes(q.replace(/^\+/, ""))
+        country.name.toLowerCase().includes(q) ||
+        country.code.toLowerCase().includes(q)
       );
     });
-  }, [countries, locale, query]);
+  }, [countries, query]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,7 +81,7 @@ export function CountrySelectField({
     setQuery("");
   }, [open]);
 
-  const handleSelect = (country: PhoneCountry) => {
+  const handleSelect = (country: ShippingCountry) => {
     onSelect(country);
     setOpen(false);
     setQuery("");
@@ -101,11 +94,13 @@ export function CountrySelectField({
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={t("form.country")}
+        disabled={isLoading}
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
           "flex h-9 w-full items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 text-sm shadow-2xs transition-colors hover:bg-muted/40 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none",
           hasError && "border-destructive ring-1 ring-destructive/30",
-          open && "border-ring ring-1 ring-ring"
+          open && "border-ring ring-1 ring-ring",
+          isLoading && "cursor-wait opacity-70",
         )}
       >
         <span className="flex min-w-0 items-center gap-2">
@@ -116,16 +111,18 @@ export function CountrySelectField({
           <span
             className={cn(
               "truncate text-start",
-              selectedLabel ? "text-foreground" : "text-muted-foreground"
+              selectedLabel ? "text-foreground" : "text-muted-foreground",
             )}
           >
-            {selectedLabel ?? t("form.countryPlaceholder")}
+            {isLoading
+              ? t("form.loadingCountries")
+              : (selectedLabel ?? t("form.countryPlaceholder"))}
           </span>
         </span>
         <ChevronDown
           className={cn(
             "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
-            open && "rotate-180"
+            open && "rotate-180",
           )}
           aria-hidden
         />
@@ -159,21 +156,20 @@ export function CountrySelectField({
               </li>
             ) : (
               filtered.map((country) => {
-                const label = getLocalizedCountryName(country, locale);
-                const isSelected = selected?.code === country.code;
+                const isSelected = selected?.id === country.id;
 
                 return (
-                  <li key={country.code} role="option" aria-selected={isSelected}>
+                  <li key={country.id} role="option" aria-selected={isSelected}>
                     <button
                       type="button"
                       onClick={() => handleSelect(country)}
                       className={cn(
                         "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-start text-sm transition-colors hover:bg-muted select-none",
-                        isSelected && "bg-muted font-medium"
+                        isSelected && "bg-muted font-medium",
                       )}
                     >
                       <span className="min-w-0 truncate text-foreground">
-                        {label}
+                        {country.name}
                       </span>
                       {isSelected && (
                         <Check

@@ -10,6 +10,7 @@ import { CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import {
   Tooltip,
   TooltipContent,
@@ -43,13 +44,14 @@ export function PasswordForm() {
         mismatch: t("errors.mismatch"),
         sameAsCurrent: t("errors.sameAsCurrent"),
       }),
-    [t]
+    [t],
   );
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(schema),
@@ -69,17 +71,43 @@ export function PasswordForm() {
   const onValidSubmit = async (values: PasswordFormValues) => {
     if (isUpdatingPassword) return;
 
-    await updatePassword({
-      currentPassword: values.currentPassword,
-      newPassword: values.newPassword,
-      confirmPassword: values.confirmPassword,
-    });
-    reset({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setSaved(true);
+    try {
+      await gooeyToast.promise(
+        updatePassword({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+        }),
+        {
+          loading: t("saving"),
+          success: t("saved"),
+          error: (err: any) => {
+            if (err?.fieldErrors) {
+              if (err.fieldErrors.current_password?.[0]) {
+                setError("currentPassword", {
+                  message: err.fieldErrors.current_password[0],
+                });
+              }
+              if (err.fieldErrors.new_password?.[0]) {
+                setError("newPassword", {
+                  message: err.fieldErrors.new_password[0],
+                });
+              }
+            }
+            return err.message || t("errors.updateFailed");
+          },
+        },
+      );
+
+      reset({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setSaved(true);
+    } catch {
+      // Error handled by toast
+    }
   };
 
   return (
@@ -197,7 +225,7 @@ function PasswordField({
           {...registration}
           className={cn(
             "h-9 pe-10 text-sm md:h-10",
-            error && "border-destructive ring-1 ring-destructive/30"
+            error && "border-destructive ring-1 ring-destructive/30",
           )}
           autoComplete={autoComplete}
           aria-invalid={!!error}

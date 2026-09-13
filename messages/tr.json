@@ -31,13 +31,38 @@
         "description": "Teslimat ve fatura bilgileri"
       },
       "settings": {
-        "label": "Ayarlar",
-        "description": "Tercihler ve hesap seçenekleri"
+        "label": "Hesap Ayarları",
+        "description": "Profil, şifre ve bildirimleri yönetin"
       }
     },
     "preferences": {
-      "title": "Dil ve para birimi",
-      "subtitle": "Gezinme ve alışveriş tercihlerinizi seçin"
+      "title": "Tercihler ve Deneyim",
+      "subtitle": "İletişim kanallarını, butik temasını ve bölgesel gezinme seçeneklerini yönetin.",
+      "saved": "Tercihler başarıyla kaydedildi.",
+      "notifications": {
+        "title": "Bildirim Kanalları",
+        "subtitle": "Sipariş takibi, özel dikim güncellemeleri ve özel davetleri nasıl alacağınızı seçin.",
+        "email": "E-posta bildirimleri",
+        "emailHint": "Sipariş makbuzları, kargo durumları ve özel koleksiyon davetleri alın.",
+        "sms": "SMS metin bildirimleri",
+        "smsHint": "Metin mesajı ile gerçek zamanlı kurye ve teslimat bilgilendirmesi.",
+        "push": "Anlık tarayıcı bildirimleri",
+        "pushHint": "Sipariş hareketleriniz için anında cihaz bildirimleri."
+      },
+      "appearance": {
+        "title": "Görünüm ve Tema",
+        "subtitle": "Butik görsel atmosferini ve katalog yerleşim yoğunluğunu özelleştirin.",
+        "theme": "Renk teması",
+        "themeSystem": "Sistem varsayılanı",
+        "themeLight": "Doğal Keten (Açık)",
+        "themeDark": "Zarif Gece (Koyu)",
+        "compactMode": "Kompakt yerleşim",
+        "compactModeHint": "Daha yoğun katalog görünümleri ve daraltılmış boşluklar."
+      },
+      "regional": {
+        "title": "Dil ve Para Birimi",
+        "subtitle": "Görüntüleme dili ve tercih edilen para birimi."
+      }
     },
     "orders": {
       "metaTitle": "Siparişlerim",
@@ -199,7 +224,12 @@
         "stateOrProvince": "İl / Eyalet",
         "stateOrProvincePlaceholder": "Örn. İstanbul, Ankara",
         "city": "İlçe / Şehir",
-        "cityPlaceholder": "Örn. Kadıköy, Çankaya",
+        "cityPlaceholder": "Şehir seçin",
+        "searchCityPlaceholder": "Şehir ara...",
+        "loadingCountries": "Ülkeler yükleniyor...",
+        "loadingCities": "Şehirler yükleniyor...",
+        "selectCountryFirst": "Lütfen önce ülke seçin",
+        "noCitiesFound": "Bu ülke için şehir bulunamadı",
         "district": "Mahalle / Semt",
         "districtPlaceholder": "Örn. Moda, Suadiye",
         "streetAddress": "Cadde / Sokak ve Bina No",
@@ -232,13 +262,26 @@
         "confirm": "Sil",
         "cancel": "Vazgeç",
         "cannotDeleteDefault": "Tek varsayılan adresinizi silemezsiniz. Lütfen önce başka bir adresi varsayılan olarak belirleyin."
+      },
+      "loadError": {
+        "title": "Adresler yüklenemedi",
+        "description": "Lütfen kısa bir süre sonra tekrar deneyin.",
+        "retry": "Yeniden deneyin"
+      },
+      "toasts": {
+        "saveSuccess": "Adres başarıyla kaydedildi.",
+        "saveError": "Adres kaydedilemedi. Lütfen tekrar deneyin.",
+        "deleteSuccess": "Adres başarıyla silindi.",
+        "deleteError": "Adres silinemedi. Lütfen tekrar deneyin.",
+        "defaultSuccess": "Varsayılan adres güncellendi.",
+        "defaultError": "Varsayılan adres güncellenemedi. Lütfen tekrar deneyin."
       }
     },
     "settings": {
-      "metaTitle": "Ayarlar",
-      "metaDescription": "Hesap bilgilerinizi, şifrenizi ve tercihlerinizi yönetin.",
-      "title": "Ayarlar",
-      "subtitle": "Kişisel bilgilerinizi ve hesap güvenliğinizi güncelleyin.",
+      "metaTitle": "Hesap Ayarları",
+      "metaDescription": "Hesap bilgilerinizi, şifrenizi, tercihlerinizi ve bildirimlerinizi yönetin.",
+      "title": "Hesap Ayarları",
+      "subtitle": "Kişisel bilgilerinizi, hesap güvenliğinizi ve bildirimlerinizi güncelleyin.",
       "backToAccount": "Hesaba dön",
       "profile": {
         "title": "Kişisel bilgiler",
@@ -247,10 +290,15 @@
         "namePlaceholder": "örn. Layla Al-Hassan",
         "email": "E-posta adresi",
         "emailPlaceholder": "name@example.com",
+        "emailReadOnly": "Hesap kimlik bilgileri üzerinden yönetilir",
+        "mobile": "Cep telefonu numarası",
+        "mobilePlaceholder": "örn. 555123456",
         "photo": "Profil fotoğrafı",
         "changePhoto": "Fotoğrafı değiştir",
         "removePhoto": "Fotoğrafı kaldır",
         "photoHint": "JPG, PNG veya WebP — en fazla 5 MB.",
+        "photoSuccess": "Profil fotoğrafı başarıyla güncellendi.",
+        "photoRemoved": "Profil fotoğrafı başarıyla kaldırıldı.",
         "save": "Değişiklikleri kaydet",
         "saving": "Kaydediliyor...",
         "saved": "Profil başarıyla güncellendi.",
@@ -260,7 +308,10 @@
           "emailRequired": "E-posta adresi zorunludur",
           "emailInvalid": "Geçerli bir e-posta adresi girin",
           "photoTooLarge": "Görsel en fazla 5 MB olabilir",
-          "photoInvalidType": "JPG, PNG veya WebP görsel kullanın"
+          "photoInvalidType": "JPG, PNG veya WebP görsel kullanın",
+          "photoUploadFailed": "Profil fotoğrafı yüklenemedi",
+          "photoDeleteFailed": "Profil fotoğrafı kaldırılamadı",
+          "updateFailed": "Profil bilgileri güncellenemedi"
         }
       },
       "password": {
@@ -317,7 +368,7 @@
   "Navigation": {
     "home": "Ana Sayfa",
     "newArrivals": "Yeni Gelenler",
-    "allAbayas": "Tüm Abayalar",
+    "allAbayas": "Tüm Koleksiyonlar",
     "linenCollection": "Keten Koleksiyonu",
     "casualAbayas": "Günlük Abayalar",
     "formalAbayas": "Özel Gün & Abiye",
@@ -327,6 +378,14 @@
     "sale": "İndirim",
     "searchPlaceholder": "Abaya, kumaş veya kesim arayın...",
     "searchButton": "Ara",
+    "searchResults": "Arama sonuçları",
+    "searchResultCount": "{count} ürün",
+    "searchLoading": "Ürünler aranıyor...",
+    "searchNoResults": "\"{query}\" için ürün bulunamadı",
+    "searchViewAll": "Tüm sonuçları gör ({count})",
+    "searchMinChars": "Aramak için en az 2 karakter yazın",
+    "searchClear": "Aramayı temizle",
+    "searchSuggestionNotice": "Kategori, kesim veya kumaşa göre aramayı deneyin",
     "cart": "Alışveriş Çantası",
     "favorites": "Favorilerim",
     "account": "Hesabım",
@@ -337,8 +396,65 @@
     "navCategories": "Kategoriler",
     "currency": "Para Birimi",
     "language": "Dil",
+    "storeSettings": "Ayarlar",
     "menu": "Menü",
     "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf Keten Koleksiyonumuzu Keşfedin"
+  },
+  "GlobalSettings": {
+    "metaTitle": "Butik Tercihleri ve Ayarlar",
+    "metaDescription": "Butik gezinme deneyiminizi, temayı, dili ve para birimini özelleştirin.",
+    "title": "Butik Tercihleri",
+    "subtitle": "Butik atmosferini, tercih ettiğiniz dili ve bölgesel para biriminizi ayarlayın.",
+    "backHome": "Butiğe dön",
+    "sections": {
+      "appearance": "Atmosfer ve Tema",
+      "appearanceDesc": "Ortamınıza en uygun aydınlatma ve tema estetiğini seçin.",
+      "language": "Dil Seçimi",
+      "languageDesc": "Butikte tercih ettiğiniz görüntüleme ve okuma dilini belirleyin.",
+      "currency": "Para Birimi",
+      "currencyDesc": "Anlık fiyatlandırma ve sepet tutarları için para biriminizi seçin.",
+      "density": "Görünüm Yoğunluğu",
+      "densityDesc": "Koleksiyon sayfalarında boşlukları ve ürün dizilim yoğunluğunu ayarlayın."
+    },
+    "theme": {
+      "system": "Sistem Varsayılanı",
+      "systemDesc": "Cihazınızın görüntü moduyla otomatik olarak eşitlenir",
+      "light": "Keten Işıltısı (Açık)",
+      "lightDesc": "Ham keten kumaşlarını yansıtan yumuşak fildişi tonları",
+      "dark": "Gece Zarafeti (Koyu)",
+      "darkDesc": "Zarif ve dinlendirici bir akşam şıklığı için koyu tonlar"
+    },
+    "languages": {
+      "ar": {
+        "name": "العربية",
+        "region": "Orta Doğu & Körfez",
+        "dir": "RTL"
+      },
+      "en": {
+        "name": "English",
+        "region": "Uluslararası",
+        "dir": "LTR"
+      },
+      "tr": {
+        "name": "Türkçe",
+        "region": "Türkiye",
+        "dir": "LTR"
+      }
+    },
+    "currencyHint": "Tüm işlemler butiğin güncel döviz kurlarına göre şeffaf biçimde hesaplanır.",
+    "density": {
+      "compactMode": "Kompakt Düzen",
+      "compactModeHint": "Daha sıkı boşluklar ve yoğun ürün ızgarası görünümü."
+    },
+    "accountPrompt": {
+      "authenticatedTitle": "Hesap ve güvenlik ayarlarını mı arıyorsunuz?",
+      "authenticatedSubtitle": "Adınızı, şifrenizi, teslimat adreslerinizi ve bildirim kanallarınızı özel hesabınızdan yönetin.",
+      "manageAccount": "Hesap Ayarlarına Git",
+      "guestTitle": "Linen Line hesabınız var mı?",
+      "guestSubtitle": "Kayıtlı sipariş geçmişinize, özel dikim taleplerinize ve teslimat adreslerinize erişmek için giriş yapın.",
+      "signIn": "Hesaba Giriş Yap"
+    },
+    "saved": "Tercihler başarıyla güncellendi."
   },
   "Notifications": {
     "title": "Bildirimler",
@@ -520,8 +636,6 @@
       "tabHowToMeasure": "Nasıl Ölçülür",
       "unitCm": "CM",
       "unitInch": "İnç",
-      "selected": "Seçili",
-      "selectThisSize": "{size} bedenini seç",
       "measureLengthTitle": "Abaya Uzunluğu",
       "measureLengthDesc": "Omuzun en yüksek noktasından ayak bileğinize veya dilediğiniz etek hizasına kadar ölçün.",
       "measureBustTitle": "Göğüs ve Kalıp",
@@ -956,7 +1070,10 @@
         "passwordMinLength": "Şifre en az 8 karakter olmalıdır"
       },
       "welcomeBackTitle": "Tekrar hoş geldiniz, {name}!",
-      "welcomeBackDescription": "Sizi aramızda yeniden görmek harika. Linen Line ile ayrıcalıklı butik koleksiyonlarımızı keşfedin."
+      "welcomeBackDescription": "Sizi aramızda yeniden görmek harika. Linen Line ile ayrıcalıklı butik koleksiyonlarımızı keşfedin.",
+      "errorTitle": "Giriş yapılamadı",
+      "errorDescription": "Lütfen e-posta adresinizi ve şifrenizi kontrol edip tekrar deneyin.",
+      "networkErrorDescription": "Bağlantı hatası oluştu. Lütfen ağınızı kontrol edip tekrar deneyin."
     },
     "register": {
       "metaTitle": "Hesap oluşturun",
@@ -978,6 +1095,11 @@
       "submitting": "Hesap oluşturuluyor…",
       "hasAccount": "Zaten bir hesabınız var mı?",
       "signIn": "Giriş yapın",
+      "successTitle": "Hesap oluşturuldu!",
+      "successDescription": "Hesabınızı etkinleştirmek için lütfen e-postanıza gönderilen doğrulama kodunu kontrol edin.",
+      "errorTitle": "Hesap oluşturulamadı",
+      "errorDescription": "Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+      "networkErrorDescription": "Kayıt sırasında bir bağlantı hatası oluştu. Lütfen tekrar deneyin.",
       "errors": {
         "nameRequired": "Ad Soyad gereklidir",
         "nameMinLength": "Ad en az 2 karakter olmalıdır",
@@ -1007,11 +1129,17 @@
       "resendAction": "Kodu tekrar gönder",
       "resending": "Gönderiliyor…",
       "resendSuccess": "E-posta adresinize yeni bir doğrulama kodu gönderildi.",
+      "resendSuccessDescription": "Yeni bir 6 haneli kod gönderdik. Lütfen gelen kutunuzu ve spam klasörünüzü kontrol edin.",
       "resendError": "Kod yeniden gönderilemedi. Lütfen tekrar deneyin.",
+      "resendErrorTitle": "Kod yeniden gönderilemedi",
+      "resendErrorDescription": "Lütfen yeni bir kod istemeden önce biraz bekleyin.",
       "wrongEmail": "Yanlış e-posta adresi mi?",
       "changeEmail": "Kayda geri dön",
       "successTitle": "E-posta doğrulandı!",
       "successSubtitle": "Hesabınız başarıyla doğrulandı. Yönlendiriliyorsunuz…",
+      "errorTitle": "Doğrulama başarısız",
+      "errorDescription": "Girdiğiniz kod geçersiz veya süresi dolmuş. Lütfen kontrol edip tekrar deneyin.",
+      "networkErrorDescription": "Bir bağlantı hatası oluştu. Lütfen ağınızı kontrol edip tekrar deneyin.",
       "devCodeToastTitle": "Doğrulama Kodu: {code}",
       "devCodeToastDescription": "Geliştirme: Kod otomatik olarak dolduruldu.",
       "devResentCodeToastTitle": "Yeni Doğrulama Kodu: {code}",
@@ -1259,7 +1387,9 @@
       "qty": "Adet {count}"
     },
     "toasts": {
+      "placing": "Siparişiniz atölyeye iletiliyor…",
       "success": "Sipariş başarıyla oluşturuldu",
+      "successDescription": "{number} numaralı siparişiniz onaylandı ve atölyeye yönlendirildi.",
       "error": "Sipariş oluşturulamadı. Lütfen tekrar deneyin."
     },
     "confirmation": {

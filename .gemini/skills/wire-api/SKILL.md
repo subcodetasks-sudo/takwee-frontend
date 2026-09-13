@@ -44,11 +44,12 @@ API wiring:
 - [ ] 3. Write mapper(s) in features/<f>/utils/ (snake_case API → camelCase UI)
 - [ ] 4. Write fetcher in features/<f>/api/ using http.* or serverFetch; throw on failure
 - [ ] 5. Add React Query hook in features/<f>/hooks/ (shared queryKey)
-- [ ] 6. Wire components to the hook (one cache, multiple consumers)
-- [ ] 7. Resolve images via resolveImageUrl in mappers; UI skips `Image` when src is missing/empty
-- [ ] 8. Add/update i18n only for chrome UI (CTAs, loading, errors) — not API copy
-- [ ] 9. Export from features/<f>/index.ts
-- [ ] 10. Update AGENTS.md if a new cross-feature convention appeared
+- [ ] 6. Wire components to the hook (one cache, multiple consumers) with skeleton loading during fetch
+- [ ] 7. Add app-level `loading.tsx` for route-level server / page fetches with matching skeleton UI
+- [ ] 8. Resolve images via resolveImageUrl in mappers; UI skips `Image` when src is missing/empty
+- [ ] 9. Add/update i18n only for chrome UI (CTAs, loading, errors) — not API copy
+- [ ] 10. Export from features/<f>/index.ts
+- [ ] 11. Update AGENTS.md if a new cross-feature convention appeared
 ```
 
 ## Step details
@@ -118,7 +119,8 @@ export async function fetchThings(locale?: string): Promise<Thing[]> {
 }
 ```
 
-- **Client-shared reads** (header + page): `http` + React Query.
+- **Default (Client-side reads & interactions)**: `http` + React Query (client-fetch is the project default).
+- **Server Fetch Exception (Checkout & Order Placement)**: Checkout endpoints (`previewCheckoutAction`, `placeOrderAction` under `features/checkout/api/actions.ts`) MUST execute as server fetches / server actions via `serverFetch` (`lib/api-server.ts`), guaranteeing secure server-side session token cookie attachment and order creation.
 - **Mutations / cookie auth on server**: prefer `serverFetch` / `createServerAction` from `lib/api-server`.
 
 ### 4. React Query hook (`hooks/`)
@@ -150,11 +152,13 @@ export function useThings() {
 
 **One queryKey per resource** — multiple components (e.g. Header ribbon + page sections) must call the **same** hook / key so the API is hit once per locale session.
 
-### 5. Components
+### 5. Components & Skeleton Loading
 
 - Interactive / query-driven sections: `'use client'` + hook.
 - Keep `app/**/page.tsx` thin; compose feature components.
-- Loading: lightweight skeletons / `aria-busy`; empty: return `null` or empty state.
+- **Skeleton loading in components**: Always provide visual skeleton placeholders during initial or background data fetches (`animate-pulse bg-muted/60`, matching the final layout shape and dimensions) rather than blank or abrupt UI jumps.
+- **Route-level `loading.tsx`**: When wiring an app route page (`app/[locale]/(...)/[route]/page.tsx`), always ensure a corresponding `loading.tsx` exists at the route segment with an accessible skeleton layout (`aria-busy="true"`).
+- Empty states: return clean empty state UI or `null`.
 - Do **not** duplicate fetch logic inside each component.
 - **Images**: only mount `next/image` / `<img>` when `src` is a non-empty string. Missing media → skip the component (or a muted placeholder block), never `src=""`.
 
@@ -192,6 +196,7 @@ Map missing API media to `null` (not `""`). Consumers must guard before renderin
 | Hook | `features/home/hooks/useHomePage.ts` → `["home-page", locale]` |
 | Mappers | `features/home/utils/map-home-page.ts`, `map-home-product.ts` |
 | Consumers | `HeroCarousel`, `CategoriesSection`, `AdditionalSections`, Header ribbon (`advertisementTapes` only) |
+| Server Fetch (Checkout) | `features/checkout/api/actions.ts` (`previewCheckoutAction`, `placeOrderAction`) → `serverFetch` (`lib/api-server.ts`) → `POST /api/v1/checkout/preview`, `POST /api/v1/checkout` |
 
 ## Anti-patterns
 

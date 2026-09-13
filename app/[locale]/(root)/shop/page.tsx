@@ -4,6 +4,7 @@ import { ShopView } from "@/features/shop";
 
 type Props = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -16,13 +17,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ShopPage({ params }: Props) {
+export default async function ShopPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const resolvedSearchParams = await searchParams;
+  const search =
+    typeof resolvedSearchParams?.search === "string"
+      ? resolvedSearchParams.search
+      : typeof resolvedSearchParams?.q === "string"
+        ? resolvedSearchParams.q
+        : undefined;
+
   setRequestLocale(locale);
 
   return (
     <main className="flex flex-1 flex-col">
-      <ShopView />
+      <ShopView searchQuery={search} />
     </main>
   );
 }

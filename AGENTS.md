@@ -231,6 +231,25 @@ Public storefront currencies, symbols, and exchange rates are loaded from **`GET
 
 ---
 
+## 4d. Addresses (`features/addresses`)
+
+Authenticated address book uses client `http` + bearer token from `useAuth().session` for **list and mutations** against **`/api/v1/addresses`** (list is paginated; storefront requests `per_page=100`). Create/update require `country_id` / `city_id` from public location endpoints.
+
+| Layer | Path | Role |
+|---|---|---|
+| Client API | [`features/addresses/api/get-addresses.ts`](features/addresses/api/get-addresses.ts) | `fetchAddresses` / create / update / set default / delete via `http` + session token |
+| Countries | [`features/addresses/api/get-countries.ts`](features/addresses/api/get-countries.ts) | Public `GET /api/v1/countries` |
+| Cities | [`features/addresses/api/get-cities.ts`](features/addresses/api/get-cities.ts) | Public `GET /api/v1/cities?country_id=` |
+| Hook | [`features/addresses/hooks/useAddresses.ts`](features/addresses/hooks/useAddresses.ts) | React Query — key `["user-addresses", locale]` |
+| Location hooks | `useCountries` / `useCities` | Shared country + city selects |
+| Mapper | [`features/addresses/utils/map-address.ts`](features/addresses/utils/map-address.ts) | API `label` → `home` / `work` / `other`; snake_case → camelCase |
+
+**Consumers:**
+- [`AddressesList`](features/addresses/components/AddressesList.tsx) — account `/me/addresses`
+- [`CheckoutView`](features/checkout/components/CheckoutView.tsx) — shipping address picker + add-address dialog
+
+---
+
 ## 5. Images & Media (`lib/images`)
 
 Product and CMS media are hosted on the **same origin as the API** (`API_BASE_URL` / `NEXT_PUBLIC_API_BASE_URL`).

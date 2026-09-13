@@ -3,10 +3,12 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Camera, CheckCircle2, Trash2 } from "lucide-react";
+import { Camera, CheckCircle2, Loader2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
 import { useProfile } from "../hooks/useProfile";
@@ -20,7 +22,17 @@ const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function ProfileDetailsForm() {
   const t = useTranslations("ProfilePage.settings.profile");
-  const { user, updateDetails, isUpdatingDetails } = useProfile();
+  const {
+    user,
+    isLoading,
+    updateDetails,
+    isUpdatingDetails,
+    uploadAvatar,
+    isUploadingAvatar,
+    removeAvatar,
+    isRemovingAvatar,
+  } = useProfile();
+
   const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,7 +47,7 @@ export function ProfileDetailsForm() {
         emailRequired: t("errors.emailRequired"),
         emailInvalid: t("errors.emailInvalid"),
       }),
-    [t]
+    [t],
   );
 
   const {
@@ -48,9 +60,10 @@ export function ProfileDetailsForm() {
   } = useForm<ProfileDetailsFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: user.name,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
+      name: user?.name || "",
+      email: user?.email || "",
+      mobile: user?.mobile || "",
+      avatarUrl: user?.avatarUrl,
     },
   });
 
@@ -58,12 +71,15 @@ export function ProfileDetailsForm() {
   const nameRegister = register("name");
 
   useEffect(() => {
-    reset({
-      name: user.name,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-    });
-  }, [user.name, user.email, user.avatarUrl, reset]);
+    if (user) {
+      reset({
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile || "",
+        avatarUrl: user.avatarUrl,
+      });
+    }
+  }, [user, reset]);
 
   useEffect(() => {
     if (!saved) return;
@@ -71,7 +87,7 @@ export function ProfileDetailsForm() {
     return () => window.clearTimeout(timer);
   }, [saved]);
 
-  const handlePhotoChange = (file: File | undefined) => {
+  const handlePhotoChange = async (file: File | undefined) => {
     if (!file) return;
 
     if (!ACCEPTED_TYPES.has(file.type)) {
@@ -84,32 +100,61 @@ export function ProfileDetailsForm() {
     }
 
     setPhotoError(undefined);
-    const objectUrl = URL.createObjectURL(file);
-    const previous = avatarUrl;
-    if (previous?.startsWith("blob:")) URL.revokeObjectURL(previous);
-    setValue("avatarUrl", objectUrl, { shouldDirty: true });
+
+    try {
+      await gooeyToast.promise(uploadAvatar(file), {
+        loading: t("saving"),
+        success: t("photoSuccess"),
+        error: (err: any) => err.message || t("errors.photoUploadFailed"),
+      });
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch {
+      // Error handled by gooeyToast
+    }
   };
 
-  const handleRemovePhoto = () => {
-    const previous = avatarUrl;
-    if (previous?.startsWith("blob:")) URL.revokeObjectURL(previous);
-    setValue("avatarUrl", undefined, { shouldDirty: true });
-    setPhotoError(undefined);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleRemovePhoto = async () => {
+    try {
+      await gooeyToast.promise(removeAvatar(), {
+        loading: t("saving"),
+        success: t("photoRemoved"),
+        error: (err: any) => err.message || t("errors.photoDeleteFailed"),
+      });
+      setValue("avatarUrl", undefined);
+      setPhotoError(undefined);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch {
+      // Error handled by gooeyToast
     }
   };
 
   const onValidSubmit = async (values: ProfileDetailsFormValues) => {
     if (isUpdatingDetails) return;
 
-    await updateDetails({
-      name: values.name.trim(),
-      email: values.email.trim().toLowerCase(),
-      avatarUrl: values.avatarUrl,
-    });
-    setSaved(true);
+    try {
+      await gooeyToast.promise(
+        updateDetails({
+          name: values.name.trim(),
+          email: values.email.trim().toLowerCase(),
+          mobile: values.mobile?.trim() || undefined,
+        }),
+        {
+          loading: t("saving"),
+          success: t("saved"),
+          error: (err: any) => err.message || t("errors.updateFailed"),
+        },
+      );
+      setSaved(true);
+    } catch {
+      // Handled by toast
+    }
   };
+
+  const isBusy = isUpdatingDetails || isUploadingAvatar || isRemovingAvatar;
 
   return (
     <form
@@ -132,11 +177,18 @@ export function ProfileDetailsForm() {
             className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-primary-50 text-lg font-semibold tracking-wide text-primary-800 dark:bg-primary-950/60 dark:text-primary-200 sm:size-24 sm:text-xl"
             aria-hidden
           >
-            {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- local blob/data preview
-              <img src={avatarUrl} alt="" className="size-full object-cover" />
+            {isUploadingAvatar || isRemovingAvatar ? (
+              <Loader2 className="size-6 animate-spin text-primary" />
+            ) : avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={user?.name || "Avatar"}
+                fill
+                sizes="(max-width: 640px) 80px, 96px"
+                className="size-full object-cover"
+              />
             ) : (
-              user.initials
+              user?.initials || "U"
             )}
           </div>
 
@@ -154,12 +206,14 @@ export function ProfileDetailsForm() {
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 className="sr-only"
+                disabled={isBusy}
                 onChange={(e) => handlePhotoChange(e.target.files?.[0])}
               />
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
+                disabled={isBusy}
                 className="h-8 gap-1.5 text-xs"
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -172,6 +226,7 @@ export function ProfileDetailsForm() {
                   type="button"
                   variant="outline"
                   size="sm"
+                  disabled={isBusy}
                   className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive"
                   onClick={handleRemovePhoto}
                 >
@@ -193,6 +248,7 @@ export function ProfileDetailsForm() {
             </Label>
             <Input
               id="profile-name"
+              disabled={isLoading || isUpdatingDetails}
               {...nameRegister}
               onChange={(e) => {
                 e.target.value = e.target.value.replace(/[^\p{L}\s'.-]/gu, "");
@@ -201,7 +257,7 @@ export function ProfileDetailsForm() {
               placeholder={t("namePlaceholder")}
               className={cn(
                 "h-9 text-sm md:h-10",
-                errors.name && "border-destructive ring-1 ring-destructive/30"
+                errors.name && "border-destructive ring-1 ring-destructive/30",
               )}
               autoComplete="name"
               aria-invalid={!!errors.name}
@@ -212,25 +268,40 @@ export function ProfileDetailsForm() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="profile-email" className="text-xs font-medium">
-              {t("email")} <span className="text-destructive">*</span>
+            <Label htmlFor="profile-mobile" className="text-xs font-medium">
+              {t("mobile")}
             </Label>
+            <Input
+              id="profile-mobile"
+              type="tel"
+              dir="ltr"
+              disabled={isLoading || isUpdatingDetails}
+              {...register("mobile")}
+              placeholder={t("mobilePlaceholder")}
+              className="h-9 text-sm md:h-10"
+              autoComplete="tel"
+            />
+          </div>
+
+          <div className="space-y-1.5 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="profile-email" className="text-xs font-medium">
+                {t("email")}
+              </Label>
+              <span className="text-[11px] text-muted-foreground">
+                {t("emailReadOnly")}
+              </span>
+            </div>
             <Input
               id="profile-email"
               type="email"
               dir="ltr"
+              disabled
+              readOnly
               {...register("email")}
-              placeholder={t("emailPlaceholder")}
-              className={cn(
-                "h-9 text-sm md:h-10",
-                errors.email && "border-destructive ring-1 ring-destructive/30"
-              )}
+              className="h-9 bg-muted/40 text-sm opacity-80 md:h-10 cursor-not-allowed"
               autoComplete="email"
-              aria-invalid={!!errors.email}
             />
-            {errors.email?.message && (
-              <p className="text-xs text-destructive">{errors.email.message}</p>
-            )}
           </div>
         </div>
       </div>
@@ -244,7 +315,7 @@ export function ProfileDetailsForm() {
         )}
         <Button
           type="submit"
-          disabled={isUpdatingDetails}
+          disabled={isBusy || isLoading}
           className="h-9 w-full text-xs font-medium shadow-2xs sm:w-auto"
         >
           {isUpdatingDetails ? t("saving") : t("save")}

@@ -68,10 +68,31 @@ export function HeroCarousel() {
   if (isLoading && count === 0) {
     return (
       <section
-        className="relative w-full min-h-[650px] md:min-h-[850px] bg-muted/40"
+        className="relative w-full min-h-[650px] md:min-h-[850px] overflow-hidden bg-muted/30"
         aria-busy="true"
         aria-label={t("loading")}
-      />
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
+        <div className="relative page-shell flex min-h-[650px] md:min-h-[850px] flex-col justify-end pb-20 sm:pb-24 md:pb-28">
+          <div className="max-w-2xl space-y-4">
+            <div className="h-6 w-28 rounded-full bg-muted animate-pulse" />
+            <div className="space-y-2">
+              <div className="h-10 sm:h-14 md:h-16 w-3/4 rounded-lg bg-muted animate-pulse" />
+              <div className="h-10 sm:h-14 md:h-16 w-1/2 rounded-lg bg-muted animate-pulse" />
+            </div>
+            <div className="h-4 sm:h-5 w-4/5 rounded bg-muted/80 animate-pulse" />
+            <div className="flex gap-3 pt-2">
+              <div className="h-11 sm:h-12 w-36 rounded-xl bg-muted animate-pulse" />
+              <div className="h-11 sm:h-12 w-32 rounded-xl bg-muted/60 animate-pulse" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 pt-10">
+            <div className="h-2 w-8 rounded-full bg-muted animate-pulse" />
+            <div className="h-2 w-2 rounded-full bg-muted/60 animate-pulse" />
+            <div className="h-2 w-2 rounded-full bg-muted/60 animate-pulse" />
+          </div>
+        </div>
+      </section>
     );
   }
 

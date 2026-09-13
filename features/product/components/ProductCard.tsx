@@ -201,9 +201,11 @@ export function ProductCard({
 
         {isOnSale ? (
           <Badge
-            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
+            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 inline-flex h-5 sm:h-6 items-center justify-center rounded sm:rounded-md border-0 px-2 sm:px-2.5 py-0 text-[10px] sm:text-xs font-bold leading-none tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
           >
-            {discountPercent > 0 ? `-${discountPercent}%` : t("sale")}
+            <span className="inline-flex items-center leading-none">
+              {discountPercent > 0 ? `-${discountPercent}%` : t("sale")}
+            </span>
           </Badge>
         ) : product.badge ? (
           <Badge
@@ -272,7 +274,7 @@ export function ProductCard({
         </div>
 
         {/* Optimized Price Showcase */}
-        <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2 pt-0.5">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-0.5">
           <ProductPrice
             amountTRY={product.priceTRY}
             className={cn(
@@ -291,9 +293,11 @@ export function ProductCard({
           {isOnSale && discountPercent > 0 ? (
             <Badge
               variant="secondary"
-              className="h-5 rounded-md px-1.5 text-[10px] sm:text-[11px] font-bold border-0 bg-error-muted text-error dark:bg-error-muted dark:text-error-foreground tracking-tight shadow-none"
+              className="inline-flex h-5 items-center justify-center self-center rounded-md border border-error/20 bg-error-muted px-1.5 py-0 text-[10px] font-bold leading-none text-error shadow-none tracking-tight sm:text-[11px] dark:border-error/30 dark:bg-error-muted/70 dark:text-error"
             >
-              {t("discount", { percent: discountPercent })}
+              <span className="inline-flex items-center leading-none">
+                {t("discount", { percent: discountPercent })}
+              </span>
             </Badge>
           ) : null}
         </div>

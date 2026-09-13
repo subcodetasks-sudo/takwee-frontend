@@ -9,7 +9,7 @@ import { AddressDialog, useAddresses } from "@/features/addresses";
 import type { AddressFormData } from "@/features/addresses/types";
 import { useCart } from "@/features/cart";
 import { zodResolver } from "@/lib/zod-resolver";
-import { placeMockOrder } from "../api/place-mock-order";
+import { useCheckout } from "../hooks/useCheckout";
 import {
   createCheckoutFormSchema,
   type CheckoutFormValues,
@@ -24,13 +24,11 @@ import { CheckoutShippingSection } from "./CheckoutShippingSection";
 
 export function CheckoutView() {
   const t = useTranslations("CheckoutPage");
-  const tProducts = useTranslations("Products");
-  const tColors = useTranslations("ProductCard.colors");
   const router = useRouter();
-  const { items, itemCount, subtotalTRY, isHydrated, clear } = useCart();
-  const { addresses, isLoading, addAddress, isAdding } = useAddresses();
+  const { items, itemCount, subtotalTRY, isHydrated } = useCart();
+  const { addresses, isLoading: isAddressesLoading, addAddress, isAdding } = useAddresses();
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState<string>("");
 
   const schema = useMemo(
     () =>
@@ -48,6 +46,7 @@ export function CheckoutView() {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(schema),
@@ -57,16 +56,37 @@ export function CheckoutView() {
     },
   });
 
+  const selectedAddressId = watch("addressId");
+
+  const {
+    preview,
+    isPreviewLoading,
+    placeOrder,
+    isPlacingOrder,
+  } = useCheckout({
+    addressId: selectedAddressId,
+    couponCode: couponCode || undefined,
+  });
+
   useEffect(() => {
-    if (defaultAddressId) {
+    if (defaultAddressId && !selectedAddressId) {
       setValue("addressId", defaultAddressId, { shouldValidate: false });
     }
-  }, [defaultAddressId, setValue]);
+  }, [defaultAddressId, selectedAddressId, setValue]);
 
   const handleAddAddress = async (data: AddressFormData) => {
-    const created = await addAddress(data);
-    if (created?.id) {
-      setValue("addressId", created.id, { shouldValidate: true });
+    try {
+      const created = await addAddress(data);
+      if (created?.id) {
+        setValue("addressId", created.id, { shouldValidate: true });
+      }
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.error"),
+      );
+      throw error;
     }
   };
 
@@ -74,38 +94,37 @@ export function CheckoutView() {
     const address = addresses.find((a) => a.id === values.addressId);
     if (!address || items.length === 0) return;
 
-    setIsSubmitting(true);
+    const orderPromise = placeOrder({
+      items,
+      addressId: values.addressId,
+      paymentMethod: values.paymentMethod,
+      couponCode: couponCode || undefined,
+      shippingAddress: mapAddressToShipping(address),
+      subtotalTRY,
+    });
+
+    gooeyToast.promise(orderPromise, {
+      loading: t("toasts.placing"),
+      success: t("toasts.success"),
+      error: (err: unknown) =>
+        err instanceof Error && err.message ? err.message : t("toasts.error"),
+      description: {
+        success: (res) =>
+          t("toasts.successDescription", {
+            number: res?.order?.number || "",
+          }),
+        error: (err: unknown) =>
+          err instanceof Error && err.message ? err.message : undefined,
+      },
+      timing: { displayDuration: 6000 },
+    });
+
     try {
-      const taxTRY = Math.round(subtotalTRY * 0.1);
-      const labels = items.map((item) => {
-        const selectedColor =
-          item.product.colors.find((c) => c.id === item.selectedColorId) ??
-          item.product.colors[0];
-        return {
-          id: item.id,
-          name: tProducts(item.product.nameKey),
-          color: selectedColor
-            ? tColors(selectedColor.nameKey)
-            : undefined,
-        };
-      });
-
-      const { order } = await placeMockOrder({
-        items,
-        labels,
-        shippingAddress: mapAddressToShipping(address),
-        paymentMethod: values.paymentMethod,
-        subtotalTRY,
-        taxTRY,
-      });
-
+      const { order } = await orderPromise;
       saveCheckoutOrder(order);
-      clear();
-      gooeyToast.success(t("toasts.success"));
       router.push("/checkout/confirmation");
     } catch {
-      gooeyToast.error(t("toasts.error"));
-      setIsSubmitting(false);
+      // Handled by gooeyToast.promise error state
     }
   });
 
@@ -129,7 +148,7 @@ export function CheckoutView() {
   }
 
   if (items.length === 0) {
-    if (isSubmitting) {
+    if (isPlacingOrder) {
       return (
         <section className="w-full flex-1 py-4 sm:py-8 md:py-12">
           <div className="space-y-6 sm:space-y-10">
@@ -169,7 +188,7 @@ export function CheckoutView() {
                     onSelect={field.onChange}
                     onAddAddress={() => setAddressDialogOpen(true)}
                     error={errors.addressId?.message}
-                    isLoading={isLoading}
+                    isLoading={isAddressesLoading}
                   />
                 )}
               />
@@ -192,7 +211,12 @@ export function CheckoutView() {
                 items={items}
                 itemCount={itemCount}
                 subtotalTRY={subtotalTRY}
-                isSubmitting={isSubmitting}
+                pricing={preview?.pricing}
+                isPreviewLoading={isPreviewLoading}
+                couponCode={couponCode}
+                onApplyCoupon={(code) => setCouponCode(code)}
+                onRemoveCoupon={() => setCouponCode("")}
+                isSubmitting={isPlacingOrder}
               />
             </aside>
           </div>

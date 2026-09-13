@@ -20,3 +20,70 @@ export const SESSION_COOKIE_OPTIONS = {
   maxAge: SESSION_COOKIE_MAX_AGE,
   secure: process.env.NODE_ENV === "production",
 };
+
+export interface CookieStoreLike {
+  get(name: string): { value: string } | undefined;
+}
+
+/**
+ * Checks whether the cookie store contains a valid authentication token.
+ */
+export function hasAuthToken(cookies?: CookieStoreLike | null): boolean {
+  if (!cookies) return false;
+  const sessionToken = cookies.get(SESSION_COOKIE_NAME)?.value;
+  const refreshToken = cookies.get(REFRESH_COOKIE_NAME)?.value;
+  const genericToken = cookies.get("token")?.value;
+
+  const isValid = (val?: string) =>
+    Boolean(val && val.trim() !== "" && val !== "undefined" && val !== "null");
+
+  return isValid(sessionToken) || isValid(refreshToken) || isValid(genericToken);
+}
+
+/**
+ * Paths that require an authenticated user.
+ */
+export function isProtectedPath(pathWithoutLocale: string): boolean {
+  return (
+    pathWithoutLocale === "/checkout" ||
+    pathWithoutLocale.startsWith("/checkout/") ||
+    pathWithoutLocale === "/me" ||
+    pathWithoutLocale.startsWith("/me/")
+  );
+}
+
+/**
+ * Paths reserved for guests (disabled for authenticated users).
+ */
+export function isGuestOnlyPath(pathWithoutLocale: string): boolean {
+  const guestRoutes = [
+    "/login",
+    "/register",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+    "/verify",
+  ];
+  return guestRoutes.some(
+    (route) =>
+      pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`),
+  );
+}
+
+/**
+ * Strips supported locale prefixes (e.g. /en, /tr, /ar) from the pathname.
+ */
+export function getCleanPathWithoutLocale(
+  pathname: string,
+  supportedLocales: readonly string[] = ["ar", "en", "tr"],
+): string {
+  const rawPath = pathname.split("?")[0] || "/";
+  const segments = rawPath.split("/").filter(Boolean);
+  if (segments.length === 0) return "/";
+  const firstSegment = segments[0];
+  if (supportedLocales.includes(firstSegment)) {
+    return "/" + segments.slice(1).join("/");
+  }
+  return "/" + segments.join("/");
+}
+

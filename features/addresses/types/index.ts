@@ -1,3 +1,5 @@
+export type { ApiAddress, ApiAddressInput, ApiCountry, ApiCity } from "./api";
+
 export type AddressType = "home" | "work" | "other";
 
 export interface Address {
@@ -7,6 +9,8 @@ export interface Address {
   fullName: string;
   phone: string;
   phoneCountryCode: string;
+  countryId: number;
+  cityId: number;
   countryCode: string;
   countryName: string;
   stateOrProvince: string;
@@ -17,7 +21,22 @@ export interface Address {
   postalCode?: string;
   deliveryNotes?: string;
   isDefault: boolean;
+  deliveryPrice?: number;
   createdAt: string;
 }
 
-export type AddressFormData = Omit<Address, "id" | "createdAt">;
+export type AddressFormData = Omit<Address, "id" | "createdAt" | "deliveryPrice">;
+
+export interface ShippingCountry {
+  id: number;
+  name: string;
+  code: string;
+  deliveryPrice: number;
+}
+
+export interface ShippingCity {
+  id: number;
+  name: string;
+  deliveryPrice: number;
+  countryId?: number;
+}

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Ruler, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Ruler, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { AbayaSize } from "../types";
+import type { AbayaSize, ApiAbayaSizeGuide } from "../types";
 
 export interface SizeChartRow {
   size: AbayaSize;
@@ -89,25 +88,76 @@ export const SIZE_CHART_ROWS: SizeChartRow[] = [
 ];
 
 interface SizeGuideDialogProps {
-  selectedSize?: AbayaSize | null;
-  onSelectSize?: (size: AbayaSize) => void;
   trigger?: React.ReactNode;
+  guide?: ApiAbayaSizeGuide | null;
+}
+
+function cmToFtIn(cm: number): string {
+  const totalInches = cm / 2.54;
+  const feet = Math.floor(totalInches / 12);
+  const inches = Math.round(totalInches % 12);
+  return `${feet}'${inches}"`;
 }
 
 export function SizeGuideDialog({
-  selectedSize,
-  onSelectSize,
   trigger,
+  guide,
 }: SizeGuideDialogProps) {
   const tGuide = useTranslations("ProductDetails.sizeGuide");
-  const [unit, setUnit] = useState<"cm" | "inch">("cm");
+  const [unit, setUnit] = useState<"cm" | "inch">(
+    (guide?.default_unit === "inch" ? "inch" : "cm") as "cm" | "inch",
+  );
   const [open, setOpen] = useState(false);
 
-  const handleRowClick = (size: AbayaSize) => {
-    if (onSelectSize) {
-      onSelectSize(size);
+  const rows: SizeChartRow[] = useMemo(() => {
+    if (guide?.rows && guide.rows.length > 0) {
+      return guide.rows.map((r) => {
+        const lengthCm = r.abaya_length;
+        const lengthInch = Math.round(lengthCm / 2.54);
+        const bustCm = r.chest_width;
+        const bustInch = Math.round((bustCm / 2.54) * 10) / 10;
+        const heightCm = r.height_plus
+          ? `${r.height_min} - ${r.height_max}+`
+          : `${r.height_min} - ${r.height_max}`;
+        const heightInch = r.height_plus
+          ? `${cmToFtIn(r.height_max)}+`
+          : `${cmToFtIn(r.height_min)} - ${cmToFtIn(r.height_max)}`;
+
+        return {
+          size: r.size as AbayaSize,
+          lengthCm,
+          lengthInch,
+          bustCm,
+          bustInch,
+          heightCm,
+          heightInch,
+        };
+      });
     }
-  };
+    return SIZE_CHART_ROWS;
+  }, [guide]);
+
+  const howToSteps = useMemo(() => {
+    if (!guide?.how_to?.trim()) return null;
+    const lines = guide.how_to
+      .split(/\n+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    return lines.map((line, idx) => {
+      // Strip leading digit and dot if present: "1. Measure..." -> "Measure..."
+      const cleaned = line.replace(/^\d+\.\s*/, "");
+      return {
+        number: idx + 1,
+        text: cleaned,
+      };
+    });
+  }, [guide?.how_to]);
+
+  const dialogTitle = guide?.title?.trim() || tGuide("title");
+  const dialogDescription = guide?.description?.trim() || tGuide("description");
+  const footerNote = guide?.footer_note?.trim() || tGuide("note");
+  const consultationCta = guide?.consultation_cta?.trim();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -140,14 +190,15 @@ export function SizeGuideDialog({
             </div>
             <DialogHeader className="gap-1 text-start">
               <DialogTitle className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-                {tGuide("title")}
+                {dialogTitle}
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
-                {tGuide("description")}
+                {dialogDescription}
               </DialogDescription>
             </DialogHeader>
           </div>
         </div>
+
 
         {/* Tab switcher & Unit Toggle */}
         <Tabs defaultValue="chart" className="w-full gap-0">
@@ -217,116 +268,116 @@ export function SizeGuideDialog({
                     <TableHead className="py-2.5 text-start font-semibold text-foreground">
                       {tGuide("bust")}
                     </TableHead>
-                    <TableHead className="py-2.5 text-end font-semibold text-foreground">
-                      <span className="sr-only">Status</span>
-                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {SIZE_CHART_ROWS.map((row) => {
-                    const isSelected = selectedSize === row.size;
-                    return (
-                      <TableRow
-                        key={row.size}
-                        onClick={() => handleRowClick(row.size)}
-                        className={cn(
-                          "cursor-pointer border-b border-border/50 transition-colors",
-                          isSelected
-                            ? "bg-primary/10 hover:bg-primary/15 font-semibold text-foreground"
-                            : "hover:bg-muted/50",
-                        )}
-                      >
-                        <TableCell className="py-3 font-semibold tabular-nums text-foreground">
-                          <div className="inline-flex items-center gap-1.5">
-                            <span>{row.size}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-3 tabular-nums text-muted-foreground">
-                          {unit === "cm"
-                            ? `${row.heightCm} cm`
-                            : row.heightInch}
-                        </TableCell>
-                        <TableCell className="py-3 tabular-nums text-foreground">
-                          {unit === "cm"
-                            ? tGuide("cm", { value: row.lengthCm })
-                            : tGuide("inch", { value: row.lengthInch })}
-                        </TableCell>
-                        <TableCell className="py-3 tabular-nums text-foreground">
-                          {unit === "cm"
-                            ? tGuide("cm", { value: row.bustCm })
-                            : tGuide("inch", { value: row.bustInch })}
-                        </TableCell>
-                        <TableCell className="py-3 text-end">
-                          {isSelected ? (
-                            <Badge
-                              variant="secondary"
-                              className="gap-1 bg-foreground text-background font-medium text-[11px]"
-                            >
-                              <Check className="size-3" />
-                              {tGuide("selected")}
-                            </Badge>
-                          ) : (
-                            <span className="text-xs text-muted-foreground/80 group-hover:text-foreground">
-                              {tGuide("selectThisSize", { size: row.size })}
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.size}
+                      className="border-b border-border/50 hover:bg-muted/30"
+                    >
+                      <TableCell className="py-3 font-semibold tabular-nums text-foreground">
+                        {row.size}
+                      </TableCell>
+                      <TableCell className="py-3 tabular-nums text-muted-foreground">
+                        {unit === "cm"
+                          ? `${row.heightCm} cm`
+                          : row.heightInch}
+                      </TableCell>
+                      <TableCell className="py-3 tabular-nums text-foreground">
+                        {unit === "cm"
+                          ? tGuide("cm", { value: row.lengthCm })
+                          : tGuide("inch", { value: row.lengthInch })}
+                      </TableCell>
+                      <TableCell className="py-3 tabular-nums text-foreground">
+                        {unit === "cm"
+                          ? tGuide("cm", { value: row.bustCm })
+                          : tGuide("inch", { value: row.bustInch })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
 
             <p className="mt-3 text-xs text-muted-foreground/90 leading-relaxed">
-              {tGuide("note")}
+              {footerNote}
             </p>
           </TabsContent>
 
           {/* How to Measure Content */}
           <TabsContent value="measure" className="space-y-3 p-4 sm:p-6">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
-                    1
-                  </span>
-                  <h4 className="text-xs sm:text-sm font-semibold text-foreground">
-                    {tGuide("measureLengthTitle")}
-                  </h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {tGuide("measureLengthDesc")}
-                </p>
-              </div>
+            <div
+              className={cn(
+                "grid gap-3",
+                howToSteps && howToSteps.length > 0
+                  ? howToSteps.length === 2
+                    ? "sm:grid-cols-2"
+                    : "sm:grid-cols-3"
+                  : "sm:grid-cols-3",
+              )}
+            >
+              {howToSteps && howToSteps.length > 0 ? (
+                howToSteps.map((step) => (
+                  <div
+                    key={step.number}
+                    className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
+                        {step.number}
+                      </span>
+                    </div>
+                    <p className="text-xs text-foreground/90 leading-relaxed">
+                      {step.text}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
+                        1
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-semibold text-foreground">
+                        {tGuide("measureLengthTitle")}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tGuide("measureLengthDesc")}
+                    </p>
+                  </div>
 
-              <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
-                    2
-                  </span>
-                  <h4 className="text-xs sm:text-sm font-semibold text-foreground">
-                    {tGuide("measureBustTitle")}
-                  </h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {tGuide("measureBustDesc")}
-                </p>
-              </div>
+                  <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
+                        2
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-semibold text-foreground">
+                        {tGuide("measureBustTitle")}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tGuide("measureBustDesc")}
+                    </p>
+                  </div>
 
-              <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
-                    3
-                  </span>
-                  <h4 className="text-xs sm:text-sm font-semibold text-foreground">
-                    {tGuide("measureSleeveTitle")}
-                  </h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {tGuide("measureSleeveDesc")}
-                </p>
-              </div>
+                  <div className="flex flex-col gap-1.5 rounded-xl border border-border/70 bg-card p-4 transition-all">
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-primary/20 text-[11px] font-bold text-foreground">
+                        3
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-semibold text-foreground">
+                        {tGuide("measureSleeveTitle")}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tGuide("measureSleeveDesc")}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </TabsContent>
         </Tabs>
@@ -340,7 +391,7 @@ export function SizeGuideDialog({
                 {tGuide("conciergeTitle")}
               </span>
               {" — "}
-              <span>{tGuide("conciergeDesc")}</span>
+              <span>{consultationCta || tGuide("conciergeDesc")}</span>
             </div>
           </div>
         </div>

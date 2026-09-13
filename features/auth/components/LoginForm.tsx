@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { Link } from "@/i18n/routing";
@@ -25,10 +26,19 @@ import {
   createLoginSchema,
   type LoginFormValues,
 } from "../schemas/login-schema";
+import {
+  getCleanPathWithoutLocale,
+  isGuestOnlyPath,
+} from "../utils/session-cookie";
+
+function computeSessionExpiry(seconds = 7200): string {
+  return new Date(Date.now() + seconds * 1000).toISOString();
+}
 
 export function LoginForm() {
   const t = useTranslations("Auth.login");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setSnapshot } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,41 +73,96 @@ export function LoginForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     setServerError(null);
-    try {
-      const res = await loginAction({
-        email: values.email,
-        password: values.password,
-        rememberMe: values.rememberMe,
-      });
 
-      if (!res.success || !res.data) {
-        setServerError(res.message || "Invalid credentials");
-        return;
-      }
-
-      setSnapshot({
-        user: res.data.user,
-        session: {
-          token: res.data.accessToken,
-          userId: res.data.user.id,
-          expiresAt: new Date(Date.now() + 7200 * 1000).toISOString(),
-        },
-        isAuthenticated: true,
-      });
-
-      const firstName = res.data.user.name?.trim().split(/\s+/)[0] || res.data.user.name || "";
+    const loginPromise = async () => {
       try {
-        gooeyToast.success(t("welcomeBackTitle", { name: firstName }), {
-          description: t("welcomeBackDescription"),
-          duration: 6000,
+        const res = await loginAction({
+          email: values.email,
+          password: values.password,
+          rememberMe: values.rememberMe,
         });
-      } catch {
-        // Fallback gracefully if toast container is not ready
+
+        if (!res.success || !res.data) {
+          const err = new Error(res.message || t("errorTitle"));
+          (err as any).description = t("errorDescription");
+          throw err;
+        }
+
+        setSnapshot({
+          user: res.data.user,
+          session: {
+            token: res.data.accessToken,
+            userId: res.data.user.id,
+            expiresAt: computeSessionExpiry(),
+          },
+          isAuthenticated: true,
+        });
+
+        const firstName =
+          res.data.user.name?.trim().split(/\s+/)[0] || res.data.user.name || "";
+        return { firstName, user: res.data.user };
+      } catch (err: unknown) {
+        if (err instanceof Error && (err as any).description) {
+          throw err;
+        }
+        const isNetwork =
+          err instanceof Error &&
+          (err.message.toLowerCase().includes("fetch") ||
+            err.message.toLowerCase().includes("network") ||
+            err.name === "AbortError");
+        const fallbackErr = new Error(
+          isNetwork
+            ? t("errorTitle")
+            : err instanceof Error
+            ? err.message
+            : t("errorTitle")
+        );
+        (fallbackErr as any).description = isNetwork
+          ? t("networkErrorDescription")
+          : t("errorDescription");
+        throw fallbackErr;
+      }
+    };
+
+    const promise = loginPromise();
+
+    try {
+      gooeyToast.promise(promise, {
+        loading: t("submitting"),
+        success: (data) => t("welcomeBackTitle", { name: data.firstName }),
+        error: (err: any) => err?.message || t("errorTitle"),
+        description: {
+          success: t("welcomeBackDescription"),
+          error: (err: any) => err?.description || t("errorDescription"),
+        },
+        timing: { displayDuration: 6000 },
+      });
+    } catch {
+      // Fallback gracefully if toast container is not ready
+    }
+
+    try {
+      await promise;
+
+      const redirectParam = searchParams.get("redirect");
+      let destination = "/";
+      if (
+        redirectParam &&
+        redirectParam.startsWith("/") &&
+        !redirectParam.startsWith("//")
+      ) {
+        const clean = getCleanPathWithoutLocale(redirectParam);
+        if (!isGuestOnlyPath(clean)) {
+          const queryIndex = redirectParam.indexOf("?");
+          const query = queryIndex !== -1 ? redirectParam.slice(queryIndex) : "";
+          destination = clean + query;
+        }
       }
 
-      router.push("/");
-    } catch {
-      setServerError("An error occurred during sign in. Please try again.");
+      router.push(destination);
+      router.refresh();
+    } catch (err: any) {
+      setServerError(err?.message || t("errorTitle"));
     } finally {
       setIsSubmitting(false);
     }

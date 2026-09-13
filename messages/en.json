@@ -31,13 +31,38 @@
         "description": "Delivery and billing details"
       },
       "settings": {
-        "label": "Settings",
-        "description": "Preferences and account options"
+        "label": "Account Settings",
+        "description": "Manage profile, password, and notifications"
       }
     },
     "preferences": {
-      "title": "Language & currency",
-      "subtitle": "Choose how you browse and shop"
+      "title": "Preferences & Experience",
+      "subtitle": "Manage communication channels, boutique theme, and regional browsing options.",
+      "saved": "Preferences updated successfully.",
+      "notifications": {
+        "title": "Notification Channels",
+        "subtitle": "Choose how you receive order tracking, tailoring updates, and private previews.",
+        "email": "Email notifications",
+        "emailHint": "Receive bespoke invitations, order receipts, and shipping updates.",
+        "sms": "SMS text alerts",
+        "smsHint": "Real-time delivery milestones and courier alerts via text message.",
+        "push": "Push notifications",
+        "pushHint": "Direct device alerts for immediate order status updates."
+      },
+      "appearance": {
+        "title": "Display & Ambiance",
+        "subtitle": "Customize the boutique visual ambiance and layout density.",
+        "theme": "Ambiance theme",
+        "themeSystem": "System default",
+        "themeLight": "Linen Light",
+        "themeDark": "Midnight Dark",
+        "compactMode": "Compact layout",
+        "compactModeHint": "Condensed spacing and denser catalog views."
+      },
+      "regional": {
+        "title": "Language & Currency",
+        "subtitle": "Display language and preferred purchasing currency."
+      }
     },
     "orders": {
       "metaTitle": "My Orders",
@@ -199,7 +224,12 @@
         "stateOrProvince": "Province / Emirate / State",
         "stateOrProvincePlaceholder": "e.g. Riyadh Province, Dubai",
         "city": "City",
-        "cityPlaceholder": "e.g. Riyadh",
+        "cityPlaceholder": "Select city",
+        "searchCityPlaceholder": "Search city...",
+        "loadingCountries": "Loading countries...",
+        "loadingCities": "Loading cities...",
+        "selectCountryFirst": "Select a country first",
+        "noCitiesFound": "No cities available for this country",
         "district": "District / Neighborhood",
         "districtPlaceholder": "e.g. Al Olaya, Downtown",
         "streetAddress": "Street Address & Building",
@@ -232,13 +262,26 @@
         "confirm": "Delete",
         "cancel": "Keep address",
         "cannotDeleteDefault": "You cannot delete your only default address. Please assign another address as default first."
+      },
+      "loadError": {
+        "title": "Addresses could not be loaded",
+        "description": "Please try again in a moment.",
+        "retry": "Try again"
+      },
+      "toasts": {
+        "saveSuccess": "Address saved successfully.",
+        "saveError": "Unable to save the address. Please try again.",
+        "deleteSuccess": "Address removed successfully.",
+        "deleteError": "Unable to remove the address. Please try again.",
+        "defaultSuccess": "Default address updated.",
+        "defaultError": "Unable to update the default address. Please try again."
       }
     },
     "settings": {
-      "metaTitle": "Settings",
-      "metaDescription": "Manage your account details, password, and preferences.",
-      "title": "Settings",
-      "subtitle": "Update personal information and account security.",
+      "metaTitle": "Account Settings",
+      "metaDescription": "Manage your account details, password, preferences, and notifications.",
+      "title": "Account Settings",
+      "subtitle": "Update personal information, account security, and notifications.",
       "backToAccount": "Back to account",
       "profile": {
         "title": "Personal information",
@@ -247,10 +290,15 @@
         "namePlaceholder": "e.g. Layla Al-Hassan",
         "email": "Email address",
         "emailPlaceholder": "name@example.com",
+        "emailReadOnly": "Managed via account credentials",
+        "mobile": "Mobile phone number",
+        "mobilePlaceholder": "e.g. 555123456",
         "photo": "Profile photo",
         "changePhoto": "Change photo",
         "removePhoto": "Remove photo",
         "photoHint": "JPG, PNG, or WebP — up to 5 MB.",
+        "photoSuccess": "Avatar updated successfully.",
+        "photoRemoved": "Avatar removed successfully.",
         "save": "Save changes",
         "saving": "Saving...",
         "saved": "Profile updated successfully.",
@@ -260,7 +308,10 @@
           "emailRequired": "Email address is required",
           "emailInvalid": "Enter a valid email address",
           "photoTooLarge": "Image must be 5 MB or smaller",
-          "photoInvalidType": "Use a JPG, PNG, or WebP image"
+          "photoInvalidType": "Use a JPG, PNG, or WebP image",
+          "photoUploadFailed": "Failed to upload avatar",
+          "photoDeleteFailed": "Failed to remove avatar",
+          "updateFailed": "Failed to update profile details"
         }
       },
       "password": {
@@ -317,7 +368,7 @@
   "Navigation": {
     "home": "Home",
     "newArrivals": "New Arrivals",
-    "allAbayas": "All Abayas",
+    "allAbayas": "All Collections",
     "linenCollection": "Linen Collection",
     "casualAbayas": "Casual Abayas",
     "formalAbayas": "Occasion & Formal",
@@ -327,6 +378,14 @@
     "sale": "Sale",
     "searchPlaceholder": "Search abayas, fabrics, or cuts...",
     "searchButton": "Search",
+    "searchResults": "Search results",
+    "searchResultCount": "{count, plural, one {# product} other {# products}}",
+    "searchLoading": "Searching products...",
+    "searchNoResults": "No products found for \"{query}\"",
+    "searchViewAll": "View all results ({count})",
+    "searchMinChars": "Type at least 2 characters to search",
+    "searchClear": "Clear search",
+    "searchSuggestionNotice": "Try searching by style, fabric, or cut",
     "cart": "Shopping Bag",
     "favorites": "Wishlist",
     "account": "My Account",
@@ -337,8 +396,65 @@
     "navCategories": "Categories",
     "currency": "Currency",
     "language": "Language",
+    "storeSettings": "Settings",
     "menu": "Menu",
     "announcement": "Worldwide & Regional Express Shipping | Discover Our Pure Linen Collection"
+  },
+  "GlobalSettings": {
+    "metaTitle": "Store Preferences & Settings",
+    "metaDescription": "Customize your boutique browsing experience, theme, language, and currency.",
+    "title": "Store Preferences",
+    "subtitle": "Tailor your boutique ambiance, preferred language, and regional currency.",
+    "backHome": "Back to boutique",
+    "sections": {
+      "appearance": "Ambiance & Theme",
+      "appearanceDesc": "Select a lighting aesthetic suited to your environment.",
+      "language": "Language",
+      "languageDesc": "Choose your preferred boutique browsing and reading language.",
+      "currency": "Currency",
+      "currencyDesc": "Select your currency for real-time pricing and checkout estimation.",
+      "density": "Display Density",
+      "densityDesc": "Adjust spacing and layout density across collection pages."
+    },
+    "theme": {
+      "system": "System Default",
+      "systemDesc": "Synchronizes automatically with your device display mode",
+      "light": "Linen Light",
+      "lightDesc": "Soft neutral ivory tones reminiscent of raw linen fabrics",
+      "dark": "Midnight Dark",
+      "darkDesc": "Deep obsidian and slate hues for understated evening elegance"
+    },
+    "languages": {
+      "ar": {
+        "name": "العربية",
+        "region": "Middle East & GCC",
+        "dir": "RTL"
+      },
+      "en": {
+        "name": "English",
+        "region": "International",
+        "dir": "LTR"
+      },
+      "tr": {
+        "name": "Türkçe",
+        "region": "Türkiye",
+        "dir": "LTR"
+      }
+    },
+    "currencyHint": "All transactions are calculated based on real-time boutique exchange rates.",
+    "density": {
+      "compactMode": "Compact layout",
+      "compactModeHint": "Condensed spacing and denser catalog views."
+    },
+    "accountPrompt": {
+      "authenticatedTitle": "Looking for account & security settings?",
+      "authenticatedSubtitle": "Manage your name, password, delivery addresses, and notification channels in your private account.",
+      "manageAccount": "Go to Account Settings",
+      "guestTitle": "Have a private Linen Line account?",
+      "guestSubtitle": "Sign in to access your saved order history, bespoke tailoring requests, and delivery addresses.",
+      "signIn": "Sign In to Account"
+    },
+    "saved": "Preferences updated successfully."
   },
   "Notifications": {
     "title": "Notifications",
@@ -520,8 +636,6 @@
       "tabHowToMeasure": "How to Measure",
       "unitCm": "CM",
       "unitInch": "Inches",
-      "selected": "Selected",
-      "selectThisSize": "Select size {size}",
       "measureLengthTitle": "Garment Length",
       "measureLengthDesc": "Measure from the highest point of the shoulder straight down to your ankle or preferred hemline.",
       "measureBustTitle": "Bust & Drape",
@@ -956,7 +1070,10 @@
         "passwordMinLength": "Password must be at least 8 characters"
       },
       "welcomeBackTitle": "Welcome back, {name}!",
-      "welcomeBackDescription": "It's wonderful to have you with us again. Enjoy exploring our luxury linen boutique."
+      "welcomeBackDescription": "It's wonderful to have you with us again. Enjoy exploring our luxury linen boutique.",
+      "errorTitle": "Sign in failed",
+      "errorDescription": "Please check your email and password, then try again.",
+      "networkErrorDescription": "A connection error occurred. Please check your network and try again."
     },
     "register": {
       "metaTitle": "Create an account",
@@ -978,6 +1095,11 @@
       "submitting": "Creating account…",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
+      "successTitle": "Account created!",
+      "successDescription": "Please check your email for the verification code to activate your account.",
+      "errorTitle": "Registration failed",
+      "errorDescription": "Please check your information and try again.",
+      "networkErrorDescription": "A connection error occurred during registration. Please try again.",
       "errors": {
         "nameRequired": "Full name is required",
         "nameMinLength": "Name must be at least 2 characters",
@@ -1007,11 +1129,17 @@
       "resendAction": "Resend code",
       "resending": "Resending…",
       "resendSuccess": "A new verification code has been sent to your email.",
+      "resendSuccessDescription": "We've sent a fresh 6-digit code. Please check your inbox and spam folder.",
       "resendError": "Failed to resend code. Please try again.",
+      "resendErrorTitle": "Failed to resend code",
+      "resendErrorDescription": "Please wait a moment before requesting another code.",
       "wrongEmail": "Wrong email?",
       "changeEmail": "Back to signup",
       "successTitle": "Email verified!",
       "successSubtitle": "Your account has been confirmed. Redirecting…",
+      "errorTitle": "Verification failed",
+      "errorDescription": "The code you entered is invalid or has expired. Please check and try again.",
+      "networkErrorDescription": "A connection error occurred. Please check your network and try again.",
       "devCodeToastTitle": "Verification Code: {code}",
       "devCodeToastDescription": "Development: Code prefilled automatically.",
       "devResentCodeToastTitle": "New Verification Code: {code}",
@@ -1259,7 +1387,9 @@
       "qty": "Qty {count}"
     },
     "toasts": {
+      "placing": "Placing your boutique order…",
       "success": "Order placed successfully",
+      "successDescription": "Your order {number} has been confirmed and forwarded to the atelier.",
       "error": "Unable to place the order. Please try again."
     },
     "confirmation": {

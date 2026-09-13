@@ -7,6 +7,7 @@ export * from "./components/ShopProductGrid";
 export * from "./components/ShopToolbar";
 export * from "./api/get-products";
 export * from "./hooks/useProducts";
+export * from "./hooks/useProductSearch";
 export * from "./types";
 export * from "./utils/filter-products";
 export * from "./utils/get-shop-products";

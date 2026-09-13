@@ -15,6 +15,7 @@ import {
   localizedSetting,
   MaintenancePage,
   SettingsHydration,
+  ThemeProvider,
 } from "@/features/settings";
 import { getCurrencies } from "@/features/currencies";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
@@ -128,36 +129,41 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     <html
       lang={locale}
       dir={dir}
-      style={{ ["--font-sans" as string]: activeFontVar }}
-      className={`${notoKufiArabic.variable} ${outfit.variable} ${activeFontClass} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${notoKufiArabic.variable} ${outfit.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body
+        className={`${activeFontClass} flex min-h-full flex-col bg-background text-foreground`}
+        style={{ ["--font-sans" as string]: activeFontVar }}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {inMaintenance && settings ? (
-            <MaintenancePage settings={settings} />
-          ) : (
-            <QueryProvider>
-              <SettingsHydration state={dehydratedSettings}>
-                <WishlistProvider>
-                  <CartProvider>
-                    <CartFlyProvider>
-                      <CurrencyProvider
-                        defaultCurrency={settings?.defaultCurrency}
-                        supportedCurrencies={settings?.supportedCurrencies}
-                        initialCurrencies={initialCurrencies}
-                      >
-                        {children}
-                      </CurrencyProvider>
-                    </CartFlyProvider>
-                  </CartProvider>
-                </WishlistProvider>
-              </SettingsHydration>
-            </QueryProvider>
-          )}
-          {settings?.googleAnalyticsId ? (
-            <GoogleAnalytics measurementId={settings.googleAnalyticsId} />
-          ) : null}
-          <GooeyToaster dir={dir} position={"top-center"} />
+          <ThemeProvider>
+            {inMaintenance && settings ? (
+              <MaintenancePage settings={settings} />
+            ) : (
+              <QueryProvider>
+                <SettingsHydration state={dehydratedSettings}>
+                  <WishlistProvider>
+                    <CartProvider>
+                      <CartFlyProvider>
+                        <CurrencyProvider
+                          defaultCurrency={settings?.defaultCurrency}
+                          supportedCurrencies={settings?.supportedCurrencies}
+                          initialCurrencies={initialCurrencies}
+                        >
+                          {children}
+                        </CurrencyProvider>
+                      </CartFlyProvider>
+                    </CartProvider>
+                  </WishlistProvider>
+                </SettingsHydration>
+              </QueryProvider>
+            )}
+            {settings?.googleAnalyticsId ? (
+              <GoogleAnalytics measurementId={settings.googleAnalyticsId} />
+            ) : null}
+            <GooeyToaster dir={dir} position={"top-center"} />
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

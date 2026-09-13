@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useAddresses } from "../hooks/useAddresses";
 import { CountryFlag } from "./CountryFlag";
 import { CountrySelectField } from "./CountrySelectField";
+import { CitySelectField } from "./CitySelectField";
 import {
   DEFAULT_PHONE_COUNTRY,
   findCountryByPhoneCode,
@@ -104,9 +105,11 @@ export function AddressForm({
       fullName: initialData?.fullName ?? "",
       phone: initialData?.phone ?? "",
       phoneCountryCode: initialData?.phoneCountryCode ?? `+${DEFAULT_PHONE_COUNTRY.phone_code}`,
+      countryId: initialData?.countryId ? String(initialData.countryId) : "",
       countryCode: initialData?.countryCode ?? "",
       countryName: initialData?.countryName ?? "",
       stateOrProvince: initialData?.stateOrProvince ?? "",
+      cityId: initialData?.cityId ? String(initialData.cityId) : "",
       city: initialData?.city ?? "",
       district: initialData?.district ?? "",
       streetAddress: initialData?.streetAddress ?? "",
@@ -117,8 +120,13 @@ export function AddressForm({
   });
 
   const type = useWatch({ control, name: "type" });
+  const countryIdValue = useWatch({ control, name: "countryId" });
   const countryCode = useWatch({ control, name: "countryCode" });
   const countryName = useWatch({ control, name: "countryName" });
+  const cityIdValue = useWatch({ control, name: "cityId" });
+  const cityName = useWatch({ control, name: "city" });
+  const selectedCountryId = Number(countryIdValue);
+  const selectedCityId = Number(cityIdValue);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,9 +177,11 @@ export function AddressForm({
       fullName: values.fullName.trim(),
       phone: values.phone.trim(),
       phoneCountryCode: values.phoneCountryCode.trim(),
+      countryId: Number(values.countryId),
       countryCode: values.countryCode.trim(),
       countryName: values.countryName.trim(),
       stateOrProvince: values.stateOrProvince.trim(),
+      cityId: Number(values.cityId),
       city: values.city.trim(),
       district: values.district.trim(),
       streetAddress: values.streetAddress.trim(),
@@ -325,11 +335,16 @@ export function AddressForm({
           {t("form.country")} <span className="text-destructive">*</span>
         </Label>
         <CountrySelectField
+          countryId={Number.isFinite(selectedCountryId) && selectedCountryId > 0 ? selectedCountryId : undefined}
           countryCode={countryCode}
           countryName={countryName}
-          hasError={!!errors.countryName || !!errors.countryCode}
+          hasError={!!errors.countryName || !!errors.countryCode || !!errors.countryId}
           onSelect={(country) => {
-            setValue("countryName", country.nameEn, {
+            setValue("countryId", String(country.id), {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+            setValue("countryName", country.name, {
               shouldDirty: true,
               shouldValidate: true,
             });
@@ -337,18 +352,21 @@ export function AddressForm({
               shouldDirty: true,
               shouldValidate: true,
             });
-            clearErrors(["countryName", "countryCode"]);
-            if (country.phone_code) {
-              setValue("phoneCountryCode", `+${country.phone_code}`, {
+            setValue("cityId", "", { shouldDirty: true, shouldValidate: true });
+            setValue("city", "", { shouldDirty: true, shouldValidate: true });
+            clearErrors(["countryName", "countryCode", "countryId"]);
+            const matchedPhone = findCountryByCodeOrName(country.code);
+            if (matchedPhone) {
+              setValue("phoneCountryCode", `+${matchedPhone.phone_code}`, {
                 shouldDirty: true,
               });
-              setPhoneCountry(country);
+              setPhoneCountry(matchedPhone);
             }
           }}
         />
-        {(errors.countryName?.message || errors.countryCode?.message) && (
+        {(errors.countryName?.message || errors.countryCode?.message || errors.countryId?.message) && (
           <p className="text-xs text-destructive">
-            {errors.countryName?.message || errors.countryCode?.message}
+            {errors.countryName?.message || errors.countryCode?.message || errors.countryId?.message}
           </p>
         )}
       </div>
@@ -473,19 +491,28 @@ export function AddressForm({
           <Label htmlFor="address-city" className="text-xs font-medium">
             {t("form.city")} <span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="address-city"
-            {...register("city")}
-            placeholder={t("form.cityPlaceholder")}
-            className={cn(
-              "h-9 text-sm",
-              errors.city && "border-destructive ring-1 ring-destructive/30"
-            )}
-            aria-invalid={!!errors.city}
+          <CitySelectField
+            countryId={Number.isFinite(selectedCountryId) && selectedCountryId > 0 ? selectedCountryId : undefined}
+            cityId={Number.isFinite(selectedCityId) && selectedCityId > 0 ? selectedCityId : undefined}
+            cityName={cityName}
+            hasError={!!errors.city || !!errors.cityId}
+            onSelect={(city) => {
+              setValue("cityId", String(city.id), {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+              setValue("city", city.name, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+              clearErrors(["city", "cityId"]);
+            }}
           />
-          {errors.city?.message && (
-            <p className="text-xs text-destructive">{errors.city.message}</p>
-          )}
+          {errors.city?.message || errors.cityId?.message ? (
+            <p className="text-xs text-destructive">
+              {errors.city?.message || errors.cityId?.message}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-1.5">

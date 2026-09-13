@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/animations";
 import { Button } from "@/components/ui/button";
+import { gooeyToast } from "@/components/ui/goey-toaster";
 import { AddressCard } from "./AddressCard";
 import { AddressDialog } from "./AddressDialog";
 import { DeleteAddressDialog } from "./DeleteAddressDialog";
@@ -15,6 +16,7 @@ export function AddressesList() {
   const t = useTranslations("ProfilePage.addresses");
   const {
     addresses,
+    isLoading,
     addAddress,
     updateAddress,
     deleteAddress,
@@ -23,6 +25,8 @@ export function AddressesList() {
     isUpdating,
     isDeleting,
     isSettingDefault,
+    isError,
+    refetch,
   } = useAddresses();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,16 +51,48 @@ export function AddressesList() {
   };
 
   const handleSubmitForm = async (formData: AddressFormData) => {
-    if (editingAddress) {
-      await updateAddress(editingAddress.id, formData);
-    } else {
-      await addAddress(formData);
+    try {
+      if (editingAddress) {
+        await updateAddress(editingAddress.id, formData);
+      } else {
+        await addAddress(formData);
+      }
+      gooeyToast.success(t("toasts.saveSuccess"));
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.saveError"),
+      );
+      throw error;
     }
   };
 
   const handleDeleteConfirm = async () => {
-    if (addressToDelete) {
+    if (!addressToDelete) return;
+    try {
       await deleteAddress(addressToDelete.id);
+      gooeyToast.success(t("toasts.deleteSuccess"));
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.deleteError"),
+      );
+      throw error;
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    try {
+      await setDefaultAddress(id);
+      gooeyToast.success(t("toasts.defaultSuccess"));
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.defaultError"),
+      );
     }
   };
 
@@ -66,6 +102,62 @@ export function AddressesList() {
     if (addresses.length <= 1 && addr.isDefault) return false;
     return true;
   };
+
+  if (isError && addresses.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-14 text-center">
+        <p className="text-base font-semibold text-foreground">
+          {t("loadError.title")}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
+          {t("loadError.description")}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => void refetch()}
+          className="mt-5 text-xs"
+        >
+          {t("loadError.retry")}
+        </Button>
+      </div>
+    );
+  }
+
+  if (isLoading && addresses.length === 0) {
+    return (
+      <div className="space-y-4" aria-busy="true">
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+          <div className="h-8 w-28 rounded-lg bg-muted animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="size-7 rounded-lg bg-muted animate-pulse" />
+                  <div className="h-4 w-20 rounded bg-muted animate-pulse" />
+                </div>
+                <div className="h-5 w-14 rounded-full bg-muted animate-pulse" />
+              </div>
+              <div className="space-y-1.5 pt-1">
+                <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
+                <div className="h-3.5 w-1/2 rounded bg-muted/80 animate-pulse" />
+              </div>
+              <div className="pt-2 border-t border-border/40 flex justify-end gap-2">
+                <div className="h-7 w-16 rounded-md bg-muted animate-pulse" />
+                <div className="h-7 w-16 rounded-md bg-muted animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (addresses.length === 0) {
     return (
@@ -127,7 +219,7 @@ export function AddressesList() {
                 address={address}
                 onEdit={handleOpenEdit}
                 onDelete={handleOpenDelete}
-                onSetDefault={setDefaultAddress}
+                onSetDefault={handleSetDefault}
                 isSettingDefault={isSettingDefault}
               />
             </StaggerItem>

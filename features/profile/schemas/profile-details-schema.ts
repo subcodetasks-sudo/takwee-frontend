@@ -8,6 +8,7 @@ export type ProfileDetailsErrorMessages = {
   nameLettersOnly: string;
   emailRequired: string;
   emailInvalid: string;
+  mobileInvalid?: string;
 };
 
 export function createProfileDetailsSchema(
@@ -24,6 +25,7 @@ export function createProfileDetailsSchema(
       .trim()
       .min(1, messages.emailRequired)
       .email(messages.emailInvalid),
+    mobile: z.string().trim().optional(),
     avatarUrl: z.string().optional(),
   });
 }

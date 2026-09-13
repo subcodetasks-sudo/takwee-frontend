@@ -72,23 +72,71 @@ export function RegisterForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     setServerError(null);
-    try {
-      const res = await registerAction({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-      });
 
-      if (!res.success) {
-        const fieldMsg = res.fieldErrors
-          ? Object.values(res.fieldErrors).flat().join(" ")
-          : null;
-        setServerError(fieldMsg || res.message || "Registration failed");
-        return;
+    const registerPromise = async () => {
+      try {
+        const res = await registerAction({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        });
+
+        if (!res.success) {
+          const fieldMsg = res.fieldErrors
+            ? Object.values(res.fieldErrors).flat().join(" ")
+            : null;
+          const errMsg = fieldMsg || res.message || t("errorTitle");
+          const err = new Error(errMsg);
+          (err as any).description = t("errorDescription");
+          throw err;
+        }
+
+        return res.data;
+      } catch (err: unknown) {
+        if (err instanceof Error && (err as any).description) {
+          throw err;
+        }
+        const isNetwork =
+          err instanceof Error &&
+          (err.message.toLowerCase().includes("fetch") ||
+            err.message.toLowerCase().includes("network") ||
+            err.name === "AbortError");
+        const fallbackErr = new Error(
+          isNetwork
+            ? t("errorTitle")
+            : err instanceof Error
+            ? err.message
+            : t("errorTitle")
+        );
+        (fallbackErr as any).description = isNetwork
+          ? t("networkErrorDescription")
+          : t("errorDescription");
+        throw fallbackErr;
       }
+    };
 
-      const verificationCode = res.data?.verificationCode;
+    const promise = registerPromise();
+
+    try {
+      gooeyToast.promise(promise, {
+        loading: t("submitting"),
+        success: t("successTitle"),
+        error: (err: any) => err?.message || t("errorTitle"),
+        description: {
+          success: t("successDescription"),
+          error: (err: any) => err?.description || t("errorDescription"),
+        },
+        timing: { displayDuration: 6000 },
+      });
+    } catch {
+      // Fallback gracefully if toast container is not ready
+    }
+
+    try {
+      const data = await promise;
+
+      const verificationCode = data?.verificationCode;
       if (verificationCode) {
         try {
           gooeyToast.info(t("devCodeToastTitle", { code: verificationCode }), {
@@ -102,8 +150,8 @@ export function RegisterForm() {
 
       const codeQuery = verificationCode ? `&devCode=${encodeURIComponent(verificationCode)}` : "";
       router.push(`/verify?email=${encodeURIComponent(values.email)}${codeQuery}`);
-    } catch {
-      setServerError("An error occurred during registration. Please try again.");
+    } catch (err: any) {
+      setServerError(err?.message || t("errorTitle"));
     } finally {
       setIsSubmitting(false);
     }

@@ -1,4 +1,5 @@
 export * from "./components/ProductCard";
+export * from "./components/ProductCardSkeleton";
 export * from "./components/ProductPrice";
 export * from "./components/ProductDetailsView";
 export * from "./components/ProductDetailsHero";
@@ -11,8 +12,11 @@ export * from "./components/ProductRichText";
 export * from "./components/ProductStickyBottomBar";
 export * from "./context/ProductDetailsContext";
 export * from "./hooks/useProduct";
+export * from "./hooks/useAbayaSizeGuide";
 export * from "./types";
 export * from "./api/get-product-by-id";
+export * from "./api/get-abaya-size-guide";
+
 export * from "./utils/sample-products";
 export * from "./utils/shop-filters";
 export * from "./utils/format-price";

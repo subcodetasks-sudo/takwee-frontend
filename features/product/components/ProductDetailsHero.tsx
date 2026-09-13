@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -23,6 +23,7 @@ import { HeightSizeCalculator } from "./HeightSizeCalculator";
 import { useProductDetails } from "../context/ProductDetailsContext";
 import { ProductImageZoom } from "./ProductImageZoom";
 import { ProductDetailsWishlistButton } from "./ProductDetailsWishlistButton";
+import { useAbayaSizeGuide } from "../hooks/useAbayaSizeGuide";
 
 const COLOR_IMAGE_EASE = [0.21, 0.47, 0.32, 0.98] as const;
 
@@ -56,6 +57,18 @@ export function ProductDetailsHero({
 
   const { isInCart: isCartInCart, isHydrated } = useCart();
   const context = useProductDetails();
+  const { data: sizeGuide } = useAbayaSizeGuide();
+
+  const sizeRows = useMemo(() => {
+    if (sizeGuide?.rows && sizeGuide.rows.length > 0) {
+      return sizeGuide.rows.map((r) => ({
+        size: r.size,
+        length: String(r.abaya_length),
+        bust: String(r.chest_width),
+      }));
+    }
+    return SIZE_ROWS;
+  }, [sizeGuide?.rows]);
 
   const [localColorId, setLocalColorId] = useState(product.colors[0]?.id);
   const [localImageIndex, setLocalImageIndex] = useState(0);
@@ -468,6 +481,7 @@ export function ProductDetailsHero({
               <HeightSizeCalculator
                 selectedSize={selectedSize}
                 onSelectSize={(size) => setSelectedSize(size)}
+                guide={sizeGuide}
               />
             </StaggerItem>
 
@@ -484,10 +498,7 @@ export function ProductDetailsHero({
                       </span>
                     ) : null}
                   </div>
-                  <SizeGuideDialog
-                    selectedSize={selectedSize}
-                    onSelectSize={(size) => setSelectedSize(size)}
-                  />
+                  <SizeGuideDialog guide={sizeGuide} />
                 </div>
 
                 <StaggerContainer
@@ -497,7 +508,7 @@ export function ProductDetailsHero({
                 >
                   {product.sizes.map((size) => {
                     const isSelected = size === selectedSize;
-                    const sizeRow = SIZE_ROWS.find((r) => r.size === size);
+                    const sizeRow = sizeRows.find((r) => r.size === size);
                     return (
                       <StaggerItem key={size}>
                         <button
@@ -524,7 +535,7 @@ export function ProductDetailsHero({
                                   : "text-muted-foreground",
                               )}
                             >
-                              {sizeRow.length} cm
+                              {sizeRow.length} {sizeGuide?.default_unit || "cm"}
                             </span>
                           ) : null}
                         </button>

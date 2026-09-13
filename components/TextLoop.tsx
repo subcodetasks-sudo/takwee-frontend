@@ -301,7 +301,7 @@ const TextLoop = ({
             >
               <span>{text}</span>
               {separator && (
-                <span className="mx-4 opacity-50 text-[0.85em] text-white select-none">
+                <span className="mx-4 opacity-60 text-[0.85em] select-none text-current">
                   {separator}
                 </span>
               )}
@@ -330,7 +330,7 @@ const TextLoop = ({
             >
               <span>{text}</span>
               {separator && (
-                <span className="mx-4 opacity-50 text-[0.85em] select-none">
+                <span className="mx-4 opacity-60 text-[0.85em] select-none text-current">
                   {separator}
                 </span>
               )}

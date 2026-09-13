@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FadeIn } from "@/components/animations";
@@ -18,7 +19,9 @@ export async function LoginView() {
       </FadeIn>
 
       <FadeIn direction="up" delay={0.56} duration={0.55}>
-        <LoginForm />
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </FadeIn>
 
       <FadeIn direction="up" delay={0.64} duration={0.5}>

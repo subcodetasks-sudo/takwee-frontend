@@ -14,15 +14,16 @@ export interface ShopProductsResult {
 
 /**
  * Load shop catalog products from `GET /api/v1/products`, then scope to the
- * category (or promo filter) for `/shop/[filter]` routes.
+ * category (or promo filter) for `/shop/[filter]` routes, or filter by search query.
  */
 export async function getShopProducts(
   pathFilter?: string,
   locale?: string,
+  searchQuery?: string,
 ): Promise<ShopProductsResult> {
   try {
     const [products, categories] = await Promise.all([
-      fetchProducts(locale),
+      fetchProducts(locale, { search: searchQuery }),
       getCategories(locale),
     ]);
 

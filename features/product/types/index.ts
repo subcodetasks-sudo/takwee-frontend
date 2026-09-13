@@ -1,4 +1,7 @@
 export type {
+  ApiAbayaSizeGuide,
+  ApiAbayaSizeGuideResponse,
+  ApiAbayaSizeGuideRow,
   ApiProduct,
   ApiProductCategory,
   ApiProductDetailResponse,
@@ -8,6 +11,10 @@ export type {
   ApiProductsPage,
   ApiProductsResponse,
 } from "./api";
+
+export type AbayaSizeGuide = import("./api").ApiAbayaSizeGuide;
+export type AbayaSizeGuideRow = import("./api").ApiAbayaSizeGuideRow;
+
 
 export const PRODUCT_SWATCH_CLASSES = {
   black: "bg-foreground",

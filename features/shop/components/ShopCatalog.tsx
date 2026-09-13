@@ -22,15 +22,23 @@ import {
 import { ShopFilterPanel } from "./ShopFilterPanel";
 import { ShopMobileFilterBar } from "./ShopMobileFilterBar";
 import { ShopProductGrid } from "./ShopProductGrid";
+import { Link } from "@/i18n/routing";
+import { Search, X } from "lucide-react";
 import { ShopToolbar } from "./ShopToolbar";
 
 interface ShopCatalogProps {
   products: Product[];
   bounds: ShopPriceBounds;
+  searchQuery?: string;
 }
 
-export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
+export function ShopCatalog({
+  products,
+  bounds,
+  searchQuery,
+}: ShopCatalogProps) {
   const t = useTranslations("ShopPage");
+  const tNav = useTranslations("Navigation");
 
   const [filters, setFilters] = useState<ShopFilterState>(() =>
     createDefaultFilterState(bounds),
@@ -113,6 +121,25 @@ export function ShopCatalog({ products, bounds }: ShopCatalogProps) {
       </div>
 
       <div className="space-y-6">
+        {searchQuery && (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-primary-200/60 bg-primary-50/50 p-3 text-sm dark:border-primary-800/40 dark:bg-primary-950/30">
+            <div className="flex items-center gap-2 text-foreground min-w-0">
+              <Search className="size-4 shrink-0 text-primary-700 dark:text-primary-300" />
+              <span className="truncate">
+                {tNav("searchResults")}:{" "}
+                <strong className="font-semibold">&quot;{searchQuery}&quot;</strong>
+              </span>
+            </div>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-1 shrink-0 text-xs font-semibold text-primary-700 hover:text-primary-900 dark:text-primary-300 dark:hover:text-primary-100 hover:underline"
+            >
+              <X className="size-3.5" />
+              <span>{tNav("searchClear")}</span>
+            </Link>
+          </div>
+        )}
+
         <ShopToolbar
           resultCount={filteredProducts.length}
           activeFilterCount={activeFilterCount}

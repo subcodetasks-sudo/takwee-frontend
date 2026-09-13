@@ -35,9 +35,11 @@ export function createAddressFormSchema(messages: AddressFormErrorMessages) {
       .min(1, messages.phoneRequired)
       .regex(PHONE_DIGITS_ONLY, messages.phoneNumbersOnly),
     phoneCountryCode: z.string().min(1),
+    countryId: z.string().trim().min(1, messages.countryRequired),
     countryCode: z.string().trim().min(1, messages.countryRequired),
     countryName: z.string().trim().min(1, messages.countryRequired),
     stateOrProvince: z.string(),
+    cityId: z.string().trim().min(1, messages.cityRequired),
     city: z.string().trim().min(1, messages.cityRequired),
     district: z.string(),
     streetAddress: z.string().trim().min(1, messages.streetRequired),

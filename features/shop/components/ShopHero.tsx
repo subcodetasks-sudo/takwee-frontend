@@ -17,10 +17,17 @@ interface ShopHeroProps {
   pathFilter?: string;
   /** RSC-resolved category (preferred); client hook used as fallback. */
   category?: StorefrontCategory | null;
+  /** Optional search query for `/shop?search=...`. */
+  searchQuery?: string;
 }
 
-export function ShopHero({ pathFilter, category: categoryProp }: ShopHeroProps) {
+export function ShopHero({
+  pathFilter,
+  category: categoryProp,
+  searchQuery,
+}: ShopHeroProps) {
   const t = useTranslations("ShopPage");
+  const tNav = useTranslations("Navigation");
   const locale = useLocale();
   const isRtl = locale === "ar";
   const { heroes } = useHomePage();
@@ -29,17 +36,21 @@ export function ShopHero({ pathFilter, category: categoryProp }: ShopHeroProps) 
   const category =
     categoryProp ?? findCategoryForFilter(pathFilter, categories) ?? null;
 
-  const title = category
-    ? category.name
-    : pathFilter && isShopFilter(pathFilter)
-      ? t(`filters.${pathFilter}.title`)
-      : t("hero.title");
+  const title = searchQuery
+    ? tNav("searchResults")
+    : category
+      ? category.name
+      : pathFilter && isShopFilter(pathFilter)
+        ? t(`filters.${pathFilter}.title`)
+        : t("hero.title");
 
-  const subtitle = pathFilter
-    ? !category && isShopFilter(pathFilter)
-      ? t(`filters.${pathFilter}.subtitle`)
-      : null
-    : t("hero.subtitle");
+  const subtitle = searchQuery
+    ? `"${searchQuery}"`
+    : pathFilter
+      ? !category && isShopFilter(pathFilter)
+        ? t(`filters.${pathFilter}.subtitle`)
+        : null
+      : t("hero.subtitle");
 
   // All-products `/shop`: prefer the first home hero image.
   // Category routes: prefer the category image from `useCategories` / RSC.

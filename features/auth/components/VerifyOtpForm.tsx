@@ -40,7 +40,7 @@ type Props = {
 
 export function VerifyOtpForm({
   initialEmail,
-  redirectTo = "/",
+  redirectTo = "/login",
 }: Props) {
   const t = useTranslations("Auth.verify");
   const router = useRouter();
@@ -114,31 +114,74 @@ export function VerifyOtpForm({
     setServerError(null);
     setResendNotification(null);
 
-    try {
-      const res = await resendVerificationAction({ email });
-      if (!res.success) {
-        setServerError(res.message || t("resendError"));
-        return;
+    const resendPromise = async () => {
+      try {
+        const res = await resendVerificationAction({ email });
+        if (!res.success) {
+          const err = new Error(res.message || t("resendErrorTitle"));
+          (err as any).description = t("resendErrorDescription");
+          throw err;
+        }
+        return res.data;
+      } catch (err: unknown) {
+        if (err instanceof Error && (err as any).description) {
+          throw err;
+        }
+        const isNetwork =
+          err instanceof Error &&
+          (err.message.toLowerCase().includes("fetch") ||
+            err.message.toLowerCase().includes("network") ||
+            err.name === "AbortError");
+        const fallbackErr = new Error(
+          isNetwork
+            ? t("resendErrorTitle")
+            : err instanceof Error
+            ? err.message
+            : t("resendErrorTitle")
+        );
+        (fallbackErr as any).description = isNetwork
+          ? t("networkErrorDescription")
+          : t("resendErrorDescription");
+        throw fallbackErr;
       }
+    };
 
+    const promise = resendPromise();
+
+    try {
+      gooeyToast.promise(promise, {
+        loading: t("resending"),
+        success: t("resendSuccess"),
+        error: (err: any) => err?.message || t("resendErrorTitle"),
+        description: {
+          success: t("resendSuccessDescription"),
+          error: (err: any) => err?.description || t("resendErrorDescription"),
+        },
+        timing: { displayDuration: 6000 },
+      });
+    } catch {
+      // Fallback gracefully if toast container isn't ready
+    }
+
+    try {
+      const data = await promise;
       setTimeLeft(RESEND_COOLDOWN_SECONDS);
       setValue("code", "");
       const msg = t("resendSuccess");
       setResendNotification(msg);
 
-      try {
-        gooeyToast.success(msg);
-        if (res.data?.verificationCode) {
-          gooeyToast.info(t("devResentCodeToastTitle", { code: res.data.verificationCode }), {
+      if (data?.verificationCode) {
+        try {
+          gooeyToast.info(t("devResentCodeToastTitle", { code: data.verificationCode }), {
             description: t("devResentCodeToastDescription"),
             duration: 15000,
           });
+        } catch {
+          // Ignore
         }
-      } catch {
-        // Fallback gracefully if toast container isn't ready
       }
-    } catch {
-      setServerError(t("resendError"));
+    } catch (err: any) {
+      setServerError(err?.message || t("resendErrorTitle"));
     } finally {
       setIsResending(false);
     }
@@ -152,34 +195,70 @@ export function VerifyOtpForm({
     setServerError(null);
     setResendNotification(null);
 
-    try {
-      const res = await verifyEmailAction({
-        email,
-        code: values.code,
-      });
-
-      if (!res.success) {
-        setServerError(res.message || t("errors.invalidCode"));
-        setIsSubmitting(false);
-        return;
-      }
-
-      setIsSuccess(true);
-
+    const verifyPromise = async () => {
       try {
-        gooeyToast.success(t("successTitle"), {
-          description: t("successSubtitle"),
+        const res = await verifyEmailAction({
+          email,
+          code: values.code,
         });
-      } catch {
-        // Fallback gracefully
+
+        if (!res.success) {
+          const err = new Error(res.message || t("errorTitle"));
+          (err as any).description = t("errorDescription");
+          throw err;
+        }
+
+        return res;
+      } catch (err: unknown) {
+        if (err instanceof Error && (err as any).description) {
+          throw err;
+        }
+        const isNetwork =
+          err instanceof Error &&
+          (err.message.toLowerCase().includes("fetch") ||
+            err.message.toLowerCase().includes("network") ||
+            err.name === "AbortError");
+        const fallbackErr = new Error(
+          isNetwork
+            ? t("errorTitle")
+            : err instanceof Error
+            ? err.message
+            : t("errorTitle")
+        );
+        (fallbackErr as any).description = isNetwork
+          ? t("networkErrorDescription")
+          : t("errorDescription");
+        throw fallbackErr;
       }
+    };
+
+    const promise = verifyPromise();
+
+    try {
+      gooeyToast.promise(promise, {
+        loading: t("submitting"),
+        success: t("successTitle"),
+        error: (err: any) => err?.message || t("errorTitle"),
+        description: {
+          success: t("successSubtitle"),
+          error: (err: any) => err?.description || t("errorDescription"),
+        },
+        timing: { displayDuration: 6000 },
+      });
+    } catch {
+      // Fallback gracefully
+    }
+
+    try {
+      await promise;
+      setIsSuccess(true);
 
       // Transition to sign in or target
       window.setTimeout(() => {
         router.push(redirectTo || "/login");
       }, 1200);
-    } catch {
-      setServerError(t("errors.invalidCode"));
+    } catch (err: any) {
+      setServerError(err?.message || t("errors.invalidCode"));
       setIsSubmitting(false);
     }
   };

@@ -1,7 +1,13 @@
 import createMiddleware from "next-intl/middleware";
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { routing, type Locale } from "./i18n/routing";
 import { getApiBaseUrl } from "./lib/api-client";
+import {
+  hasAuthToken,
+  isProtectedPath,
+  isGuestOnlyPath,
+  getCleanPathWithoutLocale,
+} from "./features/auth/utils/session-cookie";
 
 type SettingsListResponse = {
   success?: boolean;
@@ -45,6 +51,44 @@ async function resolveDefaultLocale(): Promise<Locale> {
 
 export default async function proxy(request: NextRequest) {
   const defaultLocale = await resolveDefaultLocale();
+
+  const pathname = request.nextUrl.pathname;
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0];
+  const hasLocalePrefix = (routing.locales as readonly string[]).includes(firstSegment);
+  const locale = hasLocalePrefix ? (firstSegment as Locale) : defaultLocale;
+  const pathWithoutLocale = "/" + (hasLocalePrefix ? segments.slice(1) : segments).join("/");
+
+  const isAuthenticated = hasAuthToken(request.cookies);
+
+  // 1. Protected routes: User MUST be authenticated
+  if (isProtectedPath(pathWithoutLocale) && !isAuthenticated) {
+    const loginPrefix = locale !== defaultLocale ? `/${locale}` : "";
+    const loginUrl = new URL(`${loginPrefix}/login`, request.url);
+    loginUrl.searchParams.set("redirect", pathname + request.nextUrl.search);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 2. Guest-only routes (auth pages & verify): Navigation is DISABLED for authenticated users
+  if (isGuestOnlyPath(pathWithoutLocale) && isAuthenticated) {
+    const redirectParam = request.nextUrl.searchParams.get("redirect");
+    let destination: string;
+
+    if (
+      redirectParam &&
+      redirectParam.startsWith("/") &&
+      !redirectParam.startsWith("//") &&
+      !isGuestOnlyPath(getCleanPathWithoutLocale(redirectParam, routing.locales))
+    ) {
+      destination = redirectParam;
+    } else {
+      const localePrefix = locale !== defaultLocale ? `/${locale}` : "";
+      destination = localePrefix || "/";
+    }
+
+    const redirectUrl = new URL(destination, request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
 
   const handle = createMiddleware({
     ...routing,

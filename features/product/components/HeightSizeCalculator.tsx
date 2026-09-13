@@ -6,9 +6,42 @@ import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { AbayaSize } from "../types";
+import type { AbayaSize, ApiAbayaSizeGuide, ApiAbayaSizeGuideRow } from "../types";
 
 const QUICK_PRESETS = [152, 158, 163, 168, 174] as const;
+
+export function calculateSizeFromGuideRows(
+  heightCm: number,
+  rows: ApiAbayaSizeGuideRow[],
+): { size: AbayaSize; lengthCm: number } | null {
+  if (Number.isNaN(heightCm) || rows.length === 0) return null;
+  if (heightCm < 140 || heightCm > 195) return null;
+
+  for (const row of rows) {
+    if (row.height_plus) {
+      if (heightCm >= row.height_min) {
+        return { size: row.size as AbayaSize, lengthCm: row.abaya_length };
+      }
+    } else {
+      if (heightCm >= row.height_min && heightCm <= row.height_max) {
+        return { size: row.size as AbayaSize, lengthCm: row.abaya_length };
+      }
+    }
+  }
+
+  // If slightly below the minimum row (e.g. 140-149cm)
+  if (heightCm < rows[0].height_min && heightCm >= 140) {
+    return { size: rows[0].size as AbayaSize, lengthCm: rows[0].abaya_length };
+  }
+
+  // If above highest non-plus row
+  const lastRow = rows[rows.length - 1];
+  if (heightCm >= lastRow.height_min) {
+    return { size: lastRow.size as AbayaSize, lengthCm: lastRow.abaya_length };
+  }
+
+  return null;
+}
 
 export function calculateSizeFromHeight(heightCm: number): {
   size: AbayaSize;
@@ -36,21 +69,33 @@ interface HeightSizeCalculatorProps {
   selectedSize?: AbayaSize | null;
   onSelectSize: (size: AbayaSize) => void;
   className?: string;
+  guide?: ApiAbayaSizeGuide | null;
 }
 
 export function HeightSizeCalculator({
   selectedSize,
   onSelectSize,
   className,
+  guide,
 }: HeightSizeCalculatorProps) {
   const t = useTranslations("ProductDetails.heightCalculator");
   const [heightInput, setHeightInput] = useState<string>("");
 
+  const presets = useMemo(() => {
+    if (guide?.rows && guide.rows.length > 0) {
+      return guide.rows.map((r) => Math.round((r.height_min + r.height_max) / 2));
+    }
+    return QUICK_PRESETS;
+  }, [guide?.rows]);
+
   const parsedHeight = Number.parseInt(heightInput, 10);
   const recommendation = useMemo(() => {
     if (!heightInput) return null;
+    if (guide?.rows && guide.rows.length > 0) {
+      return calculateSizeFromGuideRows(parsedHeight, guide.rows);
+    }
     return calculateSizeFromHeight(parsedHeight);
-  }, [heightInput, parsedHeight]);
+  }, [guide?.rows, heightInput, parsedHeight]);
 
   const isOutOfRange =
     Boolean(heightInput) &&
@@ -67,11 +112,15 @@ export function HeightSizeCalculator({
 
   const handlePresetClick = (preset: number) => {
     setHeightInput(preset.toString());
-    const res = calculateSizeFromHeight(preset);
+    const res =
+      guide?.rows && guide.rows.length > 0
+        ? calculateSizeFromGuideRows(preset, guide.rows)
+        : calculateSizeFromHeight(preset);
     if (res) {
       onSelectSize(res.size);
     }
   };
+
 
   return (
     <div
@@ -118,7 +167,7 @@ export function HeightSizeCalculator({
 
           {/* Quick preset buttons */}
           <div className="flex flex-wrap items-center gap-1.5" role="group">
-            {QUICK_PRESETS.map((preset) => (
+            {presets.map((preset) => (
               <button
                 key={preset}
                 type="button"

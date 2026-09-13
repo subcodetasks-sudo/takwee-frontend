@@ -9,4 +9,7 @@ export * from "./components/PasswordForm";
 export * from "./types";
 export * from "./schemas";
 export * from "./hooks/useProfile";
-export * from "./utils/mock-profile";
+export * from "./hooks/usePreferences";
+export * from "./api";
+export * from "./utils/map-profile";
+export * from "./utils/map-preferences";

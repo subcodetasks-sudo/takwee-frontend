@@ -4,6 +4,12 @@ import type {
   OrderSummary,
 } from "@/features/orders/types";
 import type { CartItem } from "@/features/cart/types";
+import type {
+  ApiCheckoutCoupon,
+  ApiCheckoutItemData,
+  ApiCheckoutPricing,
+  ApiCheckoutShippingAddress,
+} from "./api";
 
 export type CheckoutPaymentMethod = OrderPaymentMethod;
 
@@ -13,15 +19,26 @@ export interface CheckoutLineLabel {
   color?: string;
 }
 
+export interface CheckoutPreviewResult {
+  items: ApiCheckoutItemData[];
+  pricing: ApiCheckoutPricing;
+  shippingAddress?: ApiCheckoutShippingAddress | null;
+  coupon?: ApiCheckoutCoupon | null;
+}
+
 export interface PlaceOrderInput {
   items: CartItem[];
-  labels: CheckoutLineLabel[];
-  shippingAddress: OrderShippingAddress;
+  labels?: CheckoutLineLabel[];
+  addressId: string;
   paymentMethod: CheckoutPaymentMethod;
-  subtotalTRY: number;
-  taxTRY: number;
+  couponCode?: string;
+  shippingAddress?: OrderShippingAddress;
+  subtotalTRY?: number;
+  taxTRY?: number;
 }
 
 export interface PlaceOrderResult {
   order: OrderSummary;
 }
+
+export * from "./api";
