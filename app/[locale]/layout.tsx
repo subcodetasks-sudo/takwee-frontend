@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Noto_Kufi_Arabic, Outfit } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -20,6 +21,73 @@ import {
 import { getCurrencies } from "@/features/currencies";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
 import "../globals.css";
+
+const gotham = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Gotham/Gotham Thin/Gotham Thin.otf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Thin Italic/Gotham Thin Italic.otf",
+      weight: "100",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Extra Light/Gotham Extra Light.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Extra Light Italic/Gotham Extra Light Italic.otf",
+      weight: "200",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Light/Gotham Light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Book/Gotham Book.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Italic/Gotham Italic.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Medium/Gotham Medium.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Bold/Gotham Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Bold Italic/Gotham Bold Italic.ttf",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Black/Gotham Black.otf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Gotham/Gotham Ultra/Gotham Ultra.otf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-gotham",
+  display: "swap",
+});
 
 const notoKufiArabic = Noto_Kufi_Arabic({
   variable: "--font-noto-arabic",
@@ -117,10 +185,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   ]);
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const activeFontClass =
-    locale === "ar" ? notoKufiArabic.className : outfit.className;
+  const activeFontClass = `${gotham.className} ${locale === "ar" ? notoKufiArabic.className : outfit.className}`;
   const activeFontVar =
-    locale === "ar" ? "var(--font-noto-arabic)" : "var(--font-outfit)";
+    "var(--font-gotham), var(--font-noto-arabic), var(--font-outfit), sans-serif";
 
   const inMaintenance = settings?.maintenanceMode === true;
   const dehydratedSettings = dehydrateSettings(settings);
@@ -130,7 +197,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       lang={locale}
       dir={dir}
       suppressHydrationWarning
-      className={`${notoKufiArabic.variable} ${outfit.variable} h-full antialiased`}
+      className={`${gotham.variable} ${notoKufiArabic.variable} ${outfit.variable} h-full antialiased`}
     >
       <body
         className={`${activeFontClass} flex min-h-full flex-col bg-background text-foreground`}

@@ -74,6 +74,13 @@
       "copyOrderNumber": "نسخ رقم الطلب",
       "orderNumberCopied": "تم نسخ رقم الطلب",
       "placedOn": "بتاريخ {date}",
+      "search": {
+        "placeholder": "البحث برقم الطلب أو المعرّف...",
+        "clear": "مسح البحث",
+        "noResultsTitle": "لم نجد أي طلب مطابق",
+        "noResultsDescription": "لم نتمكن من العثور على أي طلب يطابق \"{query}\". يُرجى التحقق من الرقم والمحاولة مجدداً.",
+        "resultsCount": "{count, plural, zero {لا توجد طلبات} one {طلب واحد} two {طلبان} few {# طلبات} many {# طلباً} other {# طلب}}"
+      },
       "itemCount": "{count, plural, zero {لا عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}}",
       "items": "قطع هذا الطلب",
       "deliveredNotice": "تم التسليم بنجاح إلى عنوانكِ المعتمد",
@@ -82,30 +89,56 @@
       "cancelledNotice": "تم إلغاء الطلب",
       "cancelledWithDate": "تم إلغاء الطلب في {date}",
       "refundNotice": "تم رد المبلغ كاملاً ({amount}) إلى وسيلة الدفع الأصلية",
+      "failedNotice": "تعذر تسليم الشحنة",
+      "failedWithDate": "تعذر التوصيل في {date}",
+      "failedHelpNotice": "فريق خدمة العملاء جاهز لمساعدتكِ لإعادة جدولة التوصيل أو تحديث العنوان.",
+      "returnedNotice": "تم إرجاع الطلب إلى المشغل",
+      "returnedWithDate": "تم إرجاع الطلب في {date}",
+      "returnRefundNotice": "تمت معالجة استرداد مبلغ {amount} إلى وسيلة الدفع الأصلية",
       "status": {
-        "delivered": "تم التسليم",
-        "shipped": "قيد التوصيل",
+        "pending": "قيد الانتظار",
         "processing": "قيد التجهيز",
+        "shipped": "تم الشحن",
+        "in_transit": "في الطريق",
+        "out_for_delivery": "خرج للتوصيل",
+        "delivered": "تم التسليم",
+        "failed": "تعذر التوصيل",
+        "returned": "تم الإرجاع",
         "cancelled": "ملغى"
       },
       "filters": {
         "all": "جميع الطلبات",
-        "active": "قيد التوصيل",
+        "pending": "قيد الانتظار",
+        "processing": "قيد التجهيز",
+        "shipped": "تم الشحن",
+        "in_transit": "في الطريق",
+        "out_for_delivery": "خرج للتوصيل",
         "delivered": "تم التسليم",
+        "failed": "تعذر التوصيل",
+        "returned": "تم الإرجاع",
         "cancelled": "الملغاة",
         "emptyFilter": "لا توجد طلبات في هذه الحالة",
         "showAll": "عرض جميع الطلبات"
       },
       "tracker": {
         "placed": "تأكيد الطلب",
+        "processing": "التجهيز بالمشغل",
         "tailoring": "التجهيز بالمشغل",
-        "shipped": "في الطريق للتوصيل",
+        "shipped": "تم الشحن",
+        "in_transit": "في الطريق للتوصيل",
+        "out_for_delivery": "خرج للتوصيل",
         "delivered": "تم الاستلام",
         "estimatedArrival": "الوصول المتوقع: {date}",
         "carrier": "شركة الشحن: {carrier}",
         "trackingNumber": "رقم التتبع: {number}",
-        "inTransitNotice": "شحنتكِ الأنيقة في طريقها إليكِ بعناية تامة",
+        "pendingNotice": "تم استلام طلبكِ وهو بانتظار التأكيد من مشغلنا",
         "processingNotice": "تخضع قطعكِ للفحص الدقيق والتعطير والتغليف في مشغلنا",
+        "shippedNotice": "تم تسليم شحنتكِ لشركة الشحن من مشغلنا",
+        "inTransitNotice": "شحنتكِ الأنيقة في طريقها إليكِ بعناية تامة",
+        "outForDeliveryNotice": "مندوب التوصيل في طريقه إليكِ اليوم",
+        "deliveredNotice": "تم تسليم شحنتكِ بنجاح إلى العنوان المحدد",
+        "failedNotice": "تعذر تسليم الشحنة في المحاولة السابقة. يُرجى التحقق من بيانات الاتصال",
+        "returnedNotice": "تم استلام الشحنة المرتجعة في مشغلنا",
         "copyTrackingNumber": "نسخ رقم التتبع",
         "trackingCopied": "تم نسخ رقم التتبع"
       },
@@ -114,7 +147,11 @@
         "trackPackage": "تتبع الشحنة",
         "buyAgain": "طلب مماثل",
         "needHelp": "مساعدة من خدمة العملاء",
-        "viewProduct": "عرض المنتج"
+        "contactSupport": "تواصل مع خدمة العملاء",
+        "viewProduct": "عرض المنتج",
+        "cancelOrder": "إلغاء الطلب",
+        "cancelling": "جاري الإلغاء...",
+        "viewReceipt": "عرض الإيصال"
       },
       "details": {
         "metaTitle": "طلب {number}",
@@ -177,6 +214,15 @@
         "title": "لا طلبات بعد",
         "description": "عند إتمام طلب، سيظهر هنا.",
         "cta": "تسوّقي المجموعة"
+      },
+      "loadError": {
+        "title": "تعذر تحميل الطلبات",
+        "description": "يرجى المحاولة مرة أخرى بعد لحظات.",
+        "retry": "إعادة المحاولة"
+      },
+      "toasts": {
+        "cancelSuccess": "تم إلغاء الطلب بنجاح.",
+        "cancelError": "تعذر إلغاء هذا الطلب. يرجى المحاولة مرة أخرى."
       }
     },
     "addresses": {
@@ -465,18 +511,15 @@
     "markAllRead": "تعليم الكل كمقروء",
     "markRead": "تعليم كمقروء",
     "unread": "غير مقروء",
+    "loading": "جاري تحميل الإشعارات",
     "emptyTitle": "لا توجد إشعارات بعد",
     "emptyDescription": "ستظهر هنا تحديثات الطلبات والعروض المختارة.",
-    "items": {
-      "orderShippedTitle": "الطلب في الطريق",
-      "orderShippedBody": "تم شحن الطلب LL-2048. يمكن تتبع التسليم من الطلبات.",
-      "linenEditTitle": "جديد في مختارات الكتان",
-      "linenEditBody": "وصلت قصّات كتان طبيعي جديدة — قطع خفيفة للتنفس في الأيام الدافئة.",
-      "orderDeliveredTitle": "تم تسليم الطلب",
-      "orderDeliveredBody": "تم تسليم الطلب LL-2031. نتمنى أن يلائم الذوق بأناقة.",
-      "wishlistReminderTitle": "قطع محفوظة بانتظار المراجعة",
-      "wishlistReminderBody": "القطع في قائمة المفضلة ما زالت متاحة. يمكن مراجعتها في أي وقت."
-    }
+    "swipeToDelete": "اسحب يساراً أو يميناً للحذف",
+    "delete": "حذف الإشعار",
+    "signInHint": "يرجى تسجيل الدخول لعرض التحديثات",
+    "signInTitle": "يلزم تسجيل الدخول",
+    "signInDescription": "سجّل الدخول لتلقي تحديثات الطلبات وعروض البوتيك المختارة.",
+    "signInCta": "تسجيل الدخول"
   },
   "AdditionalSections": {
     "viewMore": "عرض المزيد",
@@ -515,6 +558,9 @@
     "new": "جديد",
     "discount": "خصم {percent}%",
     "ratingAria": "{rating} من 5 نجوم",
+    "inStock": "متوفر",
+    "outOfStock": "غير متوفر",
+    "lowStock": "متبقي {count} فقط",
     "colors": {
       "black": "أسود",
       "olive": "زيتوني",
@@ -546,6 +592,8 @@
     "removeFromWishlist": "إزالة من المفضلة",
     "inStock": "متوفر",
     "outOfStock": "غير متوفر",
+    "stockCount": "{count} قطعة متوفرة",
+    "lowStock": "متبقي {count} فقط",
     "save": "وفر",
     "discount": "خصم {percent}%",
     "inclusiveVat": "شامل الضريبة",
@@ -1293,12 +1341,6 @@
       "taxTooltip": "ضريبة القيمة المضافة المقدرة على المنتجات الفاخرة.",
       "total": "المجموع التقريبي",
       "totalNote": "شامل ضريبة القيمة المضافة (10%)",
-      "promoCode": {
-        "label": "رمز الخصم",
-        "placeholder": "أدخل كود الخصم",
-        "apply": "تطبيق",
-        "applied": "تم التطبيق"
-      },
       "checkoutButton": "المتابعة لإتمام الطلب",
       "scrollToSummary": "ملخص الطلب",
       "guarantees": {
@@ -1372,6 +1414,7 @@
     "summary": {
       "title": "ملخص الطلب",
       "subtotal": "المجموع الفرعي",
+      "discount": "الخصم",
       "estimatedTax": "الضريبة المقدّرة (ضريبة القيمة المضافة 10%)",
       "shipping": "الشحن",
       "shippingComplimentary": "مجاني",
@@ -1384,13 +1427,25 @@
       "itemCount": "{count, plural, =0 {0 قطع} one {قطعة واحدة} other {# قطع}}",
       "size": "المقاس",
       "color": "اللون",
-      "qty": "الكمية {count}"
+      "qty": "الكمية {count}",
+      "promoCode": {
+        "label": "رمز الخصم",
+        "placeholder": "أدخل كود الخصم",
+        "apply": "تطبيق",
+        "applied": "تم التطبيق",
+        "remove": "إزالة رمز الخصم"
+      }
     },
     "toasts": {
       "placing": "جارٍ تأكيد طلبك لدى الأتيليه…",
       "success": "تم تأكيد الطلب بنجاح",
       "successDescription": "تم تأكيد طلبك {number} وجارٍ تجهيزه بعناية في الأتيليه.",
-      "error": "تعذّر تأكيد الطلب. يرجى المحاولة مرة أخرى."
+      "error": "تعذّر تأكيد الطلب. يرجى المحاولة مرة أخرى.",
+      "couponApplied": "تم تطبيق رمز الخصم",
+      "couponAppliedDescription": "تم تطبيق {code} على هذا الطلب.",
+      "couponError": "تعذّر تطبيق رمز الخصم. يرجى المحاولة مرة أخرى.",
+      "couponRemoved": "تم إزالة رمز الخصم",
+      "couponRemoveError": "تعذّر إزالة رمز الخصم. يرجى المحاولة مرة أخرى."
     },
     "confirmation": {
       "metaTitle": "تم تأكيد الطلب",
@@ -1403,6 +1458,7 @@
       "copyOrderNumber": "نسخ رقم الطلب",
       "copied": "تم نسخ رقم الطلب",
       "printReceipt": "طباعة الإيصال",
+      "viewReceipt": "عرض الإيصال",
       "estimatedArrival": "موعد التسليم المتوقع: {date}",
       "timelineTitle": "مراحل تجهيز الطلب",
       "timelineStep1": "تم استلام الطلب",
@@ -1413,9 +1469,10 @@
       "paymentTitle": "الدفع",
       "itemsTitle": "القطع في هذا الطلب",
       "subtotal": "المجموع الفرعي",
+      "discount": "الخصم",
       "shippingFee": "الشحن",
       "complimentary": "مجاني",
-      "tax": "ضريبة القيمة المضافة (10%)",
+      "tax": "الضريبة",
       "total": "الإجمالي",
       "perks": {
         "craftTitle": "حرفية استثنائية",
@@ -1434,5 +1491,32 @@
         "cta": "العودة إلى حقيبة التسوق"
       }
     }
+  },
+
+  "OrderReceipt": {
+    "title": "إيصال الطلب",
+    "view": "الإيصال",
+    "viewShort": "عرض الإيصال",
+    "receiptLabel": "إيصال بيع",
+    "orderNumber": "الطلب",
+    "placedAt": "التاريخ",
+    "payment": "الدفع",
+    "items": "القطع",
+    "size": "المقاس",
+    "color": "اللون",
+    "qty": "الكمية",
+    "each": "للقطعة",
+    "subtotal": "المجموع الفرعي",
+    "discount": "الخصم",
+    "tax": "الضريبة",
+    "shipping": "الشحن",
+    "complimentary": "مجاني",
+    "total": "الإجمالي",
+    "shippingAddress": "التسليم",
+    "thankYou": "شكرًا لتسوقكم من Linen Line. نتطلع لخدمتكم مجددًا.",
+    "print": "طباعة",
+    "download": "تنزيل PDF",
+    "downloading": "جاري تجهيز PDF…",
+    "downloadError": "تعذر تنزيل الإيصال. يرجى المحاولة مرة أخرى."
   }
 }

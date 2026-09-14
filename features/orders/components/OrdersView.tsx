@@ -2,12 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { FadeIn } from "@/components/animations";
-import { getMockOrders } from "../utils/mock-orders";
 import { OrdersList } from "./OrdersList";
 
 export async function OrdersView() {
   const t = await getTranslations("ProfilePage.orders");
-  const orders = getMockOrders();
 
   return (
     <section className="w-full flex-1 py-5 sm:py-8 md:py-12">
@@ -34,26 +32,9 @@ export async function OrdersView() {
           </div>
         </FadeIn>
 
-        {orders.length === 0 ? (
-          <FadeIn direction="up" delay={0.05}>
-            <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-10 text-center sm:px-6 sm:py-14">
-              <p className="text-sm font-medium text-foreground">{t("empty.title")}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("empty.description")}
-              </p>
-              <Link
-                href="/shop"
-                className="mt-4 inline-flex text-sm font-medium text-primary-800 underline-offset-4 hover:underline dark:text-primary-300"
-              >
-                {t("empty.cta")}
-              </Link>
-            </div>
-          </FadeIn>
-        ) : (
-          <FadeIn direction="up" delay={0.05}>
-            <OrdersList orders={orders} />
-          </FadeIn>
-        )}
+        <FadeIn direction="up" delay={0.05}>
+          <OrdersList />
+        </FadeIn>
       </div>
     </section>
   );

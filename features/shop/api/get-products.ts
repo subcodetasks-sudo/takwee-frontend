@@ -40,14 +40,6 @@ export async function fetchProducts(
     headers: {
       ...(locale ? { "Accept-Language": locale } : {}),
     },
-    next: {
-      revalidate: 60,
-      tags: [
-        "products",
-        locale ? `products:${locale}` : "products:default",
-        ...(trimmedSearch ? [`products:search:${trimmedSearch}`] : []),
-      ],
-    },
   });
 
   if (!json?.success || !Array.isArray(json.data?.data)) {

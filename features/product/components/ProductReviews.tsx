@@ -34,7 +34,7 @@ export function ProductReviews({
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [sizePurchased, setSizePurchased] = useState<string>(
-    product.sizes[0] ?? "",
+    product.sizes[0]?.name ?? "",
   );
 
   const handleToggleHelpful = (id: string) => {
@@ -268,8 +268,8 @@ export function ProductReviews({
                       >
                         <option value="">{t("sizeLabel")}</option>
                         {product.sizes.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
+                          <option key={s.id} value={s.name}>
+                            {s.name}
                           </option>
                         ))}
                       </select>

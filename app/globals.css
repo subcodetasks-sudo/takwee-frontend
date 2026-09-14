@@ -10,6 +10,7 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  --font-gotham: var(--font-gotham);
   --font-noto-arabic: var(--font-noto-arabic);
   --font-outfit: var(--font-outfit);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -349,6 +350,60 @@
 
 .animate-pulse-glow {
   animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Product card low-stock badge: synced vertical text swap + width morph.
+   --stock-badge-step = one line box + gap between labels */
+@keyframes stockBadgeSwipeUp {
+  0%,
+  38% {
+    transform: translate3d(0, 0, 0);
+  }
+  50%,
+  88% {
+    transform: translate3d(0, calc(-1 * var(--stock-badge-step, 1.85em)), 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes stockBadgeWidthPulse {
+  0%,
+  38% {
+    width: var(--stock-badge-w1, auto);
+  }
+  50%,
+  88% {
+    width: var(--stock-badge-w2, auto);
+  }
+  100% {
+    width: var(--stock-badge-w1, auto);
+  }
+}
+
+.animate-stock-badge-swipe {
+  animation: stockBadgeSwipeUp 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-stock-badge-width {
+  animation: stockBadgeWidthPulse 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: width;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stock-badge-swipe {
+    animation: none;
+    will-change: auto;
+    transform: translate3d(0, calc(-1 * var(--stock-badge-step, 1.85em)), 0);
+  }
+
+  .animate-stock-badge-width {
+    animation: none;
+    will-change: auto;
+    width: var(--stock-badge-w2, auto);
+  }
 }
 
 @utility page-shell {

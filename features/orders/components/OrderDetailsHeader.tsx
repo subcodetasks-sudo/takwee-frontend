@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Receipt } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +14,7 @@ import { Copy } from "@/components/animate-ui/icons/copy";
 import { Check as CheckIcon } from "@/components/animate-ui/icons/check";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import type { OrderSummary } from "../types";
+import { OrderReceiptDialog } from "./OrderReceiptDialog";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 interface OrderDetailsHeaderProps {
@@ -85,6 +87,22 @@ export function OrderDetailsHeader({ order }: OrderDetailsHeaderProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          <OrderReceiptDialog
+            order={order}
+            trigger={
+              <button
+                type="button"
+                className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border/70 bg-background px-2 text-xs font-medium text-foreground shadow-2xs transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:h-8 sm:gap-2 sm:px-2.5 sm:text-sm"
+              >
+                <Receipt
+                  className="size-3.5 shrink-0 text-primary-700 sm:size-4 dark:text-primary-400"
+                  aria-hidden
+                />
+                <span>{t("actions.viewReceipt")}</span>
+              </button>
+            }
+          />
         </div>
         <p className="text-xs text-muted-foreground sm:text-sm">
           {t("placedOn", { date: placedLabel })}

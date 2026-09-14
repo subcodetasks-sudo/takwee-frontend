@@ -1,10 +1,16 @@
 "use client";
 
 import { Loader2, ShieldCheck, Tag, Check, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ProductPrice } from "@/features/product";
 import type { CartItem } from "@/features/cart/types";
 import { cn } from "@/lib/utils";
@@ -18,8 +24,9 @@ interface CheckoutOrderSummaryProps {
   pricing?: ApiCheckoutPricing | null;
   isPreviewLoading?: boolean;
   couponCode?: string;
-  onApplyCoupon?: (code: string) => void;
-  onRemoveCoupon?: () => void;
+  onApplyCoupon?: (code: string) => void | Promise<void>;
+  onRemoveCoupon?: () => void | Promise<void>;
+  isApplyingCoupon?: boolean;
   isSubmitting?: boolean;
 }
 
@@ -32,12 +39,16 @@ export function CheckoutOrderSummary({
   couponCode = "",
   onApplyCoupon,
   onRemoveCoupon,
+  isApplyingCoupon = false,
   isSubmitting = false,
 }: CheckoutOrderSummaryProps) {
   const t = useTranslations("CheckoutPage.summary");
-  const tCart = useTranslations("CartPage.summary");
 
   const [inputCoupon, setInputCoupon] = useState(couponCode);
+
+  useEffect(() => {
+    setInputCoupon(couponCode);
+  }, [couponCode]);
 
   // If live pricing from preview API is available, use exact API numbers
   const subtotal = pricing ? pricing.subtotal : subtotalTRY;
@@ -46,18 +57,17 @@ export function CheckoutOrderSummary({
   const tax = pricing ? pricing.tax : Math.round(subtotalTRY * 0.1);
   const total = pricing ? pricing.total : subtotal + tax + shippingFee - discount;
   const appliedCoupon = pricing?.coupon || couponCode;
+  const couponBusy = isApplyingCoupon || isPreviewLoading || isSubmitting;
 
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (inputCoupon.trim() && onApplyCoupon) {
-      onApplyCoupon(inputCoupon.trim());
+  const handleApplyCoupon = () => {
+    if (inputCoupon.trim() && onApplyCoupon && !couponBusy) {
+      void onApplyCoupon(inputCoupon.trim());
     }
   };
 
   const handleRemoveCoupon = () => {
-    setInputCoupon("");
-    if (onRemoveCoupon) {
-      onRemoveCoupon();
+    if (onRemoveCoupon && !couponBusy) {
+      void onRemoveCoupon();
     }
   };
 
@@ -82,9 +92,9 @@ export function CheckoutOrderSummary({
 
       <CheckoutLineItems items={items} />
 
-      {/* Coupon Code Input */}
+      {/* Coupon Code Input — div, not form (nested inside checkout-form) */}
       {onApplyCoupon ? (
-        <form onSubmit={handleCouponSubmit} className="space-y-2 pt-1 border-t border-border/60">
+        <div className="space-y-2 pt-1 border-t border-border/60">
           <div className="flex items-center gap-2 pt-2">
             <div className="relative flex-1">
               <Tag className="absolute start-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -92,34 +102,60 @@ export function CheckoutOrderSummary({
                 type="text"
                 value={inputCoupon}
                 onChange={(e) => setInputCoupon(e.target.value)}
-                placeholder={tCart("promoCode.placeholder")}
-                disabled={Boolean(appliedCoupon) || isPreviewLoading || isSubmitting}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleApplyCoupon();
+                  }
+                }}
+                placeholder={t("promoCode.placeholder")}
+                disabled={Boolean(appliedCoupon) || couponBusy}
+                aria-label={t("promoCode.label")}
                 className="h-10 ps-9 pe-3 text-xs rounded-xl uppercase tracking-wider font-medium"
               />
             </div>
             {appliedCoupon ? (
-              <button
-                type="button"
-                onClick={handleRemoveCoupon}
-                disabled={isPreviewLoading || isSubmitting}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "h-10 px-3 rounded-xl text-xs font-semibold shrink-0 text-muted-foreground hover:text-foreground",
-                )}
-                title="Remove coupon"
-              >
-                <X className="size-3.5" />
-              </button>
+              <TooltipProvider delay={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        disabled={couponBusy}
+                        className={cn(
+                          buttonVariants({ variant: "outline", size: "sm" }),
+                          "h-10 px-3 rounded-xl text-xs font-semibold shrink-0 text-muted-foreground hover:text-foreground",
+                        )}
+                        aria-label={t("promoCode.remove")}
+                      />
+                    }
+                  >
+                    {isApplyingCoupon ? (
+                      <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                    ) : (
+                      <X className="size-3.5" aria-hidden />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent side="top" sideOffset={4} className="text-xs">
+                    {t("promoCode.remove")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : (
               <button
-                type="submit"
-                disabled={!inputCoupon.trim() || isPreviewLoading || isSubmitting}
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={!inputCoupon.trim() || couponBusy}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "sm" }),
-                  "h-10 px-4 rounded-xl text-xs font-semibold shrink-0 disabled:opacity-50",
+                  "h-10 px-4 rounded-xl text-xs font-semibold shrink-0 disabled:opacity-50 gap-1.5",
                 )}
               >
-                {tCart("promoCode.apply")}
+                {isApplyingCoupon ? (
+                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                ) : null}
+                {t("promoCode.apply")}
               </button>
             )}
           </div>
@@ -129,7 +165,7 @@ export function CheckoutOrderSummary({
               <span>{appliedCoupon}</span>
             </p>
           ) : null}
-        </form>
+        </div>
       ) : null}
 
       {isPreviewLoading && !pricing ? (
@@ -168,7 +204,10 @@ export function CheckoutOrderSummary({
 
             {discount > 0 ? (
               <div className="flex items-center justify-between text-success">
-                <span>Discount {appliedCoupon ? `(${appliedCoupon})` : ""}</span>
+                <span>
+                  {t("discount")}
+                  {appliedCoupon ? ` (${appliedCoupon})` : ""}
+                </span>
                 {isPreviewLoading ? (
                   <div className="h-4 w-14 rounded bg-muted/60 animate-pulse" />
                 ) : (

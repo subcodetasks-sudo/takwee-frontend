@@ -3,7 +3,12 @@ import { useLocale } from "next-intl";
 import { useAuth } from "@/features/auth";
 import { useCart } from "@/features/cart";
 import { useCurrency } from "@/hooks/useCurrency";
-import { previewCheckoutAction, placeOrderAction } from "../api/actions";
+import {
+  applyCouponAction,
+  previewCheckoutAction,
+  placeOrderAction,
+  removeCouponAction,
+} from "../api/actions";
 import type { PlaceOrderInput } from "../types";
 
 export interface UseCheckoutOptions {
@@ -41,6 +46,60 @@ export function useCheckout(options?: UseCheckoutOptions) {
     staleTime: 30 * 1000,
   });
 
+  const applyCouponMutation = useMutation({
+    mutationFn: async (code: string) => {
+      if (!isAuthenticated) {
+        throw new Error("Authentication required to apply a coupon");
+      }
+      if (items.length === 0) {
+        throw new Error("Cart items are required to apply a coupon");
+      }
+
+      const res = await applyCouponAction({
+        code,
+        items,
+        locale,
+        currency,
+      });
+
+      if (!res.success || !res.data) {
+        throw new Error(res.message || "Failed to apply coupon");
+      }
+
+      return res.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["checkout-preview"] });
+    },
+  });
+
+  const removeCouponMutation = useMutation({
+    mutationFn: async (code: string) => {
+      if (!isAuthenticated) {
+        throw new Error("Authentication required to remove a coupon");
+      }
+      if (items.length === 0) {
+        throw new Error("Cart items are required to remove a coupon");
+      }
+
+      const res = await removeCouponAction({
+        code,
+        items,
+        locale,
+        currency,
+      });
+
+      if (!res.success || !res.data) {
+        throw new Error(res.message || "Failed to remove coupon");
+      }
+
+      return res.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["checkout-preview"] });
+    },
+  });
+
   const placeOrderMutation = useMutation({
     mutationFn: async (input: PlaceOrderInput) => {
       if (!isAuthenticated) {
@@ -71,6 +130,12 @@ export function useCheckout(options?: UseCheckoutOptions) {
     isPreviewLoading: previewQuery.isLoading,
     previewError: previewQuery.error,
     refetchPreview: previewQuery.refetch,
+    applyCoupon: applyCouponMutation.mutateAsync,
+    isApplyingCoupon: applyCouponMutation.isPending,
+    applyCouponError: applyCouponMutation.error,
+    removeCoupon: removeCouponMutation.mutateAsync,
+    isRemovingCoupon: removeCouponMutation.isPending,
+    removeCouponError: removeCouponMutation.error,
     placeOrder: placeOrderMutation.mutateAsync,
     isPlacingOrder: placeOrderMutation.isPending,
     placeOrderError: placeOrderMutation.error,

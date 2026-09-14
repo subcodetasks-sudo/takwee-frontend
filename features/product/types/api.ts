@@ -20,15 +20,24 @@ export interface ApiProductRating {
 export interface ApiProductColor {
   id: number;
   name: string;
+  /** Hex / CSS color value from the API. */
   value: string;
+  /** Per-color gallery images (may be empty). */
+  images?: string[];
+}
+
+export interface ApiProductSize {
+  id: number;
+  name: string;
+  /** Optional rich-text details for this size. */
+  details?: string | null;
 }
 
 export interface ApiProductFeature {
-  id?: number | string;
-  name?: string;
-  title?: string;
-  value?: string;
-  description?: string;
+  id: number;
+  name: string;
+  /** Optional rich-text value / description. */
+  value?: string | null;
 }
 
 export interface ApiProduct {
@@ -41,6 +50,7 @@ export interface ApiProduct {
   status: string;
   model_number: string | null;
   weight: string | null;
+  /** Product description — may contain HTML. */
   description: string | null;
   sales_count?: number;
   profit?: number;
@@ -49,9 +59,11 @@ export interface ApiProduct {
   ratings?: ApiProductRating[];
   main_image: string | null;
   images: string[];
-  colors: ApiProductColor[] | unknown[];
-  sizes: unknown[];
-  features: ApiProductFeature[] | unknown[];
+  stock_quantity?: number;
+  in_stock?: boolean;
+  colors: ApiProductColor[];
+  sizes: ApiProductSize[];
+  features: ApiProductFeature[];
   createdAt: string;
   updatedAt: string;
 }
@@ -110,4 +122,3 @@ export interface ApiAbayaSizeGuideResponse {
   message: string;
   data: ApiAbayaSizeGuide;
 }
-

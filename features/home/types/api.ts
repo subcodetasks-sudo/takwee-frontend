@@ -41,11 +41,30 @@ export interface ApiHomeProduct {
   model_number: string | null;
   weight: string | null;
   description: string | null;
+  sales_count?: number;
+  profit?: number;
+  rating?: number;
+  ratings_count?: number;
   main_image: string | null;
   images: string[];
-  colors: unknown[];
-  sizes: unknown[];
-  features: unknown[];
+  stock_quantity?: number;
+  in_stock?: boolean;
+  colors: Array<{
+    id: number;
+    name: string;
+    value: string;
+    images?: string[];
+  }>;
+  sizes: Array<{
+    id: number;
+    name: string;
+    details?: string | null;
+  }>;
+  features: Array<{
+    id: number;
+    name: string;
+    value?: string | null;
+  }>;
   createdAt: string;
   updatedAt: string;
 }

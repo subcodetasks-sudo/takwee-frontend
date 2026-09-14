@@ -24,6 +24,7 @@ import { useProductDetails } from "../context/ProductDetailsContext";
 import { ProductImageZoom } from "./ProductImageZoom";
 import { ProductDetailsWishlistButton } from "./ProductDetailsWishlistButton";
 import { useAbayaSizeGuide } from "../hooks/useAbayaSizeGuide";
+import { ProductRichText } from "./ProductRichText";
 
 const COLOR_IMAGE_EASE = [0.21, 0.47, 0.32, 0.98] as const;
 
@@ -73,7 +74,7 @@ export function ProductDetailsHero({
   const [localColorId, setLocalColorId] = useState(product.colors[0]?.id);
   const [localImageIndex, setLocalImageIndex] = useState(0);
   const [localSize, setLocalSize] = useState<AbayaSize | null>(
-    product.sizes[0] ?? null,
+    product.sizes[0]?.name ?? null,
   );
   const [localQuantity, setLocalQuantity] = useState(1);
   const [localIsAdded, setLocalIsAdded] = useState(false);
@@ -101,6 +102,12 @@ export function ProductDetailsHero({
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
     product.colors[0];
+  const selectedSizeOption =
+    product.sizes.find((size) => size.name === selectedSize) ??
+    product.sizes[0];
+  const hasGuideCompatibleSizes = product.sizes.some((option) =>
+    sizeRows.some((row) => row.size === option.name),
+  );
   const images =
     selectedColor?.images && selectedColor.images.length > 0
       ? selectedColor.images
@@ -350,15 +357,16 @@ export function ProductDetailsHero({
               ) : null}
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5 text-xs">
-              <div className="flex items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border/50 pt-2.5 text-xs">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span
                   className={cn(
-                    "flex size-2 rounded-full",
+                    "flex size-2 shrink-0 rounded-full",
                     product.inStock
                       ? "bg-success ring-4 ring-success/20 animate-pulse"
                       : "bg-error ring-4 ring-error/20",
                   )}
+                  aria-hidden
                 />
                 <span
                   className={cn(
@@ -368,8 +376,26 @@ export function ProductDetailsHero({
                 >
                   {product.inStock ? t("inStock") : t("outOfStock")}
                 </span>
+                {typeof product.stockQuantity === "number" ? (
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
+                      product.inStock && product.stockQuantity > 0
+                        ? product.stockQuantity <= 5
+                          ? "bg-warning-muted text-warning"
+                          : "bg-muted text-muted-foreground"
+                        : "bg-error-muted text-error",
+                    )}
+                  >
+                    {product.inStock && product.stockQuantity > 0
+                      ? product.stockQuantity <= 5
+                        ? t("lowStock", { count: product.stockQuantity })
+                        : t("stockCount", { count: product.stockQuantity })
+                      : t("stockCount", { count: product.stockQuantity })}
+                  </span>
+                ) : null}
               </div>
-              <span className="font-medium text-muted-foreground">
+              <span className="shrink-0 font-medium text-muted-foreground">
                 {t("inclusiveVat")}
               </span>
             </div>
@@ -477,40 +503,45 @@ export function ProductDetailsHero({
 
         {product.sizes.length > 0 ? (
           <>
-            <StaggerItem>
-              <HeightSizeCalculator
-                selectedSize={selectedSize}
-                onSelectSize={(size) => setSelectedSize(size)}
-                guide={sizeGuide}
-              />
-            </StaggerItem>
+            {hasGuideCompatibleSizes ? (
+              <StaggerItem>
+                <HeightSizeCalculator
+                  selectedSize={selectedSize}
+                  onSelectSize={(size) => setSelectedSize(size)}
+                  guide={sizeGuide}
+                />
+              </StaggerItem>
+            ) : null}
 
             <StaggerItem>
               <div id="size-selector" className="space-y-3 scroll-mt-24">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
                     <span className="text-sm font-semibold text-foreground">
                       {t("selectSize")}
                     </span>
                     {selectedSize ? (
-                      <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold tabular-nums text-foreground">
+                      <span className="max-w-[12rem] truncate rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground sm:max-w-none">
                         {selectedSize}
                       </span>
                     ) : null}
                   </div>
-                  <SizeGuideDialog guide={sizeGuide} />
+                  {hasGuideCompatibleSizes ? (
+                    <SizeGuideDialog guide={sizeGuide} />
+                  ) : null}
                 </div>
 
                 <StaggerContainer
                   staggerDelay={0.04}
                   delayChildren={0.05}
-                  className="grid grid-cols-5 gap-2 sm:gap-2.5"
+                  className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 lg:grid-cols-5"
                 >
-                  {product.sizes.map((size) => {
+                  {product.sizes.map((sizeOption) => {
+                    const size = sizeOption.name;
                     const isSelected = size === selectedSize;
                     const sizeRow = sizeRows.find((r) => r.size === size);
                     return (
-                      <StaggerItem key={size}>
+                      <StaggerItem key={sizeOption.id}>
                         <button
                           type="button"
                           onClick={() => setSelectedSize(size)}
@@ -523,7 +554,7 @@ export function ProductDetailsHero({
                               : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted/60",
                           )}
                         >
-                          <span className="text-sm font-bold tabular-nums sm:text-base">
+                          <span className="line-clamp-2 text-sm font-bold sm:text-base">
                             {size}
                           </span>
                           {sizeRow ? (
@@ -543,6 +574,13 @@ export function ProductDetailsHero({
                     );
                   })}
                 </StaggerContainer>
+
+                {selectedSizeOption?.details ? (
+                  <ProductRichText
+                    content={selectedSizeOption.details}
+                    className="rounded-xl border border-border/60 bg-muted/30 px-3.5 py-3 text-sm"
+                  />
+                ) : null}
               </div>
             </StaggerItem>
           </>

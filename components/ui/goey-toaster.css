@@ -1,9 +1,15 @@
+/* Match boutique fonts — goey-toast defaults to system UI fonts */
+.gooey-wrapper,
+[data-sonner-toaster] {
+  font-family: var(--font-sans), var(--font-gotham), var(--font-noto-arabic),
+    var(--font-outfit), sans-serif;
+}
+
 /* RTL & Locale Support for Gooey Toast */
 
 [dir="rtl"] .gooey-wrapper,
 [dir="rtl"] [data-sonner-toaster] {
   direction: rtl;
-  font-family: var(--font-sans), var(--font-noto-arabic), sans-serif;
 }
 
 [dir="rtl"] .gooey-header {

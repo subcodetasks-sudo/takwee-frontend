@@ -17,6 +17,8 @@ const LUXURY_EASE = [0.16, 1, 0.3, 1] as const;
 interface WishlistHeaderProps {
   itemCount?: number;
   onClearAll?: () => void;
+  /** When true, only render count + clear (title/back live in the RSC shell). */
+  actionsOnly?: boolean;
 }
 
 const headerContainerVariants: Variants = {
@@ -56,8 +58,47 @@ const titleVariants: Variants = {
 export function WishlistHeader({
   itemCount = 0,
   onClearAll,
+  actionsOnly = false,
 }: WishlistHeaderProps) {
   const t = useTranslations("WishlistPage");
+
+  if (actionsOnly) {
+    return (
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <span className="rounded-full border border-border/70 bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground shadow-2xs">
+          {t("itemCount", { count: itemCount })}
+        </span>
+        {onClearAll ? (
+          <TooltipProvider delay={100}>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onClearAll}
+                    aria-label={t("actions.clearAll")}
+                    className="gap-1.5 rounded-xl text-muted-foreground hover:text-error"
+                  />
+                }
+              >
+                <Trash2 className="size-3.5" aria-hidden />
+                <span className="hidden sm:inline">{t("actions.clearAll")}</span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={6}
+                className="text-xs font-medium"
+              >
+                {t("actions.clearAll")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <motion.div

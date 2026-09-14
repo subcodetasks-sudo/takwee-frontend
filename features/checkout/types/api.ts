@@ -14,6 +14,16 @@ export interface ApiCheckoutPreviewInput {
   coupon_code?: string;
 }
 
+export interface ApiApplyCouponItemInput {
+  product_id: number | string;
+  quantity: number;
+}
+
+export interface ApiApplyCouponInput {
+  code: string;
+  items: ApiApplyCouponItemInput[];
+}
+
 export interface ApiPlaceOrderInput {
   items: ApiCheckoutItemInput[];
   address_id: number | string;
@@ -72,6 +82,16 @@ export interface ApiCheckoutCoupon {
   name: string;
   type: "percentage" | "fixed" | string;
   value: string | number;
+}
+
+/** Raw payload from POST /api/v1/coupons/apply */
+export interface ApiApplyCouponData {
+  code?: string;
+  discount?: number;
+  discount_amount?: number;
+  subtotal?: number;
+  total?: number;
+  coupon?: ApiCheckoutCoupon | null;
 }
 
 export interface ApiCheckoutPreviewData {

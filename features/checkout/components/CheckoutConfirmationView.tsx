@@ -26,6 +26,7 @@ import { AnimateIcon } from "@/components/animate-ui/icons/icon";
 import { Copy } from "@/components/animate-ui/icons/copy";
 import { Check as CheckIcon } from "@/components/animate-ui/icons/check";
 import { ProductPrice } from "@/features/product";
+import { OrderReceiptDialog } from "@/features/orders";
 import type { OrderSummary } from "@/features/orders/types";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
@@ -156,7 +157,10 @@ export function CheckoutConfirmationView() {
     (sum, item) => sum + (item.priceTRY ?? 0) * item.quantity,
     0,
   );
-  const estimatedTaxTRY = Math.max(0, order.totalTRY - itemsSubtotalTRY);
+  const subtotalTRY = order.subtotalTRY ?? itemsSubtotalTRY;
+  const shippingTRY = order.shippingTRY ?? 0;
+  const discountTRY = order.discountTRY ?? 0;
+  const taxTRY = order.taxTRY ?? 0;
 
   const handleCopyOrderNumber = async () => {
     const ok = await copy(order.number);
@@ -386,6 +390,12 @@ export function CheckoutConfirmationView() {
                 </span>
               </div>
             </div>
+
+            <OrderReceiptDialog
+              order={order}
+              paymentLabel={paymentLabel}
+              triggerLabel={t("viewReceipt")}
+            />
           </div>
         </motion.div>
 
@@ -432,15 +442,26 @@ export function CheckoutConfirmationView() {
                 </div>
               </div>
 
-              {order.tracking?.carrier ? (
+              {order.tracking?.carrier || order.tracking?.trackingNumber ? (
                 <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2 text-xs flex items-center justify-between gap-2">
-                  <span className="text-muted-foreground">{order.tracking.carrier}</span>
-                  {order.tracking.trackingNumber ? (
+                  {order.tracking?.carrier ? (
+                    <span className="text-muted-foreground">
+                      {order.tracking.carrier}
+                    </span>
+                  ) : null}
+                  {order.tracking?.trackingNumber ? (
                     <span className="font-mono font-medium text-foreground">
                       {order.tracking.trackingNumber}
                     </span>
                   ) : null}
                 </div>
+              ) : null}
+              {order.tracking?.estimatedDelivery ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("estimatedArrival", {
+                    date: formatDate(locale, order.tracking.estimatedDelivery),
+                  })}
+                </p>
               ) : null}
             </motion.div>
           ) : null}
@@ -470,25 +491,47 @@ export function CheckoutConfirmationView() {
               <div className="flex justify-between text-muted-foreground">
                 <span>{t("subtotal")}</span>
                 <ProductPrice
-                  amountTRY={itemsSubtotalTRY}
+                  amountTRY={subtotalTRY}
                   className="font-medium text-foreground"
                 />
               </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>{t("shippingFee")}</span>
-                <span className="inline-flex items-center rounded-md bg-success-muted px-2 py-0.5 text-[11px] font-semibold text-success">
-                  {t("complimentary")}
-                </span>
-              </div>
-              {estimatedTaxTRY > 0 ? (
+              {discountTRY > 0 ? (
+                <div className="flex justify-between text-success">
+                  <span>
+                    {t("discount")}
+                    {order.couponCode ? ` (${order.couponCode})` : ""}
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    −{" "}
+                    <ProductPrice
+                      amountTRY={discountTRY}
+                      className="inline-flex text-success"
+                    />
+                  </span>
+                </div>
+              ) : null}
+              {taxTRY > 0 ? (
                 <div className="flex justify-between text-muted-foreground">
                   <span>{t("tax")}</span>
                   <ProductPrice
-                    amountTRY={estimatedTaxTRY}
+                    amountTRY={taxTRY}
                     className="font-medium text-foreground"
                   />
                 </div>
               ) : null}
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t("shippingFee")}</span>
+                {shippingTRY === 0 ? (
+                  <span className="inline-flex items-center rounded-md bg-success-muted px-2 py-0.5 text-[11px] font-semibold text-success">
+                    {t("complimentary")}
+                  </span>
+                ) : (
+                  <ProductPrice
+                    amountTRY={shippingTRY}
+                    className="font-medium text-foreground"
+                  />
+                )}
+              </div>
               <div className="flex items-baseline justify-between pt-2 border-t border-border/80">
                 <span className="text-sm font-semibold text-foreground">
                   {t("total")}

@@ -1,8 +1,4 @@
-import { getLocale } from "next-intl/server";
-import { getPriceBounds } from "../utils/price-bounds";
-import { getShopProducts } from "../utils/get-shop-products";
-import { ShopCatalog } from "./ShopCatalog";
-import { ShopHero } from "./ShopHero";
+import { ShopViewClient } from "./ShopViewClient";
 
 interface ShopViewProps {
   /** `/shop/[filter]` segment — category slug or legacy promo filter. */
@@ -11,27 +7,15 @@ interface ShopViewProps {
   searchQuery?: string;
 }
 
+/**
+ * Server Component shell for the shop PLP — suitable for JSON-LD / ItemList.
+ * Catalog interactivity lives in {@link ShopViewClient}.
+ */
 export async function ShopView({ pathFilter, searchQuery }: ShopViewProps) {
-  const locale = await getLocale();
-  const { products, category } = await getShopProducts(
-    pathFilter,
-    locale,
-    searchQuery,
-  );
-  const bounds = getPriceBounds(products);
-
   return (
     <>
-      <ShopHero
-        pathFilter={pathFilter}
-        category={category}
-        searchQuery={searchQuery}
-      />
-      <ShopCatalog
-        products={products}
-        bounds={bounds}
-        searchQuery={searchQuery}
-      />
+      {/* JSON-LD (CollectionPage / ItemList) can be injected here. */}
+      <ShopViewClient pathFilter={pathFilter} searchQuery={searchQuery} />
     </>
   );
 }

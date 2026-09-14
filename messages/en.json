@@ -74,6 +74,13 @@
       "copyOrderNumber": "Copy order number",
       "orderNumberCopied": "Order number copied",
       "placedOn": "Placed {date}",
+      "search": {
+        "placeholder": "Search by order number or ID...",
+        "clear": "Clear search",
+        "noResultsTitle": "No matching orders found",
+        "noResultsDescription": "We couldn't find any orders matching \"{query}\". Check the order number and try again.",
+        "resultsCount": "{count, plural, one {# order found} other {# orders found}}"
+      },
       "itemCount": "{count, plural, one {# item} other {# items}}",
       "items": "Items in this order",
       "deliveredNotice": "Delivered to your designated address",
@@ -82,30 +89,56 @@
       "cancelledNotice": "Order cancelled",
       "cancelledWithDate": "Order cancelled on {date}",
       "refundNotice": "Full refund of {amount} issued to original payment method",
+      "failedNotice": "Delivery attempt was unsuccessful",
+      "failedWithDate": "Delivery attempt failed on {date}",
+      "failedHelpNotice": "Our concierge team is available to assist with redelivery or address updates.",
+      "returnedNotice": "Order returned to atelier",
+      "returnedWithDate": "Order returned on {date}",
+      "returnRefundNotice": "Refund of {amount} processed to original payment method",
       "status": {
-        "delivered": "Delivered",
-        "shipped": "In Delivery",
+        "pending": "Pending",
         "processing": "Processing",
+        "shipped": "Shipped",
+        "in_transit": "In Transit",
+        "out_for_delivery": "Out for Delivery",
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "returned": "Returned",
         "cancelled": "Cancelled"
       },
       "filters": {
         "all": "All Orders",
-        "active": "In Delivery",
+        "pending": "Pending",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "in_transit": "In Transit",
+        "out_for_delivery": "Out for Delivery",
         "delivered": "Delivered",
+        "failed": "Failed",
+        "returned": "Returned",
         "cancelled": "Cancelled",
         "emptyFilter": "No orders found in this status",
         "showAll": "Show all orders"
       },
       "tracker": {
         "placed": "Order Placed",
-        "tailoring": "Tailoring & Prep",
-        "shipped": "Out for Delivery",
+        "processing": "Atelier Prep",
+        "tailoring": "Atelier Prep",
+        "shipped": "Shipped",
+        "in_transit": "In Transit",
+        "out_for_delivery": "Out for Delivery",
         "delivered": "Delivered",
         "estimatedArrival": "Estimated arrival: {date}",
         "carrier": "Carrier: {carrier}",
         "trackingNumber": "Tracking: {number}",
-        "inTransitNotice": "Your parcel is on its way with premium care",
+        "pendingNotice": "Your order has been received and is awaiting atelier review",
         "processingNotice": "Your order is being inspected and hand-packed in our atelier",
+        "shippedNotice": "Your parcel has been dispatched from our atelier and handed to courier",
+        "inTransitNotice": "Your parcel is on its way between hubs with premium care",
+        "outForDeliveryNotice": "Your parcel is out with the courier for delivery today",
+        "deliveredNotice": "Your parcel was delivered safely to your address",
+        "failedNotice": "Delivery attempt was unsuccessful. Please verify your contact details",
+        "returnedNotice": "Order has been returned to our atelier",
         "copyTrackingNumber": "Copy tracking number",
         "trackingCopied": "Tracking number copied"
       },
@@ -114,7 +147,11 @@
         "trackPackage": "Live tracking",
         "buyAgain": "Buy again",
         "needHelp": "Concierge help",
-        "viewProduct": "View product"
+        "contactSupport": "Contact concierge",
+        "viewProduct": "View product",
+        "cancelOrder": "Cancel order",
+        "cancelling": "Cancelling...",
+        "viewReceipt": "View receipt"
       },
       "details": {
         "metaTitle": "Order {number}",
@@ -177,6 +214,15 @@
         "title": "No orders yet",
         "description": "When you place an order, it will appear here.",
         "cta": "Browse the shop"
+      },
+      "loadError": {
+        "title": "Orders could not be loaded",
+        "description": "Please try again in a moment.",
+        "retry": "Try again"
+      },
+      "toasts": {
+        "cancelSuccess": "Order cancelled successfully.",
+        "cancelError": "Unable to cancel this order. Please try again."
       }
     },
     "addresses": {
@@ -465,18 +511,15 @@
     "markAllRead": "Mark all read",
     "markRead": "Mark read",
     "unread": "Unread",
+    "loading": "Loading notifications",
     "emptyTitle": "No notifications yet",
     "emptyDescription": "Order updates and curated offers will appear here.",
-    "items": {
-      "orderShippedTitle": "Order on the way",
-      "orderShippedBody": "Order LL-2048 has shipped. Track delivery from your orders.",
-      "linenEditTitle": "New in the Linen Edit",
-      "linenEditBody": "Fresh pure-linen cuts have arrived — breathable pieces for warmer days.",
-      "orderDeliveredTitle": "Order delivered",
-      "orderDeliveredBody": "Order LL-2031 was delivered. We hope it suits beautifully.",
-      "wishlistReminderTitle": "Saved pieces await",
-      "wishlistReminderBody": "Items on your wishlist are still available. Review them anytime."
-    }
+    "swipeToDelete": "Swipe left or right to delete",
+    "delete": "Delete notification",
+    "signInHint": "Sign in to view updates",
+    "signInTitle": "Sign in required",
+    "signInDescription": "Sign in to receive order updates and curated boutique offers.",
+    "signInCta": "Sign in"
   },
   "AdditionalSections": {
     "viewMore": "View more",
@@ -515,6 +558,9 @@
     "new": "New",
     "discount": "-{percent}%",
     "ratingAria": "{rating} out of 5 stars",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "lowStock": "Only {count} left",
     "colors": {
       "black": "Black",
       "olive": "Olive",
@@ -546,6 +592,8 @@
     "removeFromWishlist": "Remove from Wishlist",
     "inStock": "In stock",
     "outOfStock": "Out of stock",
+    "stockCount": "{count} available",
+    "lowStock": "Only {count} left",
     "save": "Save",
     "discount": "-{percent}%",
     "inclusiveVat": "Taxes included",
@@ -1293,12 +1341,6 @@
       "taxTooltip": "Estimated value-added tax on boutique merchandise.",
       "total": "Estimated Total",
       "totalNote": "Includes merchandise VAT (10%).",
-      "promoCode": {
-        "label": "Promo Code",
-        "placeholder": "Enter promo code",
-        "apply": "Apply",
-        "applied": "Applied"
-      },
       "checkoutButton": "Proceed to Checkout",
       "scrollToSummary": "Order Summary",
       "guarantees": {
@@ -1372,6 +1414,7 @@
     "summary": {
       "title": "Order summary",
       "subtotal": "Subtotal",
+      "discount": "Discount",
       "estimatedTax": "Estimated taxes (VAT 10%)",
       "shipping": "Shipping",
       "shippingComplimentary": "Complimentary",
@@ -1384,13 +1427,25 @@
       "itemCount": "{count, plural, =0 {0 items} one {# item} other {# items}}",
       "size": "Size",
       "color": "Color",
-      "qty": "Qty {count}"
+      "qty": "Qty {count}",
+      "promoCode": {
+        "label": "Promo code",
+        "placeholder": "Enter promo code",
+        "apply": "Apply",
+        "applied": "Applied",
+        "remove": "Remove promo code"
+      }
     },
     "toasts": {
       "placing": "Placing your boutique order…",
       "success": "Order placed successfully",
       "successDescription": "Your order {number} has been confirmed and forwarded to the atelier.",
-      "error": "Unable to place the order. Please try again."
+      "error": "Unable to place the order. Please try again.",
+      "couponApplied": "Promo code applied",
+      "couponAppliedDescription": "{code} has been applied to this order.",
+      "couponError": "Unable to apply this promo code. Please try again.",
+      "couponRemoved": "Promo code removed",
+      "couponRemoveError": "Unable to remove this promo code. Please try again."
     },
     "confirmation": {
       "metaTitle": "Order confirmed",
@@ -1403,6 +1458,7 @@
       "copyOrderNumber": "Copy order number",
       "copied": "Copied to clipboard",
       "printReceipt": "Print receipt",
+      "viewReceipt": "View receipt",
       "estimatedArrival": "Estimated delivery: {date}",
       "timelineTitle": "Atelier Progress",
       "timelineStep1": "Order Received",
@@ -1413,9 +1469,10 @@
       "paymentTitle": "Payment",
       "itemsTitle": "Items in this order",
       "subtotal": "Subtotal",
+      "discount": "Discount",
       "shippingFee": "Shipping",
       "complimentary": "Complimentary",
-      "tax": "Estimated VAT (10%)",
+      "tax": "Tax",
       "total": "Total",
       "perks": {
         "craftTitle": "Artisanal Tailoring",
@@ -1434,5 +1491,32 @@
         "cta": "Return to shopping bag"
       }
     }
+  },
+
+  "OrderReceipt": {
+    "title": "Order receipt",
+    "view": "Receipt",
+    "viewShort": "View receipt",
+    "receiptLabel": "Sales receipt",
+    "orderNumber": "Order",
+    "placedAt": "Date",
+    "payment": "Payment",
+    "items": "Items",
+    "size": "Size",
+    "color": "Color",
+    "qty": "Qty",
+    "each": "each",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "tax": "Tax",
+    "shipping": "Shipping",
+    "complimentary": "Complimentary",
+    "total": "Total",
+    "shippingAddress": "Delivery",
+    "thankYou": "Thank you for shopping with Linen Line. We look forward to dressing you again.",
+    "print": "Print",
+    "download": "Download PDF",
+    "downloading": "Preparing PDF…",
+    "downloadError": "Unable to download the receipt. Please try again."
   }
 }

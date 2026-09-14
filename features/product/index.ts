@@ -2,6 +2,8 @@ export * from "./components/ProductCard";
 export * from "./components/ProductCardSkeleton";
 export * from "./components/ProductPrice";
 export * from "./components/ProductDetailsView";
+export * from "./components/ProductDetailsContent";
+export * from "./components/ProductDetailsSkeleton";
 export * from "./components/ProductDetailsHero";
 export * from "./components/ProductDetailsTabs";
 export * from "./components/RelatedProducts";

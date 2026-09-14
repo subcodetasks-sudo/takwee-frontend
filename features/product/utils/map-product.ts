@@ -3,14 +3,21 @@ import { ar, enUS, tr } from "date-fns/locale";
 import type { Locale as DateLocale } from "date-fns";
 import {
   PRODUCT_SWATCH_CLASSES,
-  type AbayaSize,
   type Product,
   type ProductColor,
+  type ProductFeature,
   type ProductReview,
+  type ProductSize,
   type ProductSwatchId,
 } from "../types";
 import { resolveImageUrl } from "@/lib/images";
-import type { ApiProduct, ApiProductRating } from "../types/api";
+import type {
+  ApiProduct,
+  ApiProductColor,
+  ApiProductFeature,
+  ApiProductRating,
+  ApiProductSize,
+} from "../types/api";
 import { slugify } from "./slugify";
 
 const DATE_LOCALES: Record<string, DateLocale> = {
@@ -25,12 +32,7 @@ function parseMoney(value: string | null | undefined): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-function collectImages(product: ApiProduct): string[] {
-  const refs = [
-    product.main_image,
-    ...(Array.isArray(product.images) ? product.images : []),
-  ];
-
+function resolveMediaList(refs: Array<string | null | undefined>): string[] {
   const resolved: string[] = [];
   const seen = new Set<string>();
 
@@ -45,89 +47,122 @@ function collectImages(product: ApiProduct): string[] {
   return resolved;
 }
 
+function collectImages(product: ApiProduct): string[] {
+  return resolveMediaList([
+    product.main_image,
+    ...(Array.isArray(product.images) ? product.images : []),
+  ]);
+}
+
+function mapColorImages(
+  color: ApiProductColor,
+  fallbackImages: string[],
+): string[] {
+  const fromColor = resolveMediaList(
+    Array.isArray(color.images) ? color.images : [],
+  );
+  return fromColor.length > 0 ? fromColor : fallbackImages;
+}
+
 function mapColors(
   product: ApiProduct,
   fallbackImages: string[],
 ): ProductColor[] {
-  if (Array.isArray(product.colors) && product.colors.length > 0) {
-    const list: ProductColor[] = [];
-    for (let i = 0; i < product.colors.length; i++) {
-      const item = product.colors[i];
-      if (!item || typeof item !== "object") continue;
-      const c = item as { id?: number | string; name?: string; value?: string };
-      const id = c.id != null ? String(c.id) : `color-${i}`;
-      const name = c.name?.trim() || "";
-      const swatchCandidate = name.toLowerCase() as ProductSwatchId;
-      const swatch: ProductSwatchId =
-        swatchCandidate in PRODUCT_SWATCH_CLASSES
-          ? swatchCandidate
-          : "black";
-
-      list.push({
-        id,
-        nameKey: name || id,
-        name: name || undefined,
-        swatch,
-        hex: c.value?.trim() || undefined,
-        images: fallbackImages,
-      });
-    }
-    return list;
+  if (!Array.isArray(product.colors) || product.colors.length === 0) {
+    return [];
   }
 
-  return [];
+  const list: ProductColor[] = [];
+  for (let i = 0; i < product.colors.length; i++) {
+    const item = product.colors[i];
+    if (!item || typeof item !== "object") continue;
+
+    const c = item as ApiProductColor;
+    const id = c.id != null ? String(c.id) : `color-${i}`;
+    const name = c.name?.trim() || "";
+    const swatchCandidate = name.toLowerCase() as ProductSwatchId;
+    const swatch: ProductSwatchId =
+      swatchCandidate in PRODUCT_SWATCH_CLASSES ? swatchCandidate : "black";
+
+    list.push({
+      id,
+      nameKey: name || id,
+      name: name || undefined,
+      swatch,
+      hex: c.value?.trim() || undefined,
+      images: mapColorImages(c, fallbackImages),
+    });
+  }
+  return list;
 }
 
-function mapFeatures(raw: unknown[] | undefined): Product["features"] {
+function mapFeatures(
+  raw: ApiProductFeature[] | undefined,
+): ProductFeature[] {
   if (!Array.isArray(raw) || raw.length === 0) return [];
 
-  const list: NonNullable<Product["features"]> = [];
+  const list: ProductFeature[] = [];
   for (let i = 0; i < raw.length; i++) {
-    const item = raw[i];
+    const item = raw[i] as ApiProductFeature | string | null | undefined;
     if (typeof item === "string") {
       const s = item.trim();
       if (s) list.push({ id: `feat-${i}`, name: s });
-    } else if (item && typeof item === "object") {
-      const obj = item as {
-        id?: string | number;
-        name?: string;
-        title?: string;
-        value?: string;
-        description?: string;
-      };
-      const name = obj.name?.trim() || obj.title?.trim() || "";
-      const value = obj.value?.trim() || obj.description?.trim() || "";
-      if (name || value) {
-        list.push({
-          id: obj.id != null ? String(obj.id) : `feat-${i}`,
-          name: name || value,
-          value: name && value ? value : undefined,
-        });
-      }
+      continue;
     }
+    if (!item || typeof item !== "object") continue;
+
+    const name = item.name?.trim() || "";
+    const value = item.value?.trim() || "";
+    if (!name && !value) continue;
+
+    list.push({
+      id: item.id != null ? String(item.id) : `feat-${i}`,
+      name: name || value,
+      value: name && value && name !== value ? value : undefined,
+    });
   }
   return list;
 }
 
-function mapSizes(raw: unknown[]): AbayaSize[] {
+function mapSizes(raw: ApiProductSize[] | unknown[] | undefined): ProductSize[] {
   if (!Array.isArray(raw) || raw.length === 0) return [];
 
-  const list: AbayaSize[] = [];
-  for (const item of raw) {
+  const list: ProductSize[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const item = raw[i];
     if (typeof item === "string" || typeof item === "number") {
-      const s = String(item).trim();
-      if (s) list.push(s);
-    } else if (item && typeof item === "object") {
-      if ("name" in item && typeof (item as { name: unknown }).name === "string") {
-        const s = (item as { name: string }).name.trim();
-        if (s) list.push(s);
-      } else if ("size" in item && typeof (item as { size: unknown }).size === "string") {
-        const s = (item as { size: string }).size.trim();
-        if (s) list.push(s);
-      }
+      const name = String(item).trim();
+      if (name) list.push({ id: `size-${i}`, name });
+      continue;
     }
+    if (!item || typeof item !== "object") continue;
+
+    const obj = item as ApiProductSize & { size?: string };
+    const name =
+      obj.name?.trim() ||
+      (typeof obj.size === "string" ? obj.size.trim() : "") ||
+      "";
+    if (!name) continue;
+
+    const details = obj.details?.trim() || undefined;
+    list.push({
+      id: obj.id != null ? String(obj.id) : `size-${i}`,
+      name,
+      details,
+    });
   }
   return list;
+}
+
+function resolveInStock(product: ApiProduct): boolean {
+  if (typeof product.in_stock === "boolean") return product.in_stock;
+  if (
+    typeof product.stock_quantity === "number" &&
+    Number.isFinite(product.stock_quantity)
+  ) {
+    return product.stock_quantity > 0;
+  }
+  return product.status === "active";
 }
 
 function parseApiDate(value: string): Date | null {
@@ -207,6 +242,11 @@ export function mapProduct(product: ApiProduct): Product {
         : undefined;
 
   const description = product.description?.trim() || undefined;
+  const stockQuantity =
+    typeof product.stock_quantity === "number" &&
+    Number.isFinite(product.stock_quantity)
+      ? product.stock_quantity
+      : undefined;
 
   return {
     id: String(product.id),
@@ -219,7 +259,8 @@ export function mapProduct(product: ApiProduct): Product {
     badge: isSale ? "sale" : undefined,
     sku: product.model_number?.trim() || String(product.id),
     weightKg: parseMoney(product.weight) ?? 0,
-    inStock: product.status === "active",
+    inStock: resolveInStock(product),
+    stockQuantity,
     sizes: mapSizes(product.sizes),
     specs: [],
     features: mapFeatures(product.features),

@@ -4,8 +4,11 @@ export type {
   ApiAbayaSizeGuideRow,
   ApiProduct,
   ApiProductCategory,
+  ApiProductColor,
   ApiProductDetailResponse,
+  ApiProductFeature,
   ApiProductRating,
+  ApiProductSize,
   ApiProductsLinks,
   ApiProductsMeta,
   ApiProductsPage,
@@ -42,7 +45,15 @@ export interface ProductColor {
   images: string[];
 }
 
-/** Feature / specification item from the API (e.g. fabric, wash care) */
+/** Size option from the API (name used for cart selection; details may be HTML). */
+export interface ProductSize {
+  id: string;
+  name: AbayaSize;
+  /** Optional rich-text details for this size. */
+  details?: string;
+}
+
+/** Feature / specification item from the API (name/value may be HTML). */
 export interface ProductFeature {
   id: string;
   name: string;
@@ -65,7 +76,7 @@ export interface Product {
    */
   name?: string;
   nameKey: string;
-  /** Long-form description from the product API when present. */
+  /** Long-form description from the product API when present (may be HTML). */
   description?: string;
   priceTRY: number;
   compareAtPriceTRY?: number;
@@ -78,7 +89,9 @@ export interface Product {
   /** Shipping weight in kilograms. */
   weightKg: number;
   inStock: boolean;
-  sizes: AbayaSize[];
+  /** Remaining units when the API provides stock quantity. */
+  stockQuantity?: number;
+  sizes: ProductSize[];
   /** Spec sections shown under Product details. */
   specs: ProductSpec[];
   /** Structured features from API */

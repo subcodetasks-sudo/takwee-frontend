@@ -3,11 +3,13 @@
 import { safeServerAction, serverFetch, type ActionState } from "@/lib/api-server";
 import type { CartItem } from "@/features/cart/types";
 import type {
+  ApiApplyCouponData,
   ApiCheckoutPreviewData,
   ApiPlaceOrderData,
   ApiResponse,
 } from "../types/api";
 import type {
+  ApplyCouponResult,
   CheckoutPreviewResult,
   PlaceOrderInput,
   PlaceOrderResult,
@@ -16,6 +18,7 @@ import { mapCartItemsToApi, mapApiOrderToSummary } from "../utils/map-checkout";
 
 const PREVIEW_PATH = "/api/v1/checkout/preview";
 const CHECKOUT_PATH = "/api/v1/checkout";
+const APPLY_COUPON_PATH = "/api/v1/coupons/apply";
 
 function buildHeaders(
   locale?: string,
@@ -133,5 +136,124 @@ export async function placeOrderAction(
 
     const order = mapApiOrderToSummary(res.data, input.paymentMethod);
     return { order };
+  });
+}
+
+export interface ServerApplyCouponInput {
+  code: string;
+  items: CartItem[];
+  locale?: string;
+  currency?: string;
+}
+
+/**
+ * Server action / server-fetch for Apply Coupon (POST /api/v1/coupons/apply).
+ * Validates the promo against cart line items via session-authenticated serverFetch.
+ */
+export async function applyCouponAction(
+  input: ServerApplyCouponInput,
+): Promise<ActionState<ApplyCouponResult>> {
+  return safeServerAction(async () => {
+    const code = input.code.trim();
+    if (!code) {
+      throw new Error("A coupon code is required.");
+    }
+    if (!input.items.length) {
+      throw new Error("Cart items are required to apply a coupon.");
+    }
+
+    const payload = {
+      code,
+      items: mapCartItemsToApi(input.items).map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      })),
+    };
+
+    const res = await serverFetch<ApiResponse<ApiApplyCouponData>>(
+      APPLY_COUPON_PATH,
+      {
+        method: "POST",
+        body: payload,
+        headers: buildHeaders(input.locale, input.currency),
+        autoAuth: true,
+      },
+    );
+
+    if (!res?.success || !res.data) {
+      throw new Error(res?.message || "Failed to apply coupon");
+    }
+
+    const data = res.data;
+    const appliedCode =
+      (typeof data.code === "string" && data.code.trim()) ||
+      (typeof data.coupon?.code === "string" && data.coupon.code.trim()) ||
+      code;
+
+    const discountRaw = data.discount_amount ?? data.discount ?? 0;
+    const discount =
+      typeof discountRaw === "number"
+        ? discountRaw
+        : Number(discountRaw) || 0;
+
+    return {
+      code: appliedCode,
+      discount,
+      coupon: data.coupon ?? null,
+    };
+  });
+}
+
+export interface ServerRemoveCouponInput {
+  code: string;
+  items: CartItem[];
+  locale?: string;
+  currency?: string;
+}
+
+/**
+ * Server action / server-fetch for Remove Coupon (DELETE /api/v1/coupons/apply).
+ * Clears the promo against cart line items via session-authenticated serverFetch.
+ */
+export async function removeCouponAction(
+  input: ServerRemoveCouponInput,
+): Promise<ActionState<{ code: string }>> {
+  return safeServerAction(async () => {
+    const code = input.code.trim();
+    if (!code) {
+      throw new Error("A coupon code is required.");
+    }
+    if (!input.items.length) {
+      throw new Error("Cart items are required to remove a coupon.");
+    }
+
+    const payload = {
+      code,
+      items: mapCartItemsToApi(input.items).map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      })),
+    };
+
+    const res = await serverFetch<ApiResponse<ApiApplyCouponData | null> | undefined>(
+      APPLY_COUPON_PATH,
+      {
+        method: "DELETE",
+        body: payload,
+        headers: buildHeaders(input.locale, input.currency),
+        autoAuth: true,
+      },
+    );
+
+    // 204 No Content or empty body counts as success
+    if (res == null) {
+      return { code };
+    }
+
+    if (res.success === false) {
+      throw new Error(res.message || "Failed to remove coupon");
+    }
+
+    return { code };
   });
 }

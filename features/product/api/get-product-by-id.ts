@@ -27,14 +27,6 @@ export async function fetchProductById(
       headers: {
         ...(locale ? { "Accept-Language": locale } : {}),
       },
-      next: {
-        revalidate: 60,
-        tags: [
-          "products",
-          `product:${id}`,
-          locale ? `product:${id}:${locale}` : `product:${id}:default`,
-        ],
-      },
     },
   );
 

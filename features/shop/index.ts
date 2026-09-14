@@ -1,4 +1,6 @@
 export * from "./components/ShopView";
+export * from "./components/ShopViewClient";
+export * from "./components/ShopLoadingSkeleton";
 export * from "./components/ShopHero";
 export * from "./components/ShopCatalog";
 export * from "./components/ShopFilterPanel";

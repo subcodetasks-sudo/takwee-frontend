@@ -3,11 +3,17 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
+  AlertTriangle,
   Check,
+  CheckCircle2,
   Clock,
+  MapPin,
   Package,
   PackageCheck,
+  RotateCcw,
+  Sparkles,
   Truck,
+  XCircle,
 } from "lucide-react";
 import { motion } from "motion/react";
 import {
@@ -21,7 +27,7 @@ import { Copy } from "@/components/animate-ui/icons/copy";
 import { Check as CheckIcon } from "@/components/animate-ui/icons/check";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
-import type { OrderStatus, OrderTrackingInfo } from "../types";
+import type { OrderStatus, OrderTrackingInfo, TrackingStepKey } from "../types";
 
 interface OrderTrackerProps {
   tracking?: OrderTrackingInfo;
@@ -30,17 +36,38 @@ interface OrderTrackerProps {
 }
 
 interface TrackingStepConfig {
-  key: "placed" | "tailoring" | "shipped" | "delivered";
+  key: TrackingStepKey;
   labelKey: string;
-  icon: typeof Package;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 const TRACKING_STEPS: TrackingStepConfig[] = [
   { key: "placed", labelKey: "tracker.placed", icon: Package },
-  { key: "tailoring", labelKey: "tracker.tailoring", icon: Clock },
-  { key: "shipped", labelKey: "tracker.shipped", icon: Truck },
-  { key: "delivered", labelKey: "tracker.delivered", icon: PackageCheck },
+  { key: "processing", labelKey: "tracker.processing", icon: Sparkles },
+  { key: "shipped", labelKey: "tracker.shipped", icon: PackageCheck },
+  { key: "in_transit", labelKey: "tracker.in_transit", icon: Truck },
+  { key: "out_for_delivery", labelKey: "tracker.out_for_delivery", icon: MapPin },
+  { key: "delivered", labelKey: "tracker.delivered", icon: CheckCircle2 },
 ];
+
+function getStepIndexForStatus(status: OrderStatus): number {
+  switch (status) {
+    case "pending":
+      return 0;
+    case "processing":
+      return 1;
+    case "shipped":
+      return 2;
+    case "in_transit":
+      return 3;
+    case "out_for_delivery":
+      return 4;
+    case "delivered":
+      return 5;
+    default:
+      return 0;
+  }
+}
 
 export function OrderTracker({ tracking, status, className }: OrderTrackerProps) {
   const t = useTranslations("ProfilePage.orders");
@@ -48,18 +75,9 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
   const { copied, copy } = useCopyToClipboard();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  // Map status to current step index (0: placed, 1: tailoring/processing, 2: shipped, 3: delivered)
-  const currentStepIndex =
-    status === "delivered"
-      ? 3
-      : status === "shipped"
-      ? 2
-      : status === "processing"
-      ? 1
-      : 0;
-
-  const currentStepConfig = TRACKING_STEPS[currentStepIndex] || TRACKING_STEPS[0];
-  const CurrentIcon = currentStepConfig.icon;
+  // If status is an exception / terminal non-delivery state (failed, returned, cancelled)
+  const isException =
+    status === "failed" || status === "returned" || status === "cancelled";
 
   const handleCopyTracking = async () => {
     if (!tracking?.trackingNumber) return;
@@ -75,6 +93,136 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
       }).format(new Date(tracking.estimatedDelivery))
     : null;
 
+  if (isException) {
+    const isFailed = status === "failed";
+    const isReturned = status === "returned";
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className={cn(
+          "rounded-lg border p-3 sm:rounded-xl sm:p-4",
+          isFailed && "border-destructive/30 bg-destructive/10 text-destructive",
+          isReturned && "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-400",
+          !isFailed && !isReturned && "border-error/30 bg-error-muted text-error",
+          className,
+        )}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-background/80 shadow-2xs sm:size-8 sm:rounded-lg">
+              {isFailed ? (
+                <AlertTriangle className="size-4 text-destructive" />
+              ) : isReturned ? (
+                <RotateCcw className="size-4 text-orange-600 dark:text-orange-400" />
+              ) : (
+                <XCircle className="size-4 text-error" />
+              )}
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground sm:text-sm">
+                {isFailed
+                  ? t("failedNotice")
+                  : isReturned
+                    ? t("returnedNotice")
+                    : t("cancelledNotice")}
+              </p>
+              <p className="text-[10px] text-muted-foreground sm:text-[11px]">
+                {isFailed
+                  ? t("tracker.failedNotice")
+                  : isReturned
+                    ? t("tracker.returnedNotice")
+                    : t("cancelledNotice")}
+              </p>
+            </div>
+          </div>
+
+          {tracking?.trackingNumber && (
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <TooltipProvider delay={100}>
+                <Tooltip
+                  open={copied || tooltipOpen}
+                  onOpenChange={setTooltipOpen}
+                >
+                  <AnimateIcon animateOnHover className="inline-flex">
+                    <TooltipTrigger
+                      render={
+                        <button
+                          type="button"
+                          onClick={handleCopyTracking}
+                          className="group inline-flex max-w-full items-center gap-1 rounded-md border border-border/60 bg-background/90 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-all hover:border-border hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:gap-1.5 sm:px-2 sm:text-[11px]"
+                          aria-label={
+                            copied
+                              ? t("tracker.trackingCopied")
+                              : t("tracker.copyTrackingNumber")
+                          }
+                        />
+                      }
+                    >
+                      <bdi className="truncate">{tracking.trackingNumber}</bdi>
+                      {copied ? (
+                        <CheckIcon
+                          size={12}
+                          animate
+                          className="shrink-0 text-success"
+                          aria-hidden
+                        />
+                      ) : (
+                        <Copy
+                          size={12}
+                          className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100"
+                          aria-hidden
+                        />
+                      )}
+                    </TooltipTrigger>
+                  </AnimateIcon>
+                  <TooltipContent
+                    side="top"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {copied
+                      ? t("tracker.trackingCopied")
+                      : t("tracker.copyTrackingNumber")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Active progression status (pending, processing, shipped, in_transit, out_for_delivery, delivered)
+  const currentStepIndex = getStepIndexForStatus(status);
+  const currentStepConfig = TRACKING_STEPS[currentStepIndex] || TRACKING_STEPS[0];
+  const CurrentIcon = currentStepConfig.icon;
+
+  const getNoticeForStatus = () => {
+    switch (status) {
+      case "pending":
+        return t("tracker.pendingNotice");
+      case "processing":
+        return t("tracker.processingNotice");
+      case "shipped":
+        return t("tracker.shippedNotice");
+      case "in_transit":
+        return t("tracker.inTransitNotice");
+      case "out_for_delivery":
+        return t("tracker.outForDeliveryNotice");
+      case "delivered":
+        return t("tracker.deliveredNotice");
+      default:
+        return t("tracker.processingNotice");
+    }
+  };
+
+  const activeNotice = getNoticeForStatus();
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -82,7 +230,7 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
       transition={{ delay: 0.1, duration: 0.3 }}
       className={cn(
         "rounded-lg border border-secondary/20 bg-linear-to-r from-secondary/15 via-secondary/10 to-muted/40 p-2.5 sm:rounded-xl sm:p-5",
-        className
+        className,
       )}
     >
       {/* Header of Track Line */}
@@ -101,9 +249,7 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
               </p>
             ) : (
               <p className="text-[10px] text-muted-foreground sm:text-[11px]">
-                {status === "shipped"
-                  ? t("tracker.inTransitNotice")
-                  : t("tracker.processingNotice")}
+                {activeNotice}
               </p>
             )}
           </div>
@@ -169,29 +315,8 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
       </div>
 
       {/* Stepper Bar */}
-      <div className="relative pb-0.5 pt-1.5 sm:pb-1 sm:pt-2">
-        {/* Background Line */}
-        <div className="absolute start-4 end-4 top-4 h-0.5 -translate-y-1/2 rounded-full bg-border/60 sm:start-6 sm:end-6 sm:top-6 sm:h-1" />
-
-        {/* Filled Active Line with Motion */}
-        <motion.div
-          className="absolute start-4 top-4 h-0.5 -translate-y-1/2 rounded-full bg-secondary sm:start-6 sm:top-6 sm:h-1"
-          initial={{ width: "0%" }}
-          animate={{
-            width:
-              currentStepIndex === 0
-                ? "0%"
-                : currentStepIndex === 1
-                ? "33.33%"
-                : currentStepIndex === 2
-                ? "66.66%"
-                : "100%",
-          }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-
-        {/* Steps Nodes */}
-        <div className="relative flex justify-between">
+      <div className="relative pt-1 sm:pt-2">
+        <div className="flex justify-between">
           {TRACKING_STEPS.map((step, index) => {
             const isCompleted = index < currentStepIndex;
             const isCurrent = index === currentStepIndex;
@@ -202,42 +327,70 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                 key={step.key}
                 className="flex flex-1 flex-col items-center px-0.5 text-center"
               >
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className={cn(
-                    "relative flex size-6.5 items-center justify-center rounded-full border-2 transition-all duration-300 sm:size-9",
-                    isCompleted
-                      ? "border-secondary bg-secondary text-secondary-foreground shadow-xs"
-                      : isCurrent
-                      ? "border-secondary bg-card text-secondary ring-2 ring-secondary/20 sm:ring-4"
-                      : "border-border/80 bg-muted/80 text-muted-foreground/60"
-                  )}
-                >
-                  {isCompleted ? (
-                    <Check className="size-3 stroke-[3] sm:size-4" />
-                  ) : (
-                    <StepIcon
+                {/* Connector line container - exactly aligned with the circle's vertical and horizontal center */}
+                <div className="relative flex w-full items-center justify-center">
+                  {/* Line connecting to previous step */}
+                  {index > 0 && (
+                    <div
                       className={cn(
-                        "size-3 sm:size-4",
-                        isCurrent && "animate-pulse text-secondary"
+                        "absolute start-0 end-1/2 top-1/2 h-0.5 -translate-y-1/2 sm:h-1 transition-colors duration-500",
+                        index <= currentStepIndex
+                          ? "bg-secondary"
+                          : "bg-border/60",
                       )}
                     />
                   )}
 
-                  {/* Ripple animation on current active step */}
-                  {isCurrent && (
-                    <span className="absolute inset-0 animate-ping rounded-full bg-secondary/25" />
+                  {/* Line connecting to next step */}
+                  {index < TRACKING_STEPS.length - 1 && (
+                    <div
+                      className={cn(
+                        "absolute start-1/2 end-0 top-1/2 h-0.5 -translate-y-1/2 sm:h-1 transition-colors duration-500",
+                        index < currentStepIndex
+                          ? "bg-secondary"
+                          : "bg-border/60",
+                      )}
+                    />
                   )}
-                </motion.div>
+
+                  {/* Step Node */}
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className={cn(
+                      "relative z-10 flex size-6 items-center justify-center rounded-full border-2 transition-all duration-300 sm:size-8 md:size-9",
+                      isCompleted
+                        ? "border-secondary bg-secondary text-secondary-foreground shadow-xs"
+                        : isCurrent
+                          ? "border-secondary bg-card text-secondary ring-2 ring-secondary/20 sm:ring-4"
+                          : "border-border/80 bg-card text-muted-foreground/60 dark:bg-card",
+                    )}
+                  >
+                    {isCompleted ? (
+                      <Check className="size-2.5 stroke-[3] sm:size-3.5 md:size-4" />
+                    ) : (
+                      <StepIcon
+                        className={cn(
+                          "size-2.5 sm:size-3.5 md:size-4",
+                          isCurrent && "animate-pulse text-secondary",
+                        )}
+                      />
+                    )}
+
+                    {/* Ripple animation on current active step */}
+                    {isCurrent && (
+                      <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-secondary/25" />
+                    )}
+                  </motion.div>
+                </div>
 
                 <p
                   className={cn(
-                    "mt-1 line-clamp-2 w-full text-[9px] font-medium leading-tight sm:mt-2 sm:text-xs",
+                    "mt-1.5 line-clamp-2 w-full text-[8px] font-medium leading-tight sm:mt-2 sm:text-[11px] md:text-xs",
                     isCurrent
                       ? "font-bold text-secondary"
                       : isCompleted
-                      ? "text-foreground"
-                      : "text-muted-foreground/70"
+                        ? "text-foreground"
+                        : "text-muted-foreground/70",
                   )}
                 >
                   {t(step.labelKey)}
@@ -250,5 +403,3 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
     </motion.div>
   );
 }
-
-

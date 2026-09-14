@@ -74,6 +74,13 @@
       "copyOrderNumber": "Sipariş numarasını kopyala",
       "orderNumberCopied": "Sipariş numarası kopyalandı",
       "placedOn": "{date} tarihinde verildi",
+      "search": {
+        "placeholder": "Sipariş numarası veya ID ile ara...",
+        "clear": "Aramayı temizle",
+        "noResultsTitle": "Eşleşen sipariş bulunamadı",
+        "noResultsDescription": "\"{query}\" ile eşleşen bir sipariş bulunamadı. Lütfen sipariş numarasını kontrol edip tekrar deneyin.",
+        "resultsCount": "{count} sipariş bulundu"
+      },
       "itemCount": "{count, plural, one {# ürün} other {# ürün}}",
       "items": "Bu siparişteki ürünler",
       "deliveredNotice": "Kayıtlı adresinize başarıyla teslim edildi",
@@ -82,30 +89,56 @@
       "cancelledNotice": "Sipariş iptal edildi",
       "cancelledWithDate": "{date} tarihinde iptal edildi",
       "refundNotice": "Toplam {amount} tutarındaki iade orijinal ödeme yönteminize yapıldı",
+      "failedNotice": "Teslimat gerçekleştirilemedi",
+      "failedWithDate": "{date} tarihinde teslimat denemesi başarısız oldu",
+      "failedHelpNotice": "Müşteri ilişkileri ekibimiz yeniden teslimat veya adres güncellemesi için yardıma hazır.",
+      "returnedNotice": "Sipariş atölyeye iade edildi",
+      "returnedWithDate": "{date} tarihinde iade edildi",
+      "returnRefundNotice": "{amount} tutarındaki iade orijinal ödeme yönteminize aktarıldı",
       "status": {
-        "delivered": "Teslim edildi",
-        "shipped": "Kargoda / Yolda",
+        "pending": "Beklemede",
         "processing": "Hazırlanıyor",
-        "cancelled": "İptal edildi"
+        "shipped": "Kargoya Verildi",
+        "in_transit": "Yolda",
+        "out_for_delivery": "Dağıtımda",
+        "delivered": "Teslim Edildi",
+        "failed": "Başarısız",
+        "returned": "İade Edildi",
+        "cancelled": "İptal Edildi"
       },
       "filters": {
         "all": "Tüm Siparişler",
-        "active": "Kargoda / Yolda",
+        "pending": "Beklemede",
+        "processing": "Hazırlanıyor",
+        "shipped": "Kargoya Verildi",
+        "in_transit": "Yolda",
+        "out_for_delivery": "Dağıtımda",
         "delivered": "Teslim Edildi",
+        "failed": "Başarısız",
+        "returned": "İade Edildi",
         "cancelled": "İptal Edilenler",
         "emptyFilter": "Bu durumda sipariş bulunamadı",
         "showAll": "Tüm siparişleri göster"
       },
       "tracker": {
         "placed": "Sipariş Alındı",
+        "processing": "Atölye Hazırlığı",
         "tailoring": "Atölye Hazırlığı",
-        "shipped": "Kargoda / Yolda",
+        "shipped": "Kargoya Verildi",
+        "in_transit": "Yolda",
+        "out_for_delivery": "Dağıtımda",
         "delivered": "Teslim Edildi",
         "estimatedArrival": "Tahmini teslimat: {date}",
         "carrier": "Kargo Şirketi: {carrier}",
         "trackingNumber": "Takip No: {number}",
-        "inTransitNotice": "Siparişiniz özenle paketlenip yola çıktı",
+        "pendingNotice": "Siparişiniz alındı ve atölye onayı bekleniyor",
         "processingNotice": "Parçalarınız atölyemizde özenle kontrol ediliyor ve kokulandırılarak paketleniyor",
+        "shippedNotice": "Siparişiniz atölyemizden kargo firmasına teslim edildi",
+        "inTransitNotice": "Siparişiniz özenle paketlenip yola çıktı",
+        "outForDeliveryNotice": "Kuryeniz siparişinizi bugün teslim etmek üzere dağıtıma çıkardı",
+        "deliveredNotice": "Siparişiniz belirttiğiniz adrese güvenle teslim edildi",
+        "failedNotice": "Teslimat gerçekleştirilemedi. Lütfen iletişim bilgilerinizi kontrol ediniz",
+        "returnedNotice": "Sipariş atölyemize geri ulaştı",
         "copyTrackingNumber": "Takip numarasını kopyala",
         "trackingCopied": "Takip numarası kopyalandı"
       },
@@ -114,7 +147,11 @@
         "trackPackage": "Kargo takibi",
         "buyAgain": "Tekrar satın al",
         "needHelp": "Müşteri desteği",
-        "viewProduct": "Ürünü görüntüle"
+        "contactSupport": "Müşteri desteğine ulaş",
+        "viewProduct": "Ürünü görüntüle",
+        "cancelOrder": "Siparişi iptal et",
+        "cancelling": "İptal ediliyor...",
+        "viewReceipt": "Makbuzu görüntüle"
       },
       "details": {
         "metaTitle": "Sipariş {number}",
@@ -177,6 +214,15 @@
         "title": "Henüz sipariş yok",
         "description": "Sipariş verdiğinizde burada görünecek.",
         "cta": "Mağazayı keşfedin"
+      },
+      "loadError": {
+        "title": "Siparişler yüklenemedi",
+        "description": "Lütfen kısa bir süre sonra tekrar deneyin.",
+        "retry": "Tekrar dene"
+      },
+      "toasts": {
+        "cancelSuccess": "Sipariş başarıyla iptal edildi.",
+        "cancelError": "Bu sipariş iptal edilemedi. Lütfen tekrar deneyin."
       }
     },
     "addresses": {
@@ -465,18 +511,15 @@
     "markAllRead": "Tümünü okundu işaretle",
     "markRead": "Okundu işaretle",
     "unread": "Okunmamış",
+    "loading": "Bildirimler yükleniyor",
     "emptyTitle": "Henüz bildirim yok",
     "emptyDescription": "Sipariş güncellemeleri ve seçili fırsatlar burada görünecektir.",
-    "items": {
-      "orderShippedTitle": "Sipariş yolda",
-      "orderShippedBody": "LL-2048 numaralı siparişiniz kargoya verildi. Teslimatı siparişlerinizden takip edebilirsiniz.",
-      "linenEditTitle": "Keten Seçkisi’nde yeniler",
-      "linenEditBody": "Yeni saf keten kesimler geldi — sıcak günler için nefes alan parçalar.",
-      "orderDeliveredTitle": "Sipariş teslim edildi",
-      "orderDeliveredBody": "LL-2031 numaralı siparişiniz teslim edildi. Umarız zevkinize uygun olur.",
-      "wishlistReminderTitle": "Kaydedilen parçalar sizi bekliyor",
-      "wishlistReminderBody": "Favorilerinizdeki ürünler hâlâ mevcut. İstediğiniz zaman inceleyebilirsiniz."
-    }
+    "swipeToDelete": "Silmek için sola veya sağa kaydırın",
+    "delete": "Bildirimi sil",
+    "signInHint": "Güncellemeleri görmek için oturum açın",
+    "signInTitle": "Oturum açma gerekli",
+    "signInDescription": "Sipariş güncellemeleri ve seçili butik fırsatları için oturum açın.",
+    "signInCta": "Oturum aç"
   },
   "AdditionalSections": {
     "viewMore": "Daha fazla gör",
@@ -515,6 +558,9 @@
     "new": "Yeni",
     "discount": "%{percent} İndirim",
     "ratingAria": "5 üzerinden {rating} yıldız",
+    "inStock": "Stokta",
+    "outOfStock": "Stokta yok",
+    "lowStock": "Yalnızca {count} kaldı",
     "colors": {
       "black": "Siyah",
       "olive": "Zeytin yeşili",
@@ -546,6 +592,8 @@
     "removeFromWishlist": "Favorilerden çıkarın",
     "inStock": "Stokta",
     "outOfStock": "Stokta yok",
+    "stockCount": "{count} adet mevcut",
+    "lowStock": "Yalnızca {count} adet kaldı",
     "save": "Kazanç",
     "discount": "%{percent} İndirim",
     "inclusiveVat": "Vergiler dahil",
@@ -1293,12 +1341,6 @@
       "taxTooltip": "Lüks butik ürünleri için tahmini katma değer vergisi.",
       "total": "Tahmini Toplam",
       "totalNote": "Ürün KDV (%10) dahildir.",
-      "promoCode": {
-        "label": "Kupon Kodu",
-        "placeholder": "Kupon kodunuzu girin",
-        "apply": "Uygula",
-        "applied": "Uygulandı"
-      },
       "checkoutButton": "Ödemeye Geç",
       "scrollToSummary": "Sipariş Özeti",
       "guarantees": {
@@ -1372,6 +1414,7 @@
     "summary": {
       "title": "Sipariş özeti",
       "subtotal": "Ara toplam",
+      "discount": "İndirim",
       "estimatedTax": "Tahmini vergiler (KDV %10)",
       "shipping": "Kargo",
       "shippingComplimentary": "Ücretsiz",
@@ -1384,13 +1427,25 @@
       "itemCount": "{count, plural, =0 {0 ürün} one {# ürün} other {# ürün}}",
       "size": "Beden",
       "color": "Renk",
-      "qty": "Adet {count}"
+      "qty": "Adet {count}",
+      "promoCode": {
+        "label": "Kupon kodu",
+        "placeholder": "Kupon kodunuzu girin",
+        "apply": "Uygula",
+        "applied": "Uygulandı",
+        "remove": "Kupon kodunu kaldır"
+      }
     },
     "toasts": {
       "placing": "Siparişiniz atölyeye iletiliyor…",
       "success": "Sipariş başarıyla oluşturuldu",
       "successDescription": "{number} numaralı siparişiniz onaylandı ve atölyeye yönlendirildi.",
-      "error": "Sipariş oluşturulamadı. Lütfen tekrar deneyin."
+      "error": "Sipariş oluşturulamadı. Lütfen tekrar deneyin.",
+      "couponApplied": "Kupon kodu uygulandı",
+      "couponAppliedDescription": "{code} bu siparişe uygulandı.",
+      "couponError": "Bu kupon kodu uygulanamadı. Lütfen tekrar deneyin.",
+      "couponRemoved": "Kupon kodu kaldırıldı",
+      "couponRemoveError": "Bu kupon kodu kaldırılamadı. Lütfen tekrar deneyin."
     },
     "confirmation": {
       "metaTitle": "Sipariş onaylandı",
@@ -1403,6 +1458,7 @@
       "copyOrderNumber": "Sipariş numarasını kopyala",
       "copied": "Sipariş numarası kopyalandı",
       "printReceipt": "Makbuzu yazdır",
+      "viewReceipt": "Makbuzu görüntüle",
       "estimatedArrival": "Tahmini teslimat: {date}",
       "timelineTitle": "Atölye Süreci",
       "timelineStep1": "Sipariş Alındı",
@@ -1413,9 +1469,10 @@
       "paymentTitle": "Ödeme",
       "itemsTitle": "Bu siparişteki ürünler",
       "subtotal": "Ara Toplam",
+      "discount": "İndirim",
       "shippingFee": "Kargo",
       "complimentary": "Ücretsiz",
-      "tax": "Tahmini KDV (%10)",
+      "tax": "Vergi",
       "total": "Toplam",
       "perks": {
         "craftTitle": "Özel Atölye İşçiliği",
@@ -1434,5 +1491,32 @@
         "cta": "Alışveriş çantasına dön"
       }
     }
+  },
+
+  "OrderReceipt": {
+    "title": "Sipariş makbuzu",
+    "view": "Makbuz",
+    "viewShort": "Makbuzu görüntüle",
+    "receiptLabel": "Satış makbuzu",
+    "orderNumber": "Sipariş",
+    "placedAt": "Tarih",
+    "payment": "Ödeme",
+    "items": "Ürünler",
+    "size": "Beden",
+    "color": "Renk",
+    "qty": "Adet",
+    "each": "birim",
+    "subtotal": "Ara toplam",
+    "discount": "İndirim",
+    "tax": "Vergi",
+    "shipping": "Kargo",
+    "complimentary": "Ücretsiz",
+    "total": "Toplam",
+    "shippingAddress": "Teslimat",
+    "thankYou": "Linen Line’dan alışveriş yaptığınız için teşekkür ederiz. Sizi yeniden ağırlamayı dileriz.",
+    "print": "Yazdır",
+    "download": "PDF indir",
+    "downloading": "PDF hazırlanıyor…",
+    "downloadError": "Makbuz indirilemedi. Lütfen tekrar deneyin."
   }
 }

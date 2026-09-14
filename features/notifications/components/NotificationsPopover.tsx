@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  Bell,
-  Package,
-  Sparkles,
-  Info,
-  CheckCheck,
-  Check,
-} from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import {
   Popover,
@@ -24,55 +17,46 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "../hooks/useNotifications";
-import type { NotificationKind } from "../types";
+import { NotificationSwipeItem } from "./NotificationSwipeItem";
 
-function formatRelativeTime(iso: string, locale: string): string {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const diffSec = Math.round((then - now) / 1000);
-  const abs = Math.abs(diffSec);
-
-  const divisions: [Intl.RelativeTimeFormatUnit, number][] = [
-    ["day", 60 * 60 * 24],
-    ["hour", 60 * 60],
-    ["minute", 60],
-    ["second", 1],
-  ];
-
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-
-  for (const [unit, secondsInUnit] of divisions) {
-    if (abs >= secondsInUnit || unit === "second") {
-      const value = Math.round(diffSec / secondsInUnit);
-      return rtf.format(value, unit);
-    }
-  }
-
-  return rtf.format(0, "second");
-}
-
-function KindIcon({ kind }: { kind: NotificationKind }) {
-  const className = "size-3.5 sm:size-4 shrink-0";
-  switch (kind) {
-    case "order":
-      return <Package className={className} />;
-    case "promo":
-      return <Sparkles className={className} />;
-    default:
-      return <Info className={className} />;
-  }
+function NotificationsSkeleton() {
+  return (
+    <ul className="flex flex-col gap-1 sm:gap-1.5 p-1.5 sm:p-2" role="list">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <li
+          key={i}
+          className="flex items-start gap-2.5 sm:gap-3 rounded-lg sm:rounded-xl p-2 sm:p-2.5"
+          aria-hidden
+        >
+          <span className="mt-0.5 size-7.5 sm:size-9 shrink-0 animate-pulse rounded-lg sm:rounded-xl bg-muted/60" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="h-3.5 w-3/4 animate-pulse rounded bg-muted/60" />
+            <div className="h-3 w-full animate-pulse rounded bg-muted/50" />
+            <div className="h-2.5 w-1/3 animate-pulse rounded bg-muted/40" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function NotificationsPopover() {
   const t = useTranslations("Notifications");
   const locale = useLocale();
   const [open, setOpen] = useState(false);
-  const { notifications, unreadCount, markAsRead, markAllAsRead } =
-    useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    isLoading,
+    isAuthenticated,
+  } = useNotifications();
 
   const hasUnread = unreadCount > 0;
   const isRtl = locale === "ar";
@@ -138,7 +122,9 @@ export function NotificationsPopover() {
               )}
             </div>
             <PopoverDescription className="text-[11px] sm:text-xs text-muted-foreground">
-              {hasUnread ? (
+              {!isAuthenticated ? (
+                t("signInHint")
+              ) : hasUnread ? (
                 t("unreadSummary", { count: unreadCount })
               ) : (
                 <span className="inline-flex items-center gap-1 font-medium text-success">
@@ -148,12 +134,14 @@ export function NotificationsPopover() {
               )}
             </PopoverDescription>
           </div>
-          {hasUnread && (
+          {isAuthenticated && hasUnread && (
             <Button
               type="button"
               variant="ghost"
               size="xs"
-              onClick={markAllAsRead}
+              onClick={() => {
+                void markAllAsRead();
+              }}
               className="h-6 sm:h-7 shrink-0 gap-1 sm:gap-1.5 rounded-full px-2 sm:px-2.5 text-[11px] sm:text-xs font-medium text-muted-foreground transition-all hover:bg-muted/80 hover:text-foreground focus-visible:ring-1"
             >
               <CheckCheck className="size-3 sm:size-3.5 text-primary" />
@@ -162,7 +150,36 @@ export function NotificationsPopover() {
           )}
         </PopoverHeader>
 
-        {notifications.length === 0 ? (
+        {!isAuthenticated ? (
+          <div className="flex flex-col items-center justify-center gap-2.5 px-4 py-8 sm:px-6 sm:py-12 text-center">
+            <div className="relative flex size-11 sm:size-14 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-muted/40 shadow-xs backdrop-blur-xs">
+              <Bell className="size-5 sm:size-6 text-muted-foreground/80" />
+            </div>
+            <div className="space-y-0.5 sm:space-y-1">
+              <p className="text-xs sm:text-sm font-semibold text-foreground">
+                {t("signInTitle")}
+              </p>
+              <p className="max-w-[15rem] sm:max-w-[16rem] text-[11px] sm:text-xs leading-relaxed text-muted-foreground/90">
+                {t("signInDescription")}
+              </p>
+            </div>
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className={cn(buttonVariants({ size: "sm" }), "mt-1")}
+            >
+              {t("signInCta")}
+            </Link>
+          </div>
+        ) : isLoading ? (
+          <div
+            className="h-[min(19rem,55vh)] sm:h-[min(22rem,50vh)]"
+            aria-busy="true"
+            aria-label={t("loading")}
+          >
+            <NotificationsSkeleton />
+          </div>
+        ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2.5 px-4 py-8 sm:px-6 sm:py-12 text-center">
             <div className="relative flex size-11 sm:size-14 items-center justify-center rounded-xl sm:rounded-2xl border border-border/70 bg-muted/40 shadow-xs backdrop-blur-xs">
               <Bell className="size-5 sm:size-6 text-muted-foreground/80" />
@@ -178,118 +195,27 @@ export function NotificationsPopover() {
           </div>
         ) : (
           <ScrollArea className="h-[min(19rem,55vh)] sm:h-[min(22rem,50vh)]">
-            <ul className="flex flex-col gap-1 sm:gap-1.5 p-1.5 sm:p-2" role="list">
+            <p className="px-3 pt-2 text-[10px] sm:text-[11px] text-muted-foreground/80">
+              {t("swipeToDelete")}
+            </p>
+            <ul
+              className="flex flex-col gap-1 sm:gap-1.5 p-1.5 sm:p-2"
+              role="list"
+            >
               {notifications.map((item) => (
-                <li key={item.id}>
-                  <div
-                    className={cn(
-                      "group relative flex w-full items-start gap-2.5 sm:gap-3 rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-3 text-start transition-all",
-                      !item.read
-                        ? "border border-primary-200/90 bg-primary-50/70 shadow-xs dark:border-primary-800/80 dark:bg-primary-950/40 hover:bg-primary-50/95 dark:hover:bg-primary-950/60"
-                        : "border border-transparent bg-transparent hover:bg-muted/50",
-                    )}
-                  >
-                    {item.href ? (
-                      <Link
-                        href={item.href}
-                        onClick={() => {
-                          markAsRead(item.id);
-                          setOpen(false);
-                        }}
-                        className="absolute inset-0 z-0 rounded-lg sm:rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-                        aria-label={t(`items.${item.titleKey}`)}
-                      />
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => markAsRead(item.id)}
-                        className="absolute inset-0 z-0 rounded-lg sm:rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-                        aria-label={t(`items.${item.titleKey}`)}
-                      />
-                    )}
-
-                    <span
-                      className={cn(
-                        "mt-0.5 flex size-7.5 sm:size-9 shrink-0 items-center justify-center rounded-lg sm:rounded-xl transition-colors",
-                        !item.read
-                          ? cn(
-                              item.kind === "order" &&
-                                "border border-info/25 bg-info/15 text-info shadow-2xs",
-                              item.kind === "promo" &&
-                                "border border-primary-300/60 bg-primary-200/60 text-primary-900 shadow-2xs dark:border-primary-700/60 dark:bg-primary-900/60 dark:text-primary-100",
-                              item.kind === "system" &&
-                                "border border-secondary-300/60 bg-secondary-100 text-secondary-800 shadow-2xs dark:border-secondary-700/60 dark:bg-secondary-900/60 dark:text-secondary-200",
-                            )
-                          : "border border-border/40 bg-muted/60 text-muted-foreground opacity-70",
-                      )}
-                    >
-                      <KindIcon kind={item.kind} />
-                    </span>
-
-                    <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
-                      <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-                        <span
-                          className={cn(
-                            "text-xs sm:text-sm leading-snug tracking-tight transition-colors",
-                            item.read
-                              ? "font-normal text-muted-foreground"
-                              : "font-semibold text-foreground",
-                          )}
-                        >
-                          {t(`items.${item.titleKey}`)}
-                        </span>
-
-                        {!item.read && (
-                          <span
-                            className="relative mt-1 flex size-1.5 sm:size-2 shrink-0"
-                            aria-label={t("unread")}
-                          >
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                            <span className="relative inline-flex size-1.5 sm:size-2 rounded-full bg-primary ring-2 ring-background" />
-                          </span>
-                        )}
-                      </div>
-
-                      <p
-                        className={cn(
-                          "text-[11px] sm:text-xs leading-relaxed transition-colors",
-                          item.read
-                            ? "text-muted-foreground/75"
-                            : "text-foreground/85",
-                        )}
-                      >
-                        {t(`items.${item.bodyKey}`)}
-                      </p>
-
-                      <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-0.5">
-                        <span
-                          className={cn(
-                            "text-[10px] sm:text-[11px] transition-colors",
-                            item.read
-                              ? "text-muted-foreground/60"
-                              : "font-medium text-primary-800 dark:text-primary-300",
-                          )}
-                        >
-                          {formatRelativeTime(item.createdAt, locale)}
-                        </span>
-
-                        {!item.read && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              markAsRead(item.id);
-                            }}
-                            className="relative z-1 inline-flex items-center gap-0.5 sm:gap-1 rounded px-1.5 py-0.5 text-[10px] sm:text-[11px] font-medium text-muted-foreground transition-all hover:bg-background/90 hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                          >
-                            <Check className="size-2.5 sm:size-3 text-primary" />
-                            <span>{t("markRead")}</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </li>
+                <NotificationSwipeItem
+                  key={item.id}
+                  item={item}
+                  locale={locale}
+                  unreadLabel={t("unread")}
+                  markReadLabel={t("markRead")}
+                  deleteLabel={t("delete")}
+                  onMarkAsRead={(id) => {
+                    void markAsRead(id);
+                  }}
+                  onDelete={deleteNotification}
+                  onNavigate={() => setOpen(false)}
+                />
               ))}
             </ul>
           </ScrollArea>

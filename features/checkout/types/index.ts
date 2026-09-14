@@ -41,4 +41,10 @@ export interface PlaceOrderResult {
   order: OrderSummary;
 }
 
+export interface ApplyCouponResult {
+  code: string;
+  discount: number;
+  coupon?: ApiCheckoutCoupon | null;
+}
+
 export * from "./api";

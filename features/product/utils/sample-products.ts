@@ -14,7 +14,13 @@ export const SAMPLE_PRODUCTS: Product[] = [
     sku: "20103501",
     weightKg: 1,
     inStock: true,
-    sizes: ["52", "54", "56", "58", "60"],
+    sizes: [
+      { id: "52", name: "52" },
+      { id: "54", name: "54" },
+      { id: "56", name: "56" },
+      { id: "58", name: "58" },
+      { id: "60", name: "60" },
+    ],
     includesSheila: true,
     specs: [
       { id: "design" },
@@ -49,7 +55,13 @@ export const SAMPLE_PRODUCTS: Product[] = [
     sku: "LL-AL-01",
     weightKg: 0.9,
     inStock: true,
-    sizes: ["52", "54", "56", "58", "60"],
+    sizes: [
+      { id: "52", name: "52" },
+      { id: "54", name: "54" },
+      { id: "56", name: "56" },
+      { id: "58", name: "58" },
+      { id: "60", name: "60" },
+    ],
     includesSheila: true,
     specs: [
       { id: "design" },
@@ -94,7 +106,13 @@ export const SAMPLE_PRODUCTS: Product[] = [
     sku: "LL-OH-02",
     weightKg: 1.1,
     inStock: true,
-    sizes: ["52", "54", "56", "58", "60"],
+    sizes: [
+      { id: "52", name: "52" },
+      { id: "54", name: "54" },
+      { id: "56", name: "56" },
+      { id: "58", name: "58" },
+      { id: "60", name: "60" },
+    ],
     includesSheila: true,
     specs: [
       { id: "design" },
@@ -136,7 +154,13 @@ export const SAMPLE_PRODUCTS: Product[] = [
     sku: "LL-MS-03",
     weightKg: 0.85,
     inStock: true,
-    sizes: ["52", "54", "56", "58", "60"],
+    sizes: [
+      { id: "52", name: "52" },
+      { id: "54", name: "54" },
+      { id: "56", name: "56" },
+      { id: "58", name: "58" },
+      { id: "60", name: "60" },
+    ],
     includesSheila: true,
     specs: [
       { id: "design" },
@@ -173,7 +197,13 @@ export const SAMPLE_PRODUCTS: Product[] = [
     sku: "LL-TK-04",
     weightKg: 0.75,
     inStock: true,
-    sizes: ["52", "54", "56", "58", "60"],
+    sizes: [
+      { id: "52", name: "52" },
+      { id: "54", name: "54" },
+      { id: "56", name: "56" },
+      { id: "58", name: "58" },
+      { id: "60", name: "60" },
+    ],
     includesSheila: false,
     specs: [
       { id: "design" },

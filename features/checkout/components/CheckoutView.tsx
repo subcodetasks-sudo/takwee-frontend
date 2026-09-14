@@ -61,12 +61,51 @@ export function CheckoutView() {
   const {
     preview,
     isPreviewLoading,
+    applyCoupon,
+    isApplyingCoupon,
+    removeCoupon,
+    isRemovingCoupon,
     placeOrder,
     isPlacingOrder,
   } = useCheckout({
     addressId: selectedAddressId,
     couponCode: couponCode || undefined,
   });
+
+  const handleApplyCoupon = async (code: string) => {
+    try {
+      const result = await applyCoupon(code);
+      setCouponCode(result.code);
+      gooeyToast.success(t("toasts.couponApplied"), {
+        description: t("toasts.couponAppliedDescription", { code: result.code }),
+      });
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.couponError"),
+      );
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponCode("");
+      return;
+    }
+
+    try {
+      await removeCoupon(couponCode);
+      setCouponCode("");
+      gooeyToast.success(t("toasts.couponRemoved"));
+    } catch (error) {
+      gooeyToast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("toasts.couponRemoveError"),
+      );
+    }
+  };
 
   useEffect(() => {
     if (defaultAddressId && !selectedAddressId) {
@@ -214,8 +253,9 @@ export function CheckoutView() {
                 pricing={preview?.pricing}
                 isPreviewLoading={isPreviewLoading}
                 couponCode={couponCode}
-                onApplyCoupon={(code) => setCouponCode(code)}
-                onRemoveCoupon={() => setCouponCode("")}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={handleRemoveCoupon}
+                isApplyingCoupon={isApplyingCoupon || isRemovingCoupon}
                 isSubmitting={isPlacingOrder}
               />
             </aside>

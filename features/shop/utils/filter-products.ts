@@ -73,9 +73,8 @@ export function getSizeOptions(products: Product[]): string[] {
   for (const product of products) {
     if (Array.isArray(product.sizes)) {
       for (const size of product.sizes) {
-        if (typeof size === "string" && size.trim()) {
-          sizes.add(size.trim());
-        }
+        const name = size?.name?.trim();
+        if (name) sizes.add(name);
       }
     }
   }
@@ -167,7 +166,9 @@ function matchesFilters(product: Product, filters: ShopFilterState): boolean {
 
   if (
     filters.sizes.length > 0 &&
-    !filters.sizes.some((size) => product.sizes.includes(size))
+    !filters.sizes.some((size) =>
+      product.sizes.some((option) => option.name === size),
+    )
   ) {
     return false;
   }

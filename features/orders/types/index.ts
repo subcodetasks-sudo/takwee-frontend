@@ -1,4 +1,13 @@
-export type OrderStatus = "delivered" | "shipped" | "processing" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "in_transit"
+  | "out_for_delivery"
+  | "delivered"
+  | "failed"
+  | "returned"
+  | "cancelled";
 
 export interface OrderItemSummary {
   name: string;
@@ -10,7 +19,14 @@ export interface OrderItemSummary {
   slug?: string;
 }
 
-export type TrackingStepKey = "placed" | "tailoring" | "shipped" | "delivered";
+export type TrackingStepKey =
+  | "placed"
+  | "processing"
+  | "tailoring"
+  | "shipped"
+  | "in_transit"
+  | "out_for_delivery"
+  | "delivered";
 
 export interface OrderTrackingStep {
   key: TrackingStepKey;
@@ -23,7 +39,7 @@ export interface OrderTrackingInfo {
   carrier: string;
   trackingNumber: string;
   estimatedDelivery?: string;
-  currentStep: 1 | 2 | 3 | 4;
+  currentStep: number;
   steps: OrderTrackingStep[];
   trackingUrl?: string;
 }
@@ -60,11 +76,22 @@ export interface OrderSummary {
   tracking?: OrderTrackingInfo;
   shippingAddress?: OrderShippingAddress;
   payment?: OrderPaymentInfo;
+  /** Merchandise subtotal in TRY (before shipping/tax/discount) */
+  subtotalTRY?: number;
   /** Shipping fee in TRY (0 = complimentary) */
   shippingTRY?: number;
   discountTRY?: number;
+  taxTRY?: number;
+  couponCode?: string;
   deliveredAt?: string;
   cancelledAt?: string;
   cancelReasonKey?: string;
+  /** From API `can_cancel` — pending/confirmed and not yet shipped */
+  canCancel?: boolean;
+  paymentStatus?: string;
+  shippingStatus?: string;
 }
+
+export type { ApiOrderDetail, ApiOrderListItem, ApiOrderTrackingData } from "./api";
+
 

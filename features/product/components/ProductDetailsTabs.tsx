@@ -106,16 +106,15 @@ export function ProductDetailsTabs({
                   {features.map((feature) => (
                     <StaggerItem key={feature.id}>
                       <div className="flex h-full flex-col gap-1.5 rounded-xl border border-border/70 bg-card/60 p-4 transition-all">
-                        <p className="text-sm font-semibold text-foreground">
-                          {feature.name}
-                        </p>
+                        <ProductRichText
+                          content={feature.name}
+                          className="text-sm font-semibold text-foreground [&_p]:mb-0 [&_*]:text-foreground"
+                        />
                         {feature.value ? (
-                          <div className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                            <ProductRichText
-                              content={feature.value}
-                              className="text-xs leading-relaxed sm:text-sm [&_p]:mb-1.5 [&_p:last-child]:mb-0"
-                            />
-                          </div>
+                          <ProductRichText
+                            content={feature.value}
+                            className="text-xs leading-relaxed sm:text-sm [&_p]:mb-1.5 [&_p:last-child]:mb-0"
+                          />
                         ) : null}
                       </div>
                     </StaggerItem>

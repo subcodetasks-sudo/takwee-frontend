@@ -2,9 +2,14 @@ export * from "./components/OrdersView";
 export * from "./components/OrdersList";
 export * from "./components/OrderCard";
 export * from "./components/OrderDetailsView";
+export * from "./components/OrderDetailsContent";
 export * from "./components/OrderDetailsHeader";
+export * from "./components/OrderReceipt";
+export * from "./components/OrderReceiptDialog";
 export * from "./components/OrderStatusBadge";
 export * from "./components/OrderTracker";
 export * from "./types";
+export * from "./hooks/useOrders";
+export * from "./api";
+export * from "./utils/map-order";
 export * from "./utils/mock-orders";
-

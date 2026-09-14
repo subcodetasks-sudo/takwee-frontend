@@ -57,7 +57,7 @@ export function ProductDetailsProvider({
   );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState<AbayaSize | null>(
-    product.sizes[0] ?? null,
+    product.sizes[0]?.name ?? null,
   );
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);

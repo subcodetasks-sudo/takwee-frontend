@@ -55,7 +55,7 @@ function createCartItem(
   options?: AddToCartOptions,
 ): CartItem {
   const selectedColorId = options?.selectedColorId ?? product.colors[0]?.id;
-  const selectedSize = options?.selectedSize ?? product.sizes[0];
+  const selectedSize = options?.selectedSize ?? product.sizes[0]?.name;
   const id = generateCartItemId(product.id, selectedColorId, selectedSize);
 
   return {
@@ -140,7 +140,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (product: Product, options?: AddToCartOptions) => {
       const current = hydrateProducts(readCartFromStorage());
       const selectedColorId = options?.selectedColorId ?? product.colors[0]?.id;
-      const selectedSize = options?.selectedSize ?? product.sizes[0];
+      const selectedSize = options?.selectedSize ?? product.sizes[0]?.name;
       const targetId = generateCartItemId(
         product.id,
         selectedColorId,

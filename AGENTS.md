@@ -187,7 +187,7 @@ PDP stays slug-routed (`/products/[slug]`). Resolve slug via the products list, 
 |---|---|---|
 | Fetcher | [`features/product/api/get-product-by-id.ts`](features/product/api/get-product-by-id.ts) | `fetchProductById` → product + mapped reviews |
 | Page loader | [`features/product/utils/get-product-page.ts`](features/product/utils/get-product-page.ts) | `getProductPageBySlug` (list match → detail; soft sample fallback) |
-| Mapper | [`mapProductDetail`](features/product/utils/map-product.ts) / `mapProductRatings` | `ratings[]` → `ProductReview` (`customer_name` → author, `size` → sizePurchased) |
+| Mapper | [`mapProduct`](features/product/utils/map-product.ts) / `mapProductDetail` / `mapProductRatings` | API → `Product` (`in_stock` / `stock_quantity`, per-color `images`, sizes `{id,name,details}`, features); `ratings[]` → `ProductReview`; description / size details / feature copy may be HTML (rendered via `ProductRichText`) |
 | UI | [`ProductReviews`](features/product/components/ProductReviews.tsx) | Seeds from API ratings; hero/tabs use `product.rating` / `reviewsCount` |
 
 ---
@@ -247,6 +247,58 @@ Authenticated address book uses client `http` + bearer token from `useAuth().ses
 **Consumers:**
 - [`AddressesList`](features/addresses/components/AddressesList.tsx) — account `/me/addresses`
 - [`CheckoutView`](features/checkout/components/CheckoutView.tsx) — shipping address picker + add-address dialog
+
+---
+
+## 4e. Orders (`features/orders`)
+
+Authenticated customer orders use client `http` + bearer token from `useAuth().session` against **`/api/v1/my/orders`**.
+
+| Layer | Path | Role |
+|---|---|---|
+| Client API | [`features/orders/api/get-orders.ts`](features/orders/api/get-orders.ts) | `fetchOrders` / `fetchOrderById` / `fetchOrderTracking` / `cancelOrder` via `http` + session token |
+| Hook | [`features/orders/hooks/useOrders.ts`](features/orders/hooks/useOrders.ts) | React Query — keys `["user-orders", locale, …]`; list + detail + tracking + cancel mutation |
+| Mapper | [`features/orders/utils/map-order.ts`](features/orders/utils/map-order.ts) | List/detail/tracking DTOs → `OrderSummary` / `OrderTrackingInfo` (`resolveImageUrl` on item images) |
+| Types | [`features/orders/types/`](features/orders/types/) | API DTOs (`types/api.ts`) + storefront view models (`OrderSummary`, …) |
+
+**Endpoints:**
+- `GET /api/v1/my/orders` — paginated list (`status`, `per_page`, `page`, `sort`); abandoned carts excluded by API
+- `GET /api/v1/my/orders/{id}` — order detail (items, pricing, address, shipment, tracking)
+- `GET /api/v1/my/orders/{id}/tracking` — tracking-only payload
+- `POST /api/v1/my/orders/{id}/cancel` — cancel when `can_cancel` (pending/confirmed, not shipped)
+
+**Status mapping:** API `pending` / `confirmed` / `processing` → storefront `processing`; `shipped` / `in_transit` → `shipped`; `delivered` / `completed` → `delivered`; `cancelled` → `cancelled`.
+
+**Consumers:**
+- [`OrdersList`](features/orders/components/OrdersList.tsx) — account `/me/orders` (client filters: all / active / delivered / cancelled)
+- [`OrderDetailsView`](features/orders/components/OrderDetailsView.tsx) — `/me/orders/[orderId]` + cancel when `canCancel`
+- Checkout place-order maps via [`mapOrderDetail`](features/orders/utils/map-order.ts) (re-exported as `mapApiOrderToSummary` from checkout)
+
+---
+
+## 4f. Notifications (`features/notifications`)
+
+Authenticated in-app notifications use client `http` + bearer token from `useAuth().session` against **`/api/v1/notifications`**.
+
+| Layer | Path | Role |
+|---|---|---|
+| Client API | [`features/notifications/api/get-notifications.ts`](features/notifications/api/get-notifications.ts) | `fetchNotifications` / `fetchUnreadCount` / `markNotificationRead` / `markAllNotificationsRead` / `deleteNotification` / `registerDeviceToken` via `http` + session token |
+| Hook | [`features/notifications/hooks/useNotifications.ts`](features/notifications/hooks/useNotifications.ts) | React Query — keys `["user-notifications", locale, …]`; list + unread count + mark/delete mutations (optimistic) |
+| Mapper | [`features/notifications/utils/map-notification.ts`](features/notifications/utils/map-notification.ts) | API DTO → `NotificationItem` (`type` → `kind` / optional `href`; API `title`/`body` as display copy) |
+| Types | [`features/notifications/types/`](features/notifications/types/) | API DTOs (`types/api.ts`) + storefront view models |
+
+**Endpoints:**
+- `GET /api/v1/notifications` — paginated list (`per_page`, `page`); storefront walks pages with `per_page=100`
+- `GET /api/v1/notifications/unread-count` — `{ count }` for the header badge
+- `PUT /api/v1/notifications/{id}/read` — mark one as read
+- `PUT /api/v1/notifications/read-all` — mark all as read
+- `DELETE /api/v1/notifications/{id}` — delete one
+- `POST /api/v1/notifications/token` — register FCM/device token (`device_token`, `device_type`)
+
+**Kind mapping:** API `type` starting with `order` (or shipment/delivery) → `order`; `promo` / `sale` / offer / coupon → `promo`; else `system`. Href heuristics: orders → `/me/orders`, wishlist → `/wishlist`, promo → `/shop`.
+
+**Consumers:**
+- [`NotificationsPopover`](features/notifications/components/NotificationsPopover.tsx) — header bell; guests see sign-in empty state; titles/bodies come from the API (localized via `Accept-Language`)
 
 ---
 
