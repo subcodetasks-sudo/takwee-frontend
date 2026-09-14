@@ -88,57 +88,45 @@
       "returnPolicyNotice": "متاح للاستبدال والاسترجاع خلال 14 يوماً",
       "cancelledNotice": "تم إلغاء الطلب",
       "cancelledWithDate": "تم إلغاء الطلب في {date}",
-      "refundNotice": "تم رد المبلغ كاملاً ({amount}) إلى وسيلة الدفع الأصلية",
       "failedNotice": "تعذر تسليم الشحنة",
       "failedWithDate": "تعذر التوصيل في {date}",
       "failedHelpNotice": "فريق خدمة العملاء جاهز لمساعدتكِ لإعادة جدولة التوصيل أو تحديث العنوان.",
       "returnedNotice": "تم إرجاع الطلب إلى المشغل",
       "returnedWithDate": "تم إرجاع الطلب في {date}",
-      "returnRefundNotice": "تمت معالجة استرداد مبلغ {amount} إلى وسيلة الدفع الأصلية",
       "status": {
         "pending": "قيد الانتظار",
+        "confirmed": "مؤكد",
         "processing": "قيد التجهيز",
         "shipped": "تم الشحن",
-        "in_transit": "في الطريق",
-        "out_for_delivery": "خرج للتوصيل",
         "delivered": "تم التسليم",
-        "failed": "تعذر التوصيل",
-        "returned": "تم الإرجاع",
         "cancelled": "ملغى"
       },
       "filters": {
         "all": "جميع الطلبات",
         "pending": "قيد الانتظار",
+        "confirmed": "مؤكد",
         "processing": "قيد التجهيز",
         "shipped": "تم الشحن",
-        "in_transit": "في الطريق",
-        "out_for_delivery": "خرج للتوصيل",
         "delivered": "تم التسليم",
-        "failed": "تعذر التوصيل",
-        "returned": "تم الإرجاع",
         "cancelled": "الملغاة",
         "emptyFilter": "لا توجد طلبات في هذه الحالة",
         "showAll": "عرض جميع الطلبات"
       },
       "tracker": {
-        "placed": "تأكيد الطلب",
-        "processing": "التجهيز بالمشغل",
-        "tailoring": "التجهيز بالمشغل",
+        "pending": "قيد الانتظار",
+        "confirmed": "مؤكد",
+        "processing": "قيد التجهيز",
         "shipped": "تم الشحن",
-        "in_transit": "في الطريق للتوصيل",
-        "out_for_delivery": "خرج للتوصيل",
-        "delivered": "تم الاستلام",
+        "delivered": "تم التسليم",
         "estimatedArrival": "الوصول المتوقع: {date}",
         "carrier": "شركة الشحن: {carrier}",
         "trackingNumber": "رقم التتبع: {number}",
-        "pendingNotice": "تم استلام طلبكِ وهو بانتظار التأكيد من مشغلنا",
-        "processingNotice": "تخضع قطعكِ للفحص الدقيق والتعطير والتغليف في مشغلنا",
-        "shippedNotice": "تم تسليم شحنتكِ لشركة الشحن من مشغلنا",
-        "inTransitNotice": "شحنتكِ الأنيقة في طريقها إليكِ بعناية تامة",
-        "outForDeliveryNotice": "مندوب التوصيل في طريقه إليكِ اليوم",
-        "deliveredNotice": "تم تسليم شحنتكِ بنجاح إلى العنوان المحدد",
-        "failedNotice": "تعذر تسليم الشحنة في المحاولة السابقة. يُرجى التحقق من بيانات الاتصال",
-        "returnedNotice": "تم استلام الشحنة المرتجعة في مشغلنا",
+        "pendingNotice": "تم استلام طلبك وهو بانتظار التأكيد",
+        "confirmedNotice": "تم تأكيد طلبك وسيبدأ التجهيز قريباً",
+        "processingNotice": "يتم تجهيز طلبك وتعبئته في مشغلنا",
+        "shippedNotice": "تم شحن طلبك وهو في الطريق إليك",
+        "deliveredNotice": "تم تسليم شحنتك بنجاح إلى العنوان المحدد",
+        "cancelledNotice": "تم إلغاء هذا الطلب ولن يتم تنفيذه",
         "copyTrackingNumber": "نسخ رقم التتبع",
         "trackingCopied": "تم نسخ رقم التتبع"
       },
@@ -174,9 +162,6 @@
           "card": "الدفع بالبطاقة",
           "cashOnDelivery": "الدفع عند الاستلام",
           "bankTransfer": "تحويل بنكي"
-        },
-        "cancelReasons": {
-          "customerRequested": "أُلغي الطلب بناءً على طلب العميل."
         }
       },
       "reviewModal": {
@@ -194,19 +179,17 @@
           "4": "رائع جداً",
           "5": "خيال واستثنائي"
         },
-        "quickTags": {
-          "trueToSize": "المقاس مضبوط بالملي",
-          "luxuriousFabric": "كتان فاخر ومميز",
-          "flawlessCut": "قصة انسيابية ساحرة",
-          "breathable": "خامة باردة ومريحة",
-          "neatStitching": "خياطة نظيفة ومتقنة"
-        },
-        "reviewPlaceholder": "شاركينا رأيكِ في جودة القماش، المقاس، الخياطة، أو طريقة تنسيقكِ للعباية...",
+        "reviewPlaceholder": "شارك تفاصيل عن جودة القماش، المقاس، الخياطة، أو طريقة تنسيق العباية...",
         "nameLabel": "الاسم الظاهر",
-        "namePlaceholder": "اسمكِ الكريم",
+        "namePlaceholder": "الاسم الكريم",
+        "titleLabel": "عنوان التقييم",
+        "titlePlaceholder": "مثال: جودة ممتازة وخامة راقية",
+        "commentLabel": "نص التقييم",
         "cancel": "إلغاء",
         "submit": "إرسال التقييم",
         "submitting": "جاري الإرسال...",
+        "submitError": "تعذّر إرسال التقييم. يُرجى المحاولة مرة أخرى.",
+        "submitSuccess": "تم إرسال تقييمكم بنجاح.",
         "successTitle": "شكراً لتقييمكِ الراقي!",
         "successMessage": "رأيكِ يلهم مشغلنا ويسعد عاشقات الأناقة المحتشمة في اختيار قطعهن."
       },
@@ -634,11 +617,16 @@
       "recommendation": "98% من العملاء يوصون بهذا المنتج",
       "writeReview": "كتابة تقييم",
       "noReviewsTitle": "لا توجد تقييمات بعد",
-      "noReviewsDesc": "كن أول من يشارك تجربته مع هذا المنتج.",
+      "noReviewsDesc": "سيشارك المشترون الموثقون تجربتهم مع هذا المنتج أولاً.",
       "verifiedReviewsOnly": "تقييمات مشتريات موثوقة",
       "verifiedReviewsNotice": "جميع التقييمات مقدمة من مشترين موثقين لضمان الشفافية ومصداقية التجربة.",
-      "reviewsEmptyTitle": "شاركنا تجربتك",
-      "reviewsEmptyDesc": "هل اشتريت هذا المنتج؟ تقييمك يساعد العملاء الآخرين في اتخاذ القرار المناسب.",
+      "purchaseOnlyNotice": "يمكن فقط لمن اشترى هذا المنتج ترك تقييم من تفاصيل الطلب.",
+      "purchaserNotice": "شكراً لشرائكم. يمكن مشاركة التقييم من الطلب المسلّم في حسابكم.",
+      "viewOrdersCta": "عرض طلباتي",
+      "reviewsEmptyTitle": "تقييمات من مشترين موثقين",
+      "reviewsEmptyDesc": "بعد تسليم الطلب، يمكن مشاركة التقييم من تفاصيل الطلب.",
+      "purchaserEmptyTitle": "جاهزون لمشاركة تجربتكم؟",
+      "purchaserEmptyDesc": "افتحوا الطلب المسلّم لترك تقييم لهذه القطعة متى شئتم.",
       "writeFirstReview": "كتابة أول تقييم",
       "cancel": "إلغاء",
       "submit": "إرسال التقييم",
@@ -1391,8 +1379,8 @@
       }
     },
     "payment": {
-      "title": "طريقة الدفع",
-      "subtitle": "اختر طريقة الدفع المناسبة لهذا الطلب.",
+      "title": "إثبات الدفع",
+      "subtitle": "حوّل إجمالي الطلب إلى حساب البوتيك، ثم ارفع صورة إيصال التحويل.",
       "methods": {
         "card": {
           "label": "الدفع بالبطاقة",
@@ -1404,11 +1392,39 @@
         },
         "bankTransfer": {
           "label": "تحويل بنكي",
-          "description": "حوّل المبلغ باستخدام بيانات الحساب التي تُرسل بعد تأكيد الطلب."
+          "description": "الدفع عبر التحويل البنكي مع رفع صورة إيصال التحويل."
         }
       },
+      "bankDetails": {
+        "title": "بيانات الحساب البنكي",
+        "bankName": "البنك",
+        "accountHolder": "اسم صاحب الحساب",
+        "iban": "رقم الآيبان",
+        "accountNumber": "رقم الحساب",
+        "copied": "تم نسخ {field}",
+        "copyAria": "نسخ {field}"
+      },
+      "form": {
+        "holderName": "اسم صاحب الحساب في التحويل",
+        "holderNamePlaceholder": "الاسم كما يظهر في التحويل",
+        "transferDate": "تاريخ التحويل",
+        "receipt": "صورة إيصال الدفع",
+        "receiptHint": "ارفع صورة واضحة أو ملف PDF لإيصال التحويل البنكي (بحد أقصى 5 ميجابايت).",
+        "uploadCta": "رفع صورة الإيصال",
+        "uploadFormats": "JPG أو PNG أو WEBP أو PDF",
+        "replaceReceipt": "استبدال",
+        "removeReceipt": "إزالة"
+      },
       "errors": {
-        "required": "يرجى اختيار طريقة الدفع."
+        "required": "يرجى اختيار طريقة الدفع.",
+        "holderNameRequired": "يرجى إدخال اسم صاحب الحساب في التحويل.",
+        "holderNameMax": "يجب ألا يتجاوز اسم صاحب الحساب 150 حرفًا.",
+        "transferDateRequired": "يرجى اختيار تاريخ التحويل.",
+        "transferDateInvalid": "يرجى إدخال تاريخ تحويل صالح.",
+        "transferDateFuture": "لا يمكن أن يكون تاريخ التحويل في المستقبل.",
+        "receiptRequired": "يرجى رفع صورة إيصال الدفع.",
+        "receiptInvalidType": "يجب أن يكون الإيصال بصيغة JPG أو PNG أو WEBP أو PDF.",
+        "receiptTooLarge": "يجب ألا يتجاوز حجم الإيصال 5 ميجابايت."
       }
     },
     "summary": {

@@ -4,17 +4,15 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  AlertTriangle,
   CheckCircle2,
   Clock,
-  MapPin,
   PackageCheck,
   PackageOpen,
   RotateCcw,
   Search,
   SearchX,
+  ShieldCheck,
   Sparkles,
-  Truck,
   X,
   XCircle,
 } from "lucide-react";
@@ -65,13 +63,10 @@ export function OrdersList() {
     const c: Record<FilterTab, number> = {
       all: searchedOrders.length,
       pending: 0,
+      confirmed: 0,
       processing: 0,
       shipped: 0,
-      in_transit: 0,
-      out_for_delivery: 0,
       delivered: 0,
-      failed: 0,
-      returned: 0,
       cancelled: 0,
     };
     for (const o of searchedOrders) {
@@ -101,6 +96,12 @@ export function OrdersList() {
       icon: Clock,
     },
     {
+      key: "confirmed",
+      label: t("filters.confirmed"),
+      count: counts.confirmed,
+      icon: ShieldCheck,
+    },
+    {
       key: "processing",
       label: t("filters.processing"),
       count: counts.processing,
@@ -113,34 +114,10 @@ export function OrdersList() {
       icon: PackageCheck,
     },
     {
-      key: "in_transit",
-      label: t("filters.in_transit"),
-      count: counts.in_transit,
-      icon: Truck,
-    },
-    {
-      key: "out_for_delivery",
-      label: t("filters.out_for_delivery"),
-      count: counts.out_for_delivery,
-      icon: MapPin,
-    },
-    {
       key: "delivered",
       label: t("filters.delivered"),
       count: counts.delivered,
       icon: CheckCircle2,
-    },
-    {
-      key: "failed",
-      label: t("filters.failed"),
-      count: counts.failed,
-      icon: AlertTriangle,
-    },
-    {
-      key: "returned",
-      label: t("filters.returned"),
-      count: counts.returned,
-      icon: RotateCcw,
     },
     {
       key: "cancelled",

@@ -17,6 +17,10 @@ export interface ApiOrderListItem {
   carrier?: string | null;
   estimated_delivery_date?: string | null;
   can_cancel?: boolean;
+  /** Present when status is cancelled */
+  cancelled_at?: string | null;
+  /** Localized cancellation reason from the API */
+  cancellation_reason?: string | null;
 }
 
 export interface ApiOrderItem {
@@ -96,6 +100,18 @@ export interface ApiTrackingInfo {
   steps: ApiTrackingStep[];
 }
 
+/** Nested payment block from order detail / bank-transfer proof. */
+export interface ApiOrderPayment {
+  method?: string;
+  status?: string;
+  transfer_holder_name?: string | null;
+  transfer_date?: string | null;
+  receipt_url?: string | null;
+  submitted_at?: string | null;
+  paid_at?: string | null;
+  can_submit_proof?: boolean;
+}
+
 /** Full order payload from show / cancel / place-order. */
 export interface ApiOrderDetail {
   id: number;
@@ -103,14 +119,20 @@ export interface ApiOrderDetail {
   date: string;
   status: string;
   payment_status: string;
+  payment_method?: string;
   shipping_status: string;
   can_cancel: boolean;
+  /** Present when status is cancelled */
+  cancelled_at?: string | null;
+  /** Localized cancellation reason from the API */
+  cancellation_reason?: string | null;
   items: ApiOrderItem[];
   pricing: ApiOrderPricing;
   shipping_address?: ApiOrderShippingAddress | null;
   shipment?: ApiShipmentInfo | null;
   tracking?: ApiTrackingInfo | null;
   coupon?: ApiOrderCoupon | null;
+  payment?: ApiOrderPayment | null;
 }
 
 export interface ApiTrackingEvent {

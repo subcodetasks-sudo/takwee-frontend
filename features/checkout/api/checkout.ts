@@ -11,6 +11,7 @@ import type {
   PlaceOrderResult,
 } from "../types";
 import { mapCartItemsToApi, mapApiOrderToSummary } from "../utils/map-checkout";
+import { toApiPaymentMethod } from "@/features/orders/utils/map-payment-method";
 
 const PREVIEW_PATH = "/api/v1/checkout/preview";
 const CHECKOUT_PATH = "/api/v1/checkout";
@@ -170,9 +171,11 @@ export async function placeOrder({
     items: ReturnType<typeof mapCartItemsToApi>;
     address_id: number | string;
     coupon_code?: string;
+    payment_method: string;
   } = {
     items: mapCartItemsToApi(input.items),
     address_id,
+    payment_method: toApiPaymentMethod(input.paymentMethod),
   };
 
   if (input.couponCode?.trim()) {

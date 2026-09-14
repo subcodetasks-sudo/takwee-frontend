@@ -13,8 +13,12 @@ import type {
   CheckoutPreviewResult,
   PlaceOrderInput,
   PlaceOrderResult,
+  SubmitBankTransferProofResult,
 } from "../types";
 import { mapCartItemsToApi, mapApiOrderToSummary } from "../utils/map-checkout";
+import { toApiPaymentMethod } from "@/features/orders/utils/map-payment-method";
+import { mapOrderDetail } from "@/features/orders/utils/map-order";
+import type { ApiOrderDetail } from "@/features/orders/types/api";
 
 const PREVIEW_PATH = "/api/v1/checkout/preview";
 const CHECKOUT_PATH = "/api/v1/checkout";
@@ -111,9 +115,11 @@ export async function placeOrderAction(
       items: ReturnType<typeof mapCartItemsToApi>;
       address_id: number | string;
       coupon_code?: string;
+      payment_method: string;
     } = {
       items: mapCartItemsToApi(input.items),
       address_id,
+      payment_method: toApiPaymentMethod(input.paymentMethod),
     };
 
     if (input.couponCode?.trim()) {
@@ -257,3 +263,60 @@ export async function removeCouponAction(
     return { code };
   });
 }
+
+/**
+ * Submit bank-transfer payment proof
+ * (POST /api/v1/my/orders/{orderId}/bank-transfer — multipart).
+ */
+export async function submitBankTransferProofAction(
+  formData: FormData,
+): Promise<ActionState<SubmitBankTransferProofResult>> {
+  return safeServerAction(async () => {
+    const orderId = String(formData.get("order_id") || "").trim();
+    const transferHolderName = String(
+      formData.get("transfer_holder_name") || "",
+    ).trim();
+    const transferDate = String(formData.get("transfer_date") || "").trim();
+    const receipt = formData.get("receipt");
+    const locale = String(formData.get("locale") || "").trim() || undefined;
+    const currency =
+      String(formData.get("currency") || "").trim() || undefined;
+
+    if (!orderId) {
+      throw new Error("Order id is required.");
+    }
+    if (!transferHolderName) {
+      throw new Error("Transfer holder name is required.");
+    }
+    if (!transferDate) {
+      throw new Error("Transfer date is required.");
+    }
+    if (!(receipt instanceof File) || receipt.size === 0) {
+      throw new Error("A receipt file is required.");
+    }
+
+    const body = new FormData();
+    body.append("transfer_holder_name", transferHolderName);
+    body.append("transfer_date", transferDate);
+    body.append("receipt", receipt);
+
+    const res = await serverFetch<ApiResponse<ApiOrderDetail>>(
+      `/api/v1/my/orders/${encodeURIComponent(orderId)}/bank-transfer`,
+      {
+        method: "POST",
+        body,
+        headers: buildHeaders(locale, currency),
+        autoAuth: true,
+      },
+    );
+
+    if (!res?.success || !res.data) {
+      throw new Error(res?.message || "Failed to submit bank transfer proof");
+    }
+
+    return {
+      order: mapOrderDetail(res.data, "bankTransfer"),
+    };
+  });
+}
+

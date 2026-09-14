@@ -49,6 +49,7 @@ export type LoginFormData = {
   email: string;
   password: string;
   rememberMe?: boolean;
+  fcm_token?: string | null;
 };
 
 /** Verification OTP payload submitted by the verify form. */

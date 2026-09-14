@@ -184,7 +184,7 @@ export function ProductDetailsHero({
         <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start">
           {images.length > 1 ? (
             <ul
-              className="order-2 flex gap-2 overflow-x-auto pb-1 lg:order-1 lg:w-20 lg:shrink-0 lg:flex-col lg:overflow-x-hidden lg:pb-0"
+              className="order-2 -m-1.5 flex gap-2 overflow-x-auto p-1.5 scrollbar-none lg:order-1 lg:w-fit lg:shrink-0 lg:flex-col lg:overflow-visible"
               role="list"
             >
               {images.map((src, index) => {

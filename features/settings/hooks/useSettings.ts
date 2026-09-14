@@ -39,6 +39,11 @@ const EMPTY_SETTINGS: AppSettings = {
   defaultLanguage: "ar",
   googleAnalyticsId: null,
   supportedCurrencies: ["TRY", "SAR", "USD", "AED"],
+  bankName: null,
+  bankAccountHolder: null,
+  bankIban: null,
+  bankAccountNumber: null,
+  bankTransferInstructions: null,
 };
 
 /**

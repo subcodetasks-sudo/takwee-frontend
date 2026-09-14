@@ -5,9 +5,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
-  AlertTriangle,
   ArrowRight,
-  CheckCircle2,
   HelpCircle,
   Package,
   RotateCcw,
@@ -30,7 +28,6 @@ import { cn } from "@/lib/utils";
 import type { OrderSummary } from "../types";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { OrderTracker } from "./OrderTracker";
-import { RefundNotice } from "./RefundNotice";
 import { ProductPrice } from "@/features/product";
 
 interface OrderCardProps {
@@ -49,28 +46,36 @@ export function OrderCard({ order, className }: OrderCardProps) {
     if (ok) setTooltipOpen(true);
   };
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string, withTime = false) => {
     try {
+      const normalized = dateStr.includes("T")
+        ? dateStr
+        : dateStr.replace(" ", "T");
       return new Intl.DateTimeFormat(locale, {
         day: "numeric",
         month: "short",
         year: "numeric",
-      }).format(new Date(dateStr));
+        ...(withTime
+          ? { hour: "numeric", minute: "2-digit" as const }
+          : {}),
+      }).format(new Date(normalized));
     } catch {
       return dateStr;
     }
   };
 
   const placedLabel = formatDate(order.placedAt);
-  const deliveredLabel = order.deliveredAt ? formatDate(order.deliveredAt) : null;
-  const cancelledLabel = order.cancelledAt ? formatDate(order.cancelledAt) : null;
+  const cancelledLabel = order.cancelledAt
+    ? formatDate(order.cancelledAt, true)
+    : null;
 
   const isInProgress =
     order.status === "pending" ||
+    order.status === "confirmed" ||
     order.status === "processing" ||
-    order.status === "shipped" ||
-    order.status === "in_transit" ||
-    order.status === "out_for_delivery";
+    order.status === "shipped";
+
+  const showTracker = isInProgress || order.status === "delivered";
 
   return (
     <article
@@ -79,20 +84,14 @@ export function OrderCard({ order, className }: OrderCardProps) {
         // State-specific card styling
         order.status === "pending" &&
           "border-amber-500/30 bg-card shadow-xs hover:border-amber-500/50",
+        order.status === "confirmed" &&
+          "border-info/40 bg-card shadow-xs hover:border-info/60",
         order.status === "processing" &&
           "border-warning/40 bg-card shadow-xs hover:border-warning/60",
         order.status === "shipped" &&
           "border-sky-500/30 bg-card shadow-xs hover:border-sky-500/50",
-        order.status === "in_transit" &&
-          "border-info/40 bg-card shadow-xs hover:border-info/60",
-        order.status === "out_for_delivery" &&
-          "border-purple-500/40 bg-card shadow-xs hover:border-purple-500/60",
         order.status === "delivered" &&
           "border-border bg-card hover:border-border/90 hover:shadow-2xs",
-        order.status === "failed" &&
-          "border-destructive/40 bg-card shadow-xs hover:border-destructive/60",
-        order.status === "returned" &&
-          "border-orange-500/30 bg-card shadow-xs hover:border-orange-500/50",
         order.status === "cancelled" &&
           "border-border/60 bg-muted/15 opacity-85 hover:opacity-100",
         className,
@@ -155,80 +154,22 @@ export function OrderCard({ order, className }: OrderCardProps) {
           </div>
         </div>
 
-        <OrderStatusBadge
-          status={order.status}
-          className="shrink-0 px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs"
-        />
+        {order.status !== "delivered" && (
+          <OrderStatusBadge
+            status={order.status}
+            className="shrink-0 px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs"
+          />
+        )}
       </div>
 
       {/* STATE-SPECIFIC UNIQUE VIEWS */}
       <div className="space-y-3 p-3 sm:space-y-4 sm:p-4 md:p-5">
-        {/* 1. In Progress States Tracker (pending, processing, shipped, in_transit, out_for_delivery) */}
-        {isInProgress && (
+        {/* Tracker: in-progress + delivered (full-width stepper; no separate delivered badge) */}
+        {showTracker && (
           <OrderTracker tracking={order.tracking} status={order.status} />
         )}
 
-        {/* 2. Delivered State View */}
-        {order.status === "delivered" && (
-          <div className="rounded-lg border border-success/20 bg-success-muted/20 p-2.5 text-xs sm:rounded-xl sm:p-3.5">
-            <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
-              <div className="flex items-center gap-1.5 text-success sm:gap-2">
-                <CheckCircle2
-                  className="size-3.5 shrink-0 sm:size-4"
-                  aria-hidden
-                />
-                <span className="font-medium text-[11px] sm:text-xs">
-                  {deliveredLabel
-                    ? t("deliveredWithDate", { date: deliveredLabel })
-                    : t("deliveredNotice")}
-                </span>
-              </div>
-              <span className="text-[10px] text-muted-foreground sm:text-[11px]">
-                {t("returnPolicyNotice")}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* 3. Failed State View */}
-        {order.status === "failed" && (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-2.5 text-xs sm:rounded-xl sm:p-3.5">
-            <div className="flex items-start gap-2 text-destructive sm:gap-2.5">
-              <AlertTriangle
-                className="mt-0.5 size-3.5 shrink-0 sm:size-4"
-                aria-hidden
-              />
-              <div className="space-y-1">
-                <p className="font-medium text-[11px] sm:text-xs">
-                  {t("failedNotice")}
-                </p>
-                <p className="text-[10px] text-muted-foreground sm:text-[11px]">
-                  {t("failedHelpNotice")}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 4. Returned State View */}
-        {order.status === "returned" && (
-          <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-2.5 text-xs sm:rounded-xl sm:p-3.5">
-            <div className="flex items-start gap-2 text-orange-700 dark:text-orange-400 sm:gap-2.5">
-              <RotateCcw
-                className="mt-0.5 size-3.5 shrink-0 sm:size-4"
-                aria-hidden
-              />
-              <div className="space-y-1">
-                <p className="font-medium text-[11px] sm:text-xs">
-                  {t("returnedNotice")}
-                </p>
-                <RefundNotice totalTRY={order.totalTRY} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 5. Cancelled State View */}
+        {/* Cancelled State View */}
         {order.status === "cancelled" && (
           <div className="rounded-lg border border-error/20 bg-error-muted/20 p-2.5 text-xs sm:rounded-xl sm:p-3.5">
             <div className="flex items-start gap-2 text-error sm:gap-2.5">
@@ -242,7 +183,11 @@ export function OrderCard({ order, className }: OrderCardProps) {
                     ? t("cancelledWithDate", { date: cancelledLabel })
                     : t("cancelledNotice")}
                 </p>
-                <RefundNotice totalTRY={order.totalTRY} />
+                {order.cancellationReason && (
+                  <p className="text-[10px] text-muted-foreground sm:text-xs">
+                    {order.cancellationReason}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -340,10 +285,7 @@ export function OrderCard({ order, className }: OrderCardProps) {
             </Link>
           )}
 
-          {(order.status === "shipped" ||
-            order.status === "in_transit" ||
-            order.status === "out_for_delivery") &&
-            order.tracking && (
+          {order.status === "shipped" && order.tracking && (
               <Link
                 href={`/me/orders/${order.id}`}
                 className={buttonVariants({
@@ -358,7 +300,9 @@ export function OrderCard({ order, className }: OrderCardProps) {
               </Link>
             )}
 
-          {(order.status === "processing" || order.status === "pending") && (
+          {(order.status === "processing" ||
+            order.status === "pending" ||
+            order.status === "confirmed") && (
             <Link
               href="/contact"
               className={buttonVariants({
@@ -373,22 +317,7 @@ export function OrderCard({ order, className }: OrderCardProps) {
             </Link>
           )}
 
-          {order.status === "failed" && (
-            <Link
-              href="/contact"
-              className={buttonVariants({
-                variant: "outline",
-                size: "sm",
-                className:
-                  "flex-1 gap-1.5 text-[11px] text-destructive border-destructive/30 hover:bg-destructive/10 sm:flex-none sm:text-xs",
-              })}
-            >
-              <HelpCircle className="size-3.5" aria-hidden />
-              <span>{t("actions.contactSupport")}</span>
-            </Link>
-          )}
-
-          {(order.status === "cancelled" || order.status === "returned") && (
+          {order.status === "cancelled" && (
             <Link
               href="/shop"
               className={buttonVariants({

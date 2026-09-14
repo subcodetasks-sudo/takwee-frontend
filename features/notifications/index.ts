@@ -1,4 +1,7 @@
+export { FcmPushListener } from "./components/FcmPushListener";
 export { NotificationsPopover } from "./components/NotificationsPopover";
+export { useFcmPush } from "./hooks/useFcmPush";
+export { useLiveNotificationSync } from "./hooks/useLiveNotificationSync";
 export {
   NOTIFICATIONS_QUERY_KEY,
   notificationsQueryKey,

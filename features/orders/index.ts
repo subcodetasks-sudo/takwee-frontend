@@ -12,4 +12,4 @@ export * from "./types";
 export * from "./hooks/useOrders";
 export * from "./api";
 export * from "./utils/map-order";
-export * from "./utils/mock-orders";
+export * from "./utils/map-payment-method";

@@ -123,5 +123,10 @@ export function mapSettings(items: ApiSettingItem[]): AppSettings {
     defaultLanguage: asString(pick(map, "default_language")) ?? "ar",
     googleAnalyticsId: asString(pick(map, "google_analytics_id")),
     supportedCurrencies: asStringArray(pick(map, "supported_currencies")),
+    bankName: asString(pick(map, "bank_name")),
+    bankAccountHolder: asString(pick(map, "bank_account_holder")),
+    bankIban: asString(pick(map, "bank_iban")),
+    bankAccountNumber: asString(pick(map, "bank_account_number")),
+    bankTransferInstructions: asString(pick(map, "bank_transfer_instructions")),
   };
 }

@@ -34,16 +34,23 @@ export function useNotifications() {
     queryKey: listKey,
     queryFn: () => fetchNotifications(token!, locale),
     enabled: isAuthenticated && Boolean(token),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 0,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   const unreadQuery = useQuery<number>({
     queryKey: unreadKey,
     queryFn: () => fetchUnreadCount(token!, locale),
     enabled: isAuthenticated && Boolean(token),
-    staleTime: 1000 * 60,
+    staleTime: 0,
+    // Near-realtime while the tab is focused (FCM still accelerates when present).
+    refetchInterval: 3000,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   const invalidateAll = () =>

@@ -41,6 +41,17 @@ export interface PlaceOrderResult {
   order: OrderSummary;
 }
 
+export interface SubmitBankTransferProofInput {
+  orderId: string;
+  transferHolderName: string;
+  transferDate: string;
+  receipt: File;
+}
+
+export interface SubmitBankTransferProofResult {
+  order: OrderSummary;
+}
+
 export interface ApplyCouponResult {
   code: string;
   discount: number;

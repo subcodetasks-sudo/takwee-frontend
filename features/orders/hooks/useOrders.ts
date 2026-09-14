@@ -35,8 +35,12 @@ export function useOrders(status: OrderApiStatusFilter = "all") {
     queryKey,
     queryFn: () => fetchOrders(token!, locale, status),
     enabled: isAuthenticated && Boolean(token),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 0,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return {
@@ -59,8 +63,13 @@ export function useOrder(orderId: string) {
     queryKey,
     queryFn: () => fetchOrderById(token!, orderId, locale),
     enabled: isAuthenticated && Boolean(token) && Boolean(orderId),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 0,
+    // Live tracker while this page is open (FCM still accelerates when present).
+    refetchInterval: 3000,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return {

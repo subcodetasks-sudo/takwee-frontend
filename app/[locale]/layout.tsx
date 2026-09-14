@@ -20,6 +20,7 @@ import {
 } from "@/features/settings";
 import { getCurrencies } from "@/features/currencies";
 import { GooeyToaster } from "@/components/ui/goey-toaster";
+import { FcmPushListener } from "@/features/notifications";
 import "../globals.css";
 
 const gotham = localFont({
@@ -218,6 +219,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                           supportedCurrencies={settings?.supportedCurrencies}
                           initialCurrencies={initialCurrencies}
                         >
+                          <FcmPushListener />
                           {children}
                         </CurrencyProvider>
                       </CartFlyProvider>

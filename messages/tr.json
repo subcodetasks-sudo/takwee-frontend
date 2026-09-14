@@ -88,57 +88,45 @@
       "returnPolicyNotice": "14 gün içinde değişim ve iadeye uygun",
       "cancelledNotice": "Sipariş iptal edildi",
       "cancelledWithDate": "{date} tarihinde iptal edildi",
-      "refundNotice": "Toplam {amount} tutarındaki iade orijinal ödeme yönteminize yapıldı",
       "failedNotice": "Teslimat gerçekleştirilemedi",
       "failedWithDate": "{date} tarihinde teslimat denemesi başarısız oldu",
       "failedHelpNotice": "Müşteri ilişkileri ekibimiz yeniden teslimat veya adres güncellemesi için yardıma hazır.",
       "returnedNotice": "Sipariş atölyeye iade edildi",
       "returnedWithDate": "{date} tarihinde iade edildi",
-      "returnRefundNotice": "{amount} tutarındaki iade orijinal ödeme yönteminize aktarıldı",
       "status": {
         "pending": "Beklemede",
+        "confirmed": "Onaylandı",
         "processing": "Hazırlanıyor",
         "shipped": "Kargoya Verildi",
-        "in_transit": "Yolda",
-        "out_for_delivery": "Dağıtımda",
         "delivered": "Teslim Edildi",
-        "failed": "Başarısız",
-        "returned": "İade Edildi",
         "cancelled": "İptal Edildi"
       },
       "filters": {
         "all": "Tüm Siparişler",
         "pending": "Beklemede",
+        "confirmed": "Onaylandı",
         "processing": "Hazırlanıyor",
         "shipped": "Kargoya Verildi",
-        "in_transit": "Yolda",
-        "out_for_delivery": "Dağıtımda",
         "delivered": "Teslim Edildi",
-        "failed": "Başarısız",
-        "returned": "İade Edildi",
         "cancelled": "İptal Edilenler",
         "emptyFilter": "Bu durumda sipariş bulunamadı",
         "showAll": "Tüm siparişleri göster"
       },
       "tracker": {
-        "placed": "Sipariş Alındı",
-        "processing": "Atölye Hazırlığı",
-        "tailoring": "Atölye Hazırlığı",
+        "pending": "Beklemede",
+        "confirmed": "Onaylandı",
+        "processing": "Hazırlanıyor",
         "shipped": "Kargoya Verildi",
-        "in_transit": "Yolda",
-        "out_for_delivery": "Dağıtımda",
         "delivered": "Teslim Edildi",
         "estimatedArrival": "Tahmini teslimat: {date}",
         "carrier": "Kargo Şirketi: {carrier}",
         "trackingNumber": "Takip No: {number}",
-        "pendingNotice": "Siparişiniz alındı ve atölye onayı bekleniyor",
-        "processingNotice": "Parçalarınız atölyemizde özenle kontrol ediliyor ve kokulandırılarak paketleniyor",
-        "shippedNotice": "Siparişiniz atölyemizden kargo firmasına teslim edildi",
-        "inTransitNotice": "Siparişiniz özenle paketlenip yola çıktı",
-        "outForDeliveryNotice": "Kuryeniz siparişinizi bugün teslim etmek üzere dağıtıma çıkardı",
+        "pendingNotice": "Siparişiniz alındı ve onay bekleniyor",
+        "confirmedNotice": "Siparişiniz onaylandı ve yakında hazırlığa alınacak",
+        "processingNotice": "Siparişiniz atölyemizde hazırlanıyor ve paketleniyor",
+        "shippedNotice": "Siparişiniz kargoya verildi ve yola çıktı",
         "deliveredNotice": "Siparişiniz belirttiğiniz adrese güvenle teslim edildi",
-        "failedNotice": "Teslimat gerçekleştirilemedi. Lütfen iletişim bilgilerinizi kontrol ediniz",
-        "returnedNotice": "Sipariş atölyemize geri ulaştı",
+        "cancelledNotice": "Bu sipariş iptal edildi ve karşılanmayacak",
         "copyTrackingNumber": "Takip numarasını kopyala",
         "trackingCopied": "Takip numarası kopyalandı"
       },
@@ -174,9 +162,6 @@
           "card": "Kart ile ödeme",
           "cashOnDelivery": "Kapıda ödeme",
           "bankTransfer": "Banka havalesi"
-        },
-        "cancelReasons": {
-          "customerRequested": "Müşteri talebi üzerine iptal edildi."
         }
       },
       "reviewModal": {
@@ -194,19 +179,17 @@
           "4": "Çok iyi",
           "5": "Kusursuz ve mükemmel"
         },
-        "quickTags": {
-          "trueToSize": "Tam kalıp",
-          "luxuriousFabric": "Lüks keten kumaş",
-          "flawlessCut": "Zarif ve asil döküm",
-          "breathable": "Nefes alan & hafif",
-          "neatStitching": "Kusursuz dikiş işçiliği"
-        },
         "reviewPlaceholder": "Kumaşın kalitesi, dökümü, bedeni veya kombinleme deneyiminiz hakkında yazın...",
         "nameLabel": "Görünecek isim",
         "namePlaceholder": "Adınız",
+        "titleLabel": "Değerlendirme başlığı",
+        "titlePlaceholder": "örn. Mükemmel kalite ve zarif döküm",
+        "commentLabel": "Değerlendirmeniz",
         "cancel": "Vazgeç",
         "submit": "Değerlendirmeyi gönder",
         "submitting": "Gönderiliyor...",
+        "submitError": "Değerlendirme gönderilemedi. Lütfen tekrar deneyin.",
+        "submitSuccess": "Değerlendirmeniz başarıyla gönderildi.",
         "successTitle": "Değerlendirmeniz için teşekkürler!",
         "successMessage": "Geri bildiriminiz atölyemize ve mütevazı moda tutkunlarına ilham veriyor."
       },
@@ -634,11 +617,16 @@
       "recommendation": "Müşterilerin %98'i bu ürünü tavsiye ediyor",
       "writeReview": "Değerlendirme Yaz",
       "noReviewsTitle": "Henüz değerlendirme yok",
-      "noReviewsDesc": "Bu ürün hakkındaki ilk deneyiminizi siz paylaşın.",
+      "noReviewsDesc": "Doğrulanmış alıcılar bu ürünle ilgili ilk deneyimlerini paylaşacaktır.",
       "verifiedReviewsOnly": "Doğrulanmış Müşteri Yorumları",
       "verifiedReviewsNotice": "Tüm yorumlar, şeffaf bir deneyim için doğrulanmış alıcılar tarafından yapılmaktadır.",
-      "reviewsEmptyTitle": "Deneyiminizi Paylaşın",
-      "reviewsEmptyDesc": "Bu ürünü satın aldınız mı? Değerlendirmeniz diğer müşterilerimize rehberlik eder.",
+      "purchaseOnlyNotice": "Bu ürünü yalnızca satın alan müşteriler sipariş detaylarından değerlendirme bırakabilir.",
+      "purchaserNotice": "Satın alımınız için teşekkürler. Değerlendirmenizi hesabınızdaki teslim edilmiş siparişten paylaşabilirsiniz.",
+      "viewOrdersCta": "Siparişlerimi görüntüle",
+      "reviewsEmptyTitle": "Doğrulanmış alıcı yorumları",
+      "reviewsEmptyDesc": "Siparişiniz teslim edildikten sonra sipariş detaylarından değerlendirme paylaşabilirsiniz.",
+      "purchaserEmptyTitle": "Deneyiminizi paylaşmaya hazır mısınız?",
+      "purchaserEmptyDesc": "Hazır olduğunuzda bu ürün için değerlendirme bırakmak üzere teslim edilmiş siparişinizi açın.",
       "writeFirstReview": "İlk Yorumu Siz Yazın",
       "cancel": "İptal",
       "submit": "Değerlendirmeyi Gönder",
@@ -1391,8 +1379,8 @@
       }
     },
     "payment": {
-      "title": "Ödeme yöntemi",
-      "subtitle": "Bu sipariş için nasıl ödemek istediğinizi seçin.",
+      "title": "Ödeme belgesi",
+      "subtitle": "Sipariş tutarını butik hesabına transfer edin, ardından dekont fotoğrafını yükleyin.",
       "methods": {
         "card": {
           "label": "Kartla ödeme",
@@ -1404,11 +1392,39 @@
         },
         "bankTransfer": {
           "label": "Banka havalesi",
-          "description": "Sipariş sonrası paylaşılan butik banka bilgileriyle transfer yapın."
+          "description": "Banka havalesi ile ödeyin ve dekont fotoğrafını yükleyin."
         }
       },
+      "bankDetails": {
+        "title": "Butik banka bilgileri",
+        "bankName": "Banka",
+        "accountHolder": "Hesap sahibi",
+        "iban": "IBAN",
+        "accountNumber": "Hesap numarası",
+        "copied": "{field} kopyalandı",
+        "copyAria": "{field} kopyala"
+      },
+      "form": {
+        "holderName": "Havaledeki hesap sahibi adı",
+        "holderNamePlaceholder": "Havalede görünen ad",
+        "transferDate": "Havale tarihi",
+        "receipt": "Ödeme dekontu fotoğrafı",
+        "receiptHint": "Banka havalesi dekontunuzun net bir fotoğrafını veya PDF’ini yükleyin (en fazla 5 MB).",
+        "uploadCta": "Dekont fotoğrafı yükle",
+        "uploadFormats": "JPG, PNG, WEBP veya PDF",
+        "replaceReceipt": "Değiştir",
+        "removeReceipt": "Kaldır"
+      },
       "errors": {
-        "required": "Lütfen bir ödeme yöntemi seçin."
+        "required": "Lütfen bir ödeme yöntemi seçin.",
+        "holderNameRequired": "Lütfen havaldeki hesap sahibi adını girin.",
+        "holderNameMax": "Hesap sahibi adı en fazla 150 karakter olabilir.",
+        "transferDateRequired": "Lütfen havale tarihini seçin.",
+        "transferDateInvalid": "Lütfen geçerli bir havale tarihi girin.",
+        "transferDateFuture": "Havale tarihi gelecekte olamaz.",
+        "receiptRequired": "Lütfen bir ödeme dekontu fotoğrafı yükleyin.",
+        "receiptInvalidType": "Dekont JPG, PNG, WEBP veya PDF olmalıdır.",
+        "receiptTooLarge": "Dekont en fazla 5 MB olabilir."
       }
     },
     "summary": {

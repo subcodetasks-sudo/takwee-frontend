@@ -3,16 +3,12 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  AlertTriangle,
   Check,
   CheckCircle2,
   Clock,
-  MapPin,
-  Package,
   PackageCheck,
-  RotateCcw,
+  ShieldCheck,
   Sparkles,
-  Truck,
   XCircle,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -42,11 +38,10 @@ interface TrackingStepConfig {
 }
 
 const TRACKING_STEPS: TrackingStepConfig[] = [
-  { key: "placed", labelKey: "tracker.placed", icon: Package },
+  { key: "pending", labelKey: "tracker.pending", icon: Clock },
+  { key: "confirmed", labelKey: "tracker.confirmed", icon: ShieldCheck },
   { key: "processing", labelKey: "tracker.processing", icon: Sparkles },
   { key: "shipped", labelKey: "tracker.shipped", icon: PackageCheck },
-  { key: "in_transit", labelKey: "tracker.in_transit", icon: Truck },
-  { key: "out_for_delivery", labelKey: "tracker.out_for_delivery", icon: MapPin },
   { key: "delivered", labelKey: "tracker.delivered", icon: CheckCircle2 },
 ];
 
@@ -54,16 +49,14 @@ function getStepIndexForStatus(status: OrderStatus): number {
   switch (status) {
     case "pending":
       return 0;
-    case "processing":
+    case "confirmed":
       return 1;
-    case "shipped":
+    case "processing":
       return 2;
-    case "in_transit":
+    case "shipped":
       return 3;
-    case "out_for_delivery":
-      return 4;
     case "delivered":
-      return 5;
+      return 4;
     default:
       return 0;
   }
@@ -75,9 +68,7 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
   const { copied, copy } = useCopyToClipboard();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  // If status is an exception / terminal non-delivery state (failed, returned, cancelled)
-  const isException =
-    status === "failed" || status === "returned" || status === "cancelled";
+  const isCancelled = status === "cancelled";
 
   const handleCopyTracking = async () => {
     if (!tracking?.trackingNumber) return;
@@ -93,48 +84,28 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
       }).format(new Date(tracking.estimatedDelivery))
     : null;
 
-  if (isException) {
-    const isFailed = status === "failed";
-    const isReturned = status === "returned";
-
+  if (isCancelled) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.3 }}
         className={cn(
-          "rounded-lg border p-3 sm:rounded-xl sm:p-4",
-          isFailed && "border-destructive/30 bg-destructive/10 text-destructive",
-          isReturned && "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-400",
-          !isFailed && !isReturned && "border-error/30 bg-error-muted text-error",
+          "w-full rounded-lg border border-error/30 bg-error-muted p-3 text-error sm:rounded-xl sm:p-4",
           className,
         )}
       >
         <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-background/80 shadow-2xs sm:size-8 sm:rounded-lg">
-              {isFailed ? (
-                <AlertTriangle className="size-4 text-destructive" />
-              ) : isReturned ? (
-                <RotateCcw className="size-4 text-orange-600 dark:text-orange-400" />
-              ) : (
-                <XCircle className="size-4 text-error" />
-              )}
+              <XCircle className="size-4 text-error" />
             </span>
             <div className="min-w-0">
               <p className="text-xs font-bold text-foreground sm:text-sm">
-                {isFailed
-                  ? t("failedNotice")
-                  : isReturned
-                    ? t("returnedNotice")
-                    : t("cancelledNotice")}
+                {t("cancelledNotice")}
               </p>
               <p className="text-[10px] text-muted-foreground sm:text-[11px]">
-                {isFailed
-                  ? t("tracker.failedNotice")
-                  : isReturned
-                    ? t("tracker.returnedNotice")
-                    : t("cancelledNotice")}
+                {t("tracker.cancelledNotice")}
               </p>
             </div>
           </div>
@@ -196,8 +167,9 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
     );
   }
 
-  // Active progression status (pending, processing, shipped, in_transit, out_for_delivery, delivered)
+  // Active progression: pending → confirmed → processing → shipped → delivered
   const currentStepIndex = getStepIndexForStatus(status);
+  const isDelivered = status === "delivered";
   const currentStepConfig = TRACKING_STEPS[currentStepIndex] || TRACKING_STEPS[0];
   const CurrentIcon = currentStepConfig.icon;
 
@@ -205,23 +177,20 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
     switch (status) {
       case "pending":
         return t("tracker.pendingNotice");
+      case "confirmed":
+        return t("tracker.confirmedNotice");
       case "processing":
         return t("tracker.processingNotice");
       case "shipped":
         return t("tracker.shippedNotice");
-      case "in_transit":
-        return t("tracker.inTransitNotice");
-      case "out_for_delivery":
-        return t("tracker.outForDeliveryNotice");
       case "delivered":
         return t("tracker.deliveredNotice");
       default:
-        return t("tracker.processingNotice");
+        return t("tracker.pendingNotice");
     }
   };
 
   const activeNotice = getNoticeForStatus();
-
 
   return (
     <motion.div
@@ -229,23 +198,39 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.3 }}
       className={cn(
-        "rounded-lg border border-secondary/20 bg-linear-to-r from-secondary/15 via-secondary/10 to-muted/40 p-2.5 sm:rounded-xl sm:p-5",
+        "w-full rounded-lg border p-2.5 sm:rounded-xl sm:p-5",
+        isDelivered
+          ? "border-success/25 bg-linear-to-r from-success-muted/40 via-success-muted/20 to-muted/40"
+          : "border-secondary/20 bg-linear-to-r from-secondary/15 via-secondary/10 to-muted/40",
         className,
       )}
     >
-      {/* Header of Track Line */}
       <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 sm:mb-5 sm:gap-2.5">
         <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-secondary/15 text-secondary shadow-2xs sm:size-8 sm:rounded-lg">
-            <CurrentIcon className="size-4 animate-bounce sm:size-4.5" />
+          <span
+            className={cn(
+              "flex size-7 shrink-0 items-center justify-center rounded-md shadow-2xs sm:size-8 sm:rounded-lg",
+              isDelivered
+                ? "bg-success/15 text-success"
+                : "bg-secondary/15 text-secondary",
+            )}
+          >
+            <CurrentIcon
+              className={cn(
+                "size-4 sm:size-4.5",
+                !isDelivered && "animate-bounce",
+              )}
+            />
           </span>
           <div className="min-w-0">
             <p className="text-xs font-bold text-foreground sm:text-sm">
               {t(currentStepConfig.labelKey)}
             </p>
-            {formattedEstimatedDelivery ? (
+            {formattedEstimatedDelivery && !isDelivered ? (
               <p className="text-[10px] text-muted-foreground sm:text-[11px]">
-                {t("tracker.estimatedArrival", { date: formattedEstimatedDelivery })}
+                {t("tracker.estimatedArrival", {
+                  date: formattedEstimatedDelivery,
+                })}
               </p>
             ) : (
               <p className="text-[10px] text-muted-foreground sm:text-[11px]">
@@ -314,12 +299,11 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
         </div>
       </div>
 
-      {/* Stepper Bar */}
-      <div className="relative pt-1 sm:pt-2">
-        <div className="flex justify-between">
+      <div className="relative w-full pt-1 sm:pt-2">
+        <div className="flex w-full justify-between">
           {TRACKING_STEPS.map((step, index) => {
-            const isCompleted = index < currentStepIndex;
-            const isCurrent = index === currentStepIndex;
+            const isCompleted = isDelivered || index < currentStepIndex;
+            const isCurrent = !isDelivered && index === currentStepIndex;
             const StepIcon = step.icon;
 
             return (
@@ -327,39 +311,41 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                 key={step.key}
                 className="flex flex-1 flex-col items-center px-0.5 text-center"
               >
-                {/* Connector line container - exactly aligned with the circle's vertical and horizontal center */}
                 <div className="relative flex w-full items-center justify-center">
-                  {/* Line connecting to previous step */}
                   {index > 0 && (
                     <div
                       className={cn(
-                        "absolute start-0 end-1/2 top-1/2 h-0.5 -translate-y-1/2 sm:h-1 transition-colors duration-500",
-                        index <= currentStepIndex
-                          ? "bg-secondary"
+                        "absolute start-0 end-1/2 top-1/2 h-0.5 -translate-y-1/2 transition-colors duration-500 sm:h-1",
+                        index <= currentStepIndex || isDelivered
+                          ? isDelivered
+                            ? "bg-success"
+                            : "bg-secondary"
                           : "bg-border/60",
                       )}
                     />
                   )}
 
-                  {/* Line connecting to next step */}
                   {index < TRACKING_STEPS.length - 1 && (
                     <div
                       className={cn(
-                        "absolute start-1/2 end-0 top-1/2 h-0.5 -translate-y-1/2 sm:h-1 transition-colors duration-500",
-                        index < currentStepIndex
-                          ? "bg-secondary"
+                        "absolute start-1/2 end-0 top-1/2 h-0.5 -translate-y-1/2 transition-colors duration-500 sm:h-1",
+                        index < currentStepIndex || isDelivered
+                          ? isDelivered
+                            ? "bg-success"
+                            : "bg-secondary"
                           : "bg-border/60",
                       )}
                     />
                   )}
 
-                  {/* Step Node */}
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     className={cn(
                       "relative z-10 flex size-6 items-center justify-center rounded-full border-2 transition-all duration-300 sm:size-8 md:size-9",
                       isCompleted
-                        ? "border-secondary bg-secondary text-secondary-foreground shadow-xs"
+                        ? isDelivered
+                          ? "border-success bg-success text-success-foreground shadow-xs"
+                          : "border-secondary bg-secondary text-secondary-foreground shadow-xs"
                         : isCurrent
                           ? "border-secondary bg-card text-secondary ring-2 ring-secondary/20 sm:ring-4"
                           : "border-border/80 bg-card text-muted-foreground/60 dark:bg-card",
@@ -376,7 +362,6 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                       />
                     )}
 
-                    {/* Ripple animation on current active step */}
                     {isCurrent && (
                       <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-secondary/25" />
                     )}
@@ -389,7 +374,9 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                     isCurrent
                       ? "font-bold text-secondary"
                       : isCompleted
-                        ? "text-foreground"
+                        ? isDelivered
+                          ? "text-success"
+                          : "text-foreground"
                         : "text-muted-foreground/70",
                   )}
                 >

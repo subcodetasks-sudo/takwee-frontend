@@ -17,6 +17,7 @@
     "cn": "^0.2.5",
     "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^12.19.0",
     "framer-motion": "^13.2.0",
     "goey-toast": "^0.5.0",
     "gsap": "^3.15.0",

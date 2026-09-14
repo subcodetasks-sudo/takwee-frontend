@@ -4,10 +4,8 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
-  AlertTriangle,
   ArrowLeft,
   ArrowUpRight,
-  CheckCircle2,
   HelpCircle,
   MapPin,
   Package,
@@ -28,8 +26,6 @@ import type { OrderItemSummary } from "../types";
 import { useCancelOrder, useOrder } from "../hooks/useOrders";
 import { OrderDetailsHeader } from "./OrderDetailsHeader";
 import { OrderTracker } from "./OrderTracker";
-import { RefundNotice } from "./RefundNotice";
-
 function getProductHref(item: OrderItemSummary): string | null {
   if (item.slug) return `/products/${item.slug}`;
   return null;
@@ -38,14 +34,20 @@ function getProductHref(item: OrderItemSummary): string | null {
 function formatDate(
   locale: string,
   dateStr: string,
-  style: "short" | "long" = "short",
+  style: "short" | "long" | "datetime" = "short",
 ) {
   try {
+    const normalized = dateStr.includes("T")
+      ? dateStr
+      : dateStr.replace(" ", "T");
     return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: style === "long" ? "long" : "short",
       year: "numeric",
-    }).format(new Date(dateStr));
+      ...(style === "datetime"
+        ? { hour: "numeric", minute: "2-digit" as const }
+        : {}),
+    }).format(new Date(normalized));
   } catch {
     return dateStr;
   }
@@ -136,19 +138,17 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
     );
   }
 
-  const deliveredLabel = order.deliveredAt
-    ? formatDate(locale, order.deliveredAt)
-    : null;
   const cancelledLabel = order.cancelledAt
-    ? formatDate(locale, order.cancelledAt)
+    ? formatDate(locale, order.cancelledAt, "datetime")
     : null;
 
   const isInProgress =
     order.status === "pending" ||
+    order.status === "confirmed" ||
     order.status === "processing" ||
-    order.status === "shipped" ||
-    order.status === "in_transit" ||
-    order.status === "out_for_delivery";
+    order.status === "shipped";
+
+  const showTracker = isInProgress || order.status === "delivered";
 
   const itemsSubtotal =
     order.subtotalTRY ??
@@ -182,72 +182,9 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
           </div>
         </FadeIn>
 
-        {isInProgress && (
+        {showTracker && (
           <FadeIn direction="up" delay={0.05}>
             <OrderTracker tracking={order.tracking} status={order.status} />
-          </FadeIn>
-        )}
-
-        {order.status === "delivered" && (
-          <FadeIn direction="up" delay={0.05}>
-            <div className="rounded-lg border border-success/20 bg-success-muted/20 p-2.5 text-xs sm:rounded-xl sm:p-4 sm:text-sm">
-              <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
-                <div className="flex items-center gap-1.5 text-success sm:gap-2">
-                  <CheckCircle2
-                    className="size-3.5 shrink-0 sm:size-4"
-                    aria-hidden
-                  />
-                  <span className="font-medium text-[11px] sm:text-sm">
-                    {deliveredLabel
-                      ? t("deliveredWithDate", { date: deliveredLabel })
-                      : t("deliveredNotice")}
-                  </span>
-                </div>
-                <span className="text-[10px] text-muted-foreground sm:text-xs">
-                  {t("returnPolicyNotice")}
-                </span>
-              </div>
-            </div>
-          </FadeIn>
-        )}
-
-        {order.status === "failed" && (
-          <FadeIn direction="up" delay={0.05}>
-            <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-2.5 text-xs sm:rounded-xl sm:p-4 sm:text-sm">
-              <div className="flex items-start gap-2 text-destructive sm:gap-2.5">
-                <AlertTriangle
-                  className="mt-0.5 size-3.5 shrink-0 sm:size-4"
-                  aria-hidden
-                />
-                <div className="space-y-1">
-                  <p className="font-medium text-[11px] sm:text-sm">
-                    {t("failedNotice")}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground sm:text-xs">
-                    {t("failedHelpNotice")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-        )}
-
-        {order.status === "returned" && (
-          <FadeIn direction="up" delay={0.05}>
-            <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-2.5 text-xs sm:rounded-xl sm:p-4 sm:text-sm">
-              <div className="flex items-start gap-2 text-orange-700 dark:text-orange-400 sm:gap-2.5">
-                <RotateCcw
-                  className="mt-0.5 size-3.5 shrink-0 sm:size-4"
-                  aria-hidden
-                />
-                <div className="space-y-1">
-                  <p className="font-medium text-[11px] sm:text-sm">
-                    {t("returnedNotice")}
-                  </p>
-                  <RefundNotice totalTRY={order.totalTRY} />
-                </div>
-              </div>
-            </div>
           </FadeIn>
         )}
 
@@ -265,12 +202,11 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
                       ? t("cancelledWithDate", { date: cancelledLabel })
                       : t("cancelledNotice")}
                   </p>
-                  {order.cancelReasonKey === "customerRequested" && (
+                  {order.cancellationReason && (
                     <p className="text-[10px] text-muted-foreground sm:text-xs">
-                      {t("details.cancelReasons.customerRequested")}
+                      {order.cancellationReason}
                     </p>
                   )}
-                  <RefundNotice totalTRY={order.totalTRY} />
                 </div>
               </div>
             </div>
@@ -425,7 +361,9 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
                           )}
 
                           <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
-                            {order.status === "delivered" && item.name && (
+                            {order.status === "delivered" &&
+                              item.name &&
+                              item.productId && (
                               <WriteReviewDialog
                                 item={item}
                                 orderNumber={order.number}
@@ -605,9 +543,7 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
               </Button>
             )}
 
-            {(order.status === "delivered" ||
-              order.status === "cancelled" ||
-              order.status === "returned") && (
+            {(order.status === "delivered" || order.status === "cancelled") && (
               <Link
                 href="/shop"
                 className={buttonVariants({
@@ -626,33 +562,18 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
               </Link>
             )}
 
-            {order.status === "failed" ? (
-              <Link
-                href="/contact"
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "sm",
-                  className:
-                    "flex-1 gap-1.5 text-[11px] text-destructive border-destructive/30 hover:bg-destructive/10 sm:flex-none sm:text-xs",
-                })}
-              >
-                <HelpCircle className="size-3.5" aria-hidden />
-                <span>{t("actions.contactSupport")}</span>
-              </Link>
-            ) : (
-              <Link
-                href="/contact"
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                  className:
-                    "flex-1 gap-1.5 text-[11px] text-muted-foreground hover:text-foreground sm:flex-none sm:text-xs",
-                })}
-              >
-                <HelpCircle className="size-3.5" aria-hidden />
-                <span>{t("actions.needHelp")}</span>
-              </Link>
-            )}
+            <Link
+              href="/contact"
+              className={buttonVariants({
+                variant: "ghost",
+                size: "sm",
+                className:
+                  "flex-1 gap-1.5 text-[11px] text-muted-foreground hover:text-foreground sm:flex-none sm:text-xs",
+              })}
+            >
+              <HelpCircle className="size-3.5" aria-hidden />
+              <span>{t("actions.needHelp")}</span>
+            </Link>
           </div>
         </FadeIn>
       </div>

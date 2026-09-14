@@ -1,10 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, CheckCircle2, MessageSquarePlus, Sparkles, Star, ThumbsUp } from "lucide-react";
+import { Link } from "@/i18n/routing";
+import {
+  Check,
+  MessageSquarePlus,
+  Package,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { useAuth } from "@/features/auth";
+import {
+  fetchOrderById,
+  fetchOrders,
+  orderQueryKey,
+  ordersQueryKey,
+} from "@/features/orders";
 import { cn } from "@/lib/utils";
 import type { Product, ProductReview } from "../types";
 
@@ -19,61 +34,48 @@ export function ProductReviews({
   product,
   initialReviews = [],
 }: ProductReviewsProps) {
-  const locale = useLocale();
   const t = useTranslations("ProductDetails.reviewsSection");
+  const locale = useLocale();
+  const { session, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const token = session?.token;
 
-  const [reviews, setReviews] = useState<ProductReview[]>(initialReviews);
-  const [helpfulMap, setHelpfulMap] = useState<Record<string, boolean>>({});
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const deliveredOrdersQuery = useQuery({
+    queryKey: ordersQueryKey(locale, "delivered"),
+    queryFn: () => fetchOrders(token!, locale, "delivered"),
+    enabled: isAuthenticated && Boolean(token),
+    staleTime: 60_000,
+  });
 
-  // New review form fields
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
-  const [comment, setComment] = useState("");
-  const [sizePurchased, setSizePurchased] = useState<string>(
-    product.sizes[0]?.name ?? "",
-  );
+  const deliveredOrders = deliveredOrdersQuery.data ?? [];
 
-  const handleToggleHelpful = (id: string) => {
-    if (helpfulMap[id]) return;
-    setHelpfulMap((prev) => ({ ...prev, [id]: true }));
-    setReviews((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, helpfulCount: item.helpfulCount + 1 } : item,
+  const detailQueries = useQueries({
+    queries: deliveredOrders.map((order) => ({
+      queryKey: orderQueryKey(locale, order.id),
+      queryFn: () => fetchOrderById(token!, order.id, locale),
+      enabled: isAuthenticated && Boolean(token) && Boolean(order.id),
+      staleTime: 60_000,
+    })),
+  });
+
+  const hasPurchasedProduct = useMemo(() => {
+    if (!isAuthenticated || !product.id) return false;
+    return detailQueries.some((query) =>
+      query.data?.items.some(
+        (item) =>
+          item.productId != null &&
+          String(item.productId) === String(product.id),
       ),
     );
-  };
+  }, [detailQueries, isAuthenticated, product.id]);
 
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !comment.trim()) return;
+  const isPurchaseCheckPending =
+    isAuthenticated &&
+    (isAuthLoading ||
+      deliveredOrdersQuery.isLoading ||
+      (deliveredOrders.length > 0 &&
+        detailQueries.some((query) => query.isLoading || query.isPending)));
 
-    const newReview: ProductReview = {
-      id: `rev-user-${Date.now()}`,
-      author: name.trim(),
-      rating,
-      date: locale === "ar" ? "الآن" : locale === "tr" ? "Şimdi" : "Just now",
-      title: title.trim() || (locale === "ar" ? "تقييم ممتاز" : locale === "tr" ? "Mükemmel" : "Wonderful piece"),
-      comment: comment.trim(),
-      verified: true,
-      sizePurchased: sizePurchased || undefined,
-      helpfulCount: 0,
-    };
-
-    setReviews([newReview, ...reviews]);
-    setFormSubmitted(true);
-    setName("");
-    setTitle("");
-    setComment("");
-    setTimeout(() => {
-      setFormSubmitted(false);
-      setIsFormOpen(false);
-    }, 1800);
-  };
-
+  const reviews = initialReviews;
   const totalReviews = Math.max(product.reviewsCount ?? 0, reviews.length);
   const averageFromList =
     reviews.length > 0
@@ -85,9 +87,10 @@ export function ProductReviews({
       : averageFromList
   ).toFixed(1);
 
+  const showOrdersCta = !hasPurchasedProduct && !isPurchaseCheckPending;
+
   return (
     <div className="w-full space-y-8">
-      {/* Overview Card: Score, Stars, Breakdown, Action */}
       <div className="rounded-2xl border border-border/80 bg-card/60 p-6 shadow-xs sm:p-8">
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-3">
           {totalReviews === 0 ? (
@@ -103,7 +106,6 @@ export function ProductReviews({
               </p>
             </div>
           ) : (
-            /* Left: Score & Stars */
             <div className="flex flex-col items-center justify-center text-center lg:items-start lg:text-start">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -114,7 +116,6 @@ export function ProductReviews({
                 </span>
               </div>
 
-              {/* Stars row */}
               <div className="mt-2 flex items-center gap-1 text-warning">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -135,7 +136,6 @@ export function ProductReviews({
           )}
 
           {totalReviews === 0 ? (
-            /* Middle: Verified Notice */
             <div className="flex flex-col items-center justify-center gap-2 border-y border-border/60 py-4 text-center text-xs text-muted-foreground lg:border-y-0 lg:border-x lg:px-6 lg:py-0">
               <Sparkles className="size-5 text-secondary-500" />
               <p className="font-semibold text-foreground">
@@ -146,15 +146,19 @@ export function ProductReviews({
               </p>
             </div>
           ) : (
-            /* Middle: Rating Breakdown Bars */
             <div className="space-y-2 border-y border-border/60 py-4 lg:border-y-0 lg:border-x lg:px-6 lg:py-0">
               {[5, 4, 3, 2, 1].map((stars) => {
                 const count = reviews.filter((r) => r.rating === stars).length;
-                const percent = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
+                const percent =
+                  totalReviews > 0
+                    ? Math.round((count / totalReviews) * 100)
+                    : 0;
                 return (
                   <div key={stars} className="flex items-center gap-2 text-xs">
                     <div className="flex w-12 shrink-0 items-center justify-end gap-1">
-                      <span className="font-semibold tabular-nums text-foreground">{stars}</span>
+                      <span className="font-semibold tabular-nums text-foreground">
+                        {stars}
+                      </span>
                       <Star className="size-3 fill-warning text-warning" />
                     </div>
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
@@ -172,22 +176,27 @@ export function ProductReviews({
             </div>
           )}
 
-          {/* Right: Write Review Trigger */}
           <div className="flex flex-col items-center justify-center gap-3 text-center lg:items-end lg:text-end">
-            <Button
-              type="button"
-              onClick={() => setIsFormOpen((prev) => !prev)}
-              className="gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-xs"
-            >
-              <MessageSquarePlus className="size-4" />
-              <span>
-                {isFormOpen
-                  ? t("cancel")
-                  : totalReviews === 0
-                    ? t("writeFirstReview")
-                    : t("writeReview")}
-              </span>
-            </Button>
+            <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
+              {hasPurchasedProduct
+                ? t("purchaserNotice")
+                : t("purchaseOnlyNotice")}
+            </p>
+            {showOrdersCta ? (
+              <Link
+                href="/me/orders"
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    className:
+                      "gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-xs",
+                  }),
+                )}
+              >
+                <Package className="size-4" />
+                <span>{t("viewOrdersCta")}</span>
+              </Link>
+            ) : null}
             {totalReviews > 0 ? (
               <span className="text-xs text-muted-foreground">
                 {t("filterAll", { count: totalReviews })}
@@ -195,153 +204,8 @@ export function ProductReviews({
             ) : null}
           </div>
         </div>
-
-        {/* Expandable Write Review Form */}
-        {isFormOpen ? (
-          <form
-            onSubmit={handleSubmitReview}
-            className="mt-6 border-t border-border/60 pt-6 animate-in fade-in-0 duration-200"
-          >
-            {formSubmitted ? (
-              <div className="flex items-center justify-center gap-2 rounded-xl bg-success-muted p-4 text-xs sm:text-sm font-semibold text-success">
-                <CheckCircle2 className="size-5" />
-                <span>{t("successMessage")}</span>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-foreground">
-                    {t("ratingLabel")}
-                  </span>
-                  <div className="flex items-center gap-1.5" role="radiogroup">
-                    {[1, 2, 3, 4, 5].map((star) => {
-                      const isFilled =
-                        hoverRating != null ? star <= hoverRating : star <= rating;
-                      return (
-                        <button
-                          key={star}
-                          type="button"
-                          onMouseEnter={() => setHoverRating(star)}
-                          onMouseLeave={() => setHoverRating(null)}
-                          onClick={() => setRating(star)}
-                          className="p-1 text-warning transition-transform hover:scale-115 focus:outline-none"
-                          aria-label={t("starsLabel", { stars: star })}
-                        >
-                          <Star
-                            className={cn(
-                              "size-6 transition-colors",
-                              isFilled
-                                ? "fill-warning text-warning"
-                                : "fill-transparent text-muted-foreground/40",
-                            )}
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">
-                      {t("nameLabel")} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={t("namePlaceholder")}
-                      className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-
-                  {product.sizes.length > 0 ? (
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-foreground">
-                        {t("sizeLabel")}
-                      </label>
-                      <select
-                        value={sizePurchased}
-                        onChange={(e) => setSizePurchased(e.target.value)}
-                        className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      >
-                        <option value="">{t("sizeLabel")}</option>
-                        {product.sizes.map((s) => (
-                          <option key={s.id} value={s.name}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-foreground">
-                        {t("titleLabel")}
-                      </label>
-                      <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder={t("titlePlaceholder")}
-                        className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {product.sizes.length > 0 ? (
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">
-                      {t("titleLabel")}
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder={t("titlePlaceholder")}
-                      className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-                ) : null}
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">
-                    {t("commentLabel")} *
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder={t("commentPlaceholder")}
-                    className="w-full rounded-lg border border-border bg-background p-3 text-xs sm:text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsFormOpen(false)}
-                    className="rounded-lg text-xs font-medium"
-                  >
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="rounded-lg text-xs font-semibold shadow-xs"
-                  >
-                    {t("submit")}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </form>
-        ) : null}
       </div>
 
-      {/* Reviews Comments List */}
       <div className="space-y-4">
         {reviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/80 bg-card/40 p-8 text-center sm:p-10">
@@ -350,31 +214,38 @@ export function ProductReviews({
             </div>
             <div className="max-w-md space-y-1">
               <h5 className="text-sm font-semibold text-foreground">
-                {t("reviewsEmptyTitle")}
+                {hasPurchasedProduct
+                  ? t("purchaserEmptyTitle")
+                  : t("reviewsEmptyTitle")}
               </h5>
               <p className="text-xs leading-relaxed text-muted-foreground">
-                {t("reviewsEmptyDesc")}
+                {hasPurchasedProduct
+                  ? t("purchaserEmptyDesc")
+                  : t("reviewsEmptyDesc")}
               </p>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsFormOpen(true)}
-              className="mt-1 rounded-xl text-xs font-semibold"
-            >
-              {t("writeFirstReview")}
-            </Button>
+            {showOrdersCta ? (
+              <Link
+                href="/me/orders"
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                    className: "mt-1 rounded-xl text-xs font-semibold gap-1.5",
+                  }),
+                )}
+              >
+                <Package className="size-3.5" />
+                <span>{t("viewOrdersCta")}</span>
+              </Link>
+            ) : null}
           </div>
         ) : (
-          reviews.map((rev) => {
-            const isHelpful = helpfulMap[rev.id];
-            return (
-              <article
-                key={rev.id}
-                className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card p-5 sm:p-6 shadow-2xs transition-all hover:border-border"
-              >
-              {/* Top Row: Author, Verified Badge, Rating, Date */}
+          reviews.map((rev) => (
+            <article
+              key={rev.id}
+              className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card p-5 sm:p-6 shadow-2xs transition-all hover:border-border"
+            >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15 font-semibold text-foreground ring-1 ring-primary/20 text-xs sm:text-sm">
@@ -401,8 +272,10 @@ export function ProductReviews({
                   </div>
                 </div>
 
-                {/* Stars */}
-                <div className="flex items-center gap-0.5 text-warning" aria-label={`${rev.rating} stars`}>
+                <div
+                  className="flex items-center gap-0.5 text-warning"
+                  aria-label={`${rev.rating} stars`}
+                >
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
                       key={s}
@@ -418,7 +291,6 @@ export function ProductReviews({
                 </div>
               </div>
 
-              {/* Title & Comment Text */}
               <div className="space-y-1.5">
                 {rev.title ? (
                   <h5 className="text-sm font-semibold text-foreground">
@@ -430,35 +302,16 @@ export function ProductReviews({
                 </p>
               </div>
 
-              {/* Bottom Meta: Purchased Size & Helpful Counter */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/40 pt-3 text-xs">
-                {rev.sizePurchased ? (
+              {rev.sizePurchased ? (
+                <div className="border-t border-border/40 pt-3 text-xs">
                   <span className="inline-flex items-center rounded-md bg-muted/60 px-2 py-1 text-[11px] font-medium text-foreground">
                     {t("sizePurchased", { size: rev.sizePurchased })}
                   </span>
-                ) : <span />}
-
-                <button
-                  type="button"
-                  onClick={() => handleToggleHelpful(rev.id)}
-                  disabled={isHelpful}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors",
-                    isHelpful
-                      ? "border-success/40 bg-success-muted text-success"
-                      : "border-border/80 bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <ThumbsUp className="size-3" />
-                  <span>
-                    {t("helpful")} ({rev.helpfulCount})
-                  </span>
-                </button>
-              </div>
+                </div>
+              ) : null}
             </article>
-          );
-        })
-      )}
+          ))
+        )}
       </div>
     </div>
   );

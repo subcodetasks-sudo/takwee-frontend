@@ -1,15 +1,14 @@
 export type OrderStatus =
   | "pending"
+  | "confirmed"
   | "processing"
   | "shipped"
-  | "in_transit"
-  | "out_for_delivery"
   | "delivered"
-  | "failed"
-  | "returned"
   | "cancelled";
 
 export interface OrderItemSummary {
+  /** API product id — used for PDP links and post-purchase ratings. */
+  productId?: string;
   name: string;
   quantity: number;
   image?: string;
@@ -19,13 +18,12 @@ export interface OrderItemSummary {
   slug?: string;
 }
 
+/** Linear tracker steps (cancelled is an exception state, not a step). */
 export type TrackingStepKey =
-  | "placed"
+  | "pending"
+  | "confirmed"
   | "processing"
-  | "tailoring"
   | "shipped"
-  | "in_transit"
-  | "out_for_delivery"
   | "delivered";
 
 export interface OrderTrackingStep {
@@ -55,13 +53,29 @@ export interface OrderShippingAddress {
   phone?: string;
 }
 
-export type OrderPaymentMethod = "card" | "cashOnDelivery" | "bankTransfer";
+/** Storefront payment method ids (camelCase). API uses snake_case, e.g. `bank_transfer`. */
+export type OrderPaymentMethod = "bankTransfer" | "card" | "cashOnDelivery";
+
+export type OrderPaymentStatus =
+  | "pending"
+  | "under_review"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | (string & {});
 
 export interface OrderPaymentInfo {
   method: OrderPaymentMethod;
-  /** Last 4 digits when method is card */
+  status?: OrderPaymentStatus;
+  /** Last 4 digits when method is card (legacy) */
   last4?: string;
   brand?: string;
+  transferHolderName?: string;
+  transferDate?: string;
+  receiptUrl?: string | null;
+  submittedAt?: string | null;
+  paidAt?: string | null;
+  canSubmitProof?: boolean;
 }
 
 export interface OrderSummary {
@@ -84,8 +98,10 @@ export interface OrderSummary {
   taxTRY?: number;
   couponCode?: string;
   deliveredAt?: string;
+  /** From API `cancelled_at` when status is cancelled */
   cancelledAt?: string;
-  cancelReasonKey?: string;
+  /** From API `cancellation_reason` — already localized by Accept-Language */
+  cancellationReason?: string;
   /** From API `can_cancel` — pending/confirmed and not yet shipped */
   canCancel?: boolean;
   paymentStatus?: string;
@@ -93,5 +109,3 @@ export interface OrderSummary {
 }
 
 export type { ApiOrderDetail, ApiOrderListItem, ApiOrderTrackingData } from "./api";
-
-

@@ -44,4 +44,11 @@ export interface AppSettings {
   defaultLanguage: string;
   googleAnalyticsId: string | null;
   supportedCurrencies: string[];
+  /** Bank transfer account details (from settings keys in payment.md). */
+  bankName: string | null;
+  bankAccountHolder: string | null;
+  bankIban: string | null;
+  bankAccountNumber: string | null;
+  /** Localized via Accept-Language on settings fetch. */
+  bankTransferInstructions: string | null;
 }

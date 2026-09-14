@@ -29,18 +29,25 @@ export interface LoginInput {
   email: string;
   password: string;
   rememberMe?: boolean;
+  /** Firebase Cloud Messaging web device token */
+  fcm_token?: string | null;
 }
 
 export async function loginAction(
   input: LoginInput,
 ): Promise<ActionState<{ user: AuthUser; accessToken: string }>> {
   return safeServerAction(async () => {
+    const body: Record<string, string> = {
+      email: input.email.trim(),
+      password: input.password,
+    };
+    if (input.fcm_token?.trim()) {
+      body.fcm_token = input.fcm_token.trim();
+    }
+
     const res = await serverFetch<ApiResponse<ApiLoginData>>("/api/v1/auth/login", {
       method: "POST",
-      body: {
-        email: input.email.trim(),
-        password: input.password,
-      },
+      body,
       autoAuth: false,
     });
 

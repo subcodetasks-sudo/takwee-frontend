@@ -208,6 +208,7 @@ Public boutique settings are loaded from **`GET /api/v1/settings`** (key/value l
 - [`proxy.ts`](proxy.ts) — `default_language` drives next-intl `defaultLocale` for unprefixed routes (soft-fail to `ar`)
 - [`CurrencyProvider`](hooks/useCurrency.tsx) / [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — only list API-supported currencies; default when no localStorage pick
 - [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Atelier** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
+- Checkout bank transfer — `bank_name`, `bank_account_holder`, `bank_iban`, `bank_account_number`, `bank_transfer_instructions` (shown in [`CheckoutPaymentSection`](features/checkout/components/CheckoutPaymentSection.tsx); place-order sends `payment_method: bank_transfer`)
 
 ---
 

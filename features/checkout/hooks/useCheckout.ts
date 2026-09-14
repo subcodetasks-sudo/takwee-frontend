@@ -8,8 +8,12 @@ import {
   previewCheckoutAction,
   placeOrderAction,
   removeCouponAction,
+  submitBankTransferProofAction,
 } from "../api/actions";
-import type { PlaceOrderInput } from "../types";
+import type {
+  PlaceOrderInput,
+  SubmitBankTransferProofInput,
+} from "../types";
 
 export interface UseCheckoutOptions {
   addressId?: string;
@@ -118,10 +122,29 @@ export function useCheckout(options?: UseCheckoutOptions) {
 
       return res.data;
     },
-    onSuccess: () => {
-      clear();
-      void queryClient.invalidateQueries({ queryKey: ["my-orders"] });
-      void queryClient.invalidateQueries({ queryKey: ["checkout-preview"] });
+  });
+
+  const submitBankTransferProofMutation = useMutation({
+    mutationFn: async (input: SubmitBankTransferProofInput) => {
+      if (!isAuthenticated) {
+        throw new Error("Authentication required to submit payment proof");
+      }
+
+      const formData = new FormData();
+      formData.append("order_id", input.orderId);
+      formData.append("transfer_holder_name", input.transferHolderName.trim());
+      formData.append("transfer_date", input.transferDate);
+      formData.append("receipt", input.receipt);
+      if (locale) formData.append("locale", locale);
+      if (currency) formData.append("currency", currency);
+
+      const res = await submitBankTransferProofAction(formData);
+
+      if (!res.success || !res.data) {
+        throw new Error(res.message || "Failed to submit bank transfer proof");
+      }
+
+      return res.data;
     },
   });
 
@@ -137,7 +160,16 @@ export function useCheckout(options?: UseCheckoutOptions) {
     isRemovingCoupon: removeCouponMutation.isPending,
     removeCouponError: removeCouponMutation.error,
     placeOrder: placeOrderMutation.mutateAsync,
-    isPlacingOrder: placeOrderMutation.isPending,
+    isPlacingOrder:
+      placeOrderMutation.isPending || submitBankTransferProofMutation.isPending,
     placeOrderError: placeOrderMutation.error,
+    submitBankTransferProof: submitBankTransferProofMutation.mutateAsync,
+    isSubmittingProof: submitBankTransferProofMutation.isPending,
+    clearCartAfterCheckout: () => {
+      clear();
+      void queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["checkout-preview"] });
+    },
   };
 }

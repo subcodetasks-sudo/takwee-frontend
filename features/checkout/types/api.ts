@@ -28,6 +28,8 @@ export interface ApiPlaceOrderInput {
   items: ApiCheckoutItemInput[];
   address_id: number | string;
   coupon_code?: string;
+  /** Currently only `bank_transfer` (see payment.md). */
+  payment_method?: "bank_transfer" | string;
 }
 
 export interface ApiCheckoutItemData {
@@ -130,6 +132,7 @@ export interface ApiPlaceOrderData {
   date: string;
   status: string;
   payment_status: string;
+  payment_method?: string;
   shipping_status: string;
   can_cancel: boolean;
   items: ApiCheckoutItemData[];
@@ -138,6 +141,16 @@ export interface ApiPlaceOrderData {
   shipment?: ApiShipmentInfo | null;
   tracking?: ApiTrackingInfo | null;
   coupon?: ApiCheckoutCoupon | null;
+  payment?: {
+    method?: string;
+    status?: string;
+    transfer_holder_name?: string | null;
+    transfer_date?: string | null;
+    receipt_url?: string | null;
+    submitted_at?: string | null;
+    paid_at?: string | null;
+    can_submit_proof?: boolean;
+  } | null;
 }
 
 export interface ApiResponse<T> {

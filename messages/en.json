@@ -88,57 +88,45 @@
       "returnPolicyNotice": "14-day exchange & return eligible",
       "cancelledNotice": "Order cancelled",
       "cancelledWithDate": "Order cancelled on {date}",
-      "refundNotice": "Full refund of {amount} issued to original payment method",
       "failedNotice": "Delivery attempt was unsuccessful",
       "failedWithDate": "Delivery attempt failed on {date}",
       "failedHelpNotice": "Our concierge team is available to assist with redelivery or address updates.",
       "returnedNotice": "Order returned to atelier",
       "returnedWithDate": "Order returned on {date}",
-      "returnRefundNotice": "Refund of {amount} processed to original payment method",
       "status": {
         "pending": "Pending",
+        "confirmed": "Confirmed",
         "processing": "Processing",
         "shipped": "Shipped",
-        "in_transit": "In Transit",
-        "out_for_delivery": "Out for Delivery",
         "delivered": "Delivered",
-        "failed": "Failed",
-        "returned": "Returned",
         "cancelled": "Cancelled"
       },
       "filters": {
         "all": "All Orders",
         "pending": "Pending",
+        "confirmed": "Confirmed",
         "processing": "Processing",
         "shipped": "Shipped",
-        "in_transit": "In Transit",
-        "out_for_delivery": "Out for Delivery",
         "delivered": "Delivered",
-        "failed": "Failed",
-        "returned": "Returned",
         "cancelled": "Cancelled",
         "emptyFilter": "No orders found in this status",
         "showAll": "Show all orders"
       },
       "tracker": {
-        "placed": "Order Placed",
-        "processing": "Atelier Prep",
-        "tailoring": "Atelier Prep",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "processing": "Processing",
         "shipped": "Shipped",
-        "in_transit": "In Transit",
-        "out_for_delivery": "Out for Delivery",
         "delivered": "Delivered",
         "estimatedArrival": "Estimated arrival: {date}",
         "carrier": "Carrier: {carrier}",
         "trackingNumber": "Tracking: {number}",
-        "pendingNotice": "Your order has been received and is awaiting atelier review",
-        "processingNotice": "Your order is being inspected and hand-packed in our atelier",
-        "shippedNotice": "Your parcel has been dispatched from our atelier and handed to courier",
-        "inTransitNotice": "Your parcel is on its way between hubs with premium care",
-        "outForDeliveryNotice": "Your parcel is out with the courier for delivery today",
+        "pendingNotice": "Your order has been received and is awaiting confirmation",
+        "confirmedNotice": "Your order has been confirmed and will enter atelier prep soon",
+        "processingNotice": "Your order is being prepared and packed in our atelier",
+        "shippedNotice": "Your parcel has been dispatched and is on its way",
         "deliveredNotice": "Your parcel was delivered safely to your address",
-        "failedNotice": "Delivery attempt was unsuccessful. Please verify your contact details",
-        "returnedNotice": "Order has been returned to our atelier",
+        "cancelledNotice": "This order was cancelled and will not be fulfilled",
         "copyTrackingNumber": "Copy tracking number",
         "trackingCopied": "Tracking number copied"
       },
@@ -174,9 +162,6 @@
           "card": "Card payment",
           "cashOnDelivery": "Cash on delivery",
           "bankTransfer": "Bank transfer"
-        },
-        "cancelReasons": {
-          "customerRequested": "Cancelled at the customer's request."
         }
       },
       "reviewModal": {
@@ -194,19 +179,17 @@
           "4": "Very good",
           "5": "Exceptional"
         },
-        "quickTags": {
-          "trueToSize": "True to size",
-          "luxuriousFabric": "Premium linen",
-          "flawlessCut": "Elegant drape",
-          "breathable": "Breathable & light",
-          "neatStitching": "Impeccable seamwork"
-        },
         "reviewPlaceholder": "Share how the abaya feels, the fit, craftsmanship, or how you styled it...",
         "nameLabel": "Display name",
         "namePlaceholder": "Your name",
+        "titleLabel": "Review title",
+        "titlePlaceholder": "e.g. Excellent quality and beautiful drape",
+        "commentLabel": "Your review",
         "cancel": "Cancel",
         "submit": "Submit review",
         "submitting": "Submitting...",
+        "submitError": "Unable to submit your review. Please try again.",
+        "submitSuccess": "Your review has been submitted successfully.",
         "successTitle": "Thank you for your review!",
         "successMessage": "Your feedback helps our atelier and community of modest fashion lovers."
       },
@@ -634,11 +617,16 @@
       "recommendation": "98% of customers recommend this product",
       "writeReview": "Write a Review",
       "noReviewsTitle": "No reviews yet",
-      "noReviewsDesc": "Be the first to share your experience with this product.",
+      "noReviewsDesc": "Verified buyers will be the first to share their experience with this product.",
       "verifiedReviewsOnly": "Verified Client Reviews",
       "verifiedReviewsNotice": "All reviews are submitted by verified purchasers to ensure authentic client experiences.",
-      "reviewsEmptyTitle": "Share Your Experience",
-      "reviewsEmptyDesc": "Have you purchased this product? Your review helps other customers make the right decision.",
+      "purchaseOnlyNotice": "Only customers who purchased this product can leave a review from their order details.",
+      "purchaserNotice": "Thank you for your purchase. You can share your review from the delivered order in your account.",
+      "viewOrdersCta": "View my orders",
+      "reviewsEmptyTitle": "Reviews from verified buyers",
+      "reviewsEmptyDesc": "After your order is delivered, you can share a review from your order details.",
+      "purchaserEmptyTitle": "Ready to share your experience?",
+      "purchaserEmptyDesc": "Open your delivered order to leave a review for this piece whenever you are ready.",
       "writeFirstReview": "Write the First Review",
       "cancel": "Cancel",
       "submit": "Submit Review",
@@ -1391,8 +1379,8 @@
       }
     },
     "payment": {
-      "title": "Payment method",
-      "subtitle": "Choose how you would like to pay for this order.",
+      "title": "Payment proof",
+      "subtitle": "Transfer the order total to the boutique account, then upload your receipt photo.",
       "methods": {
         "card": {
           "label": "Card payment",
@@ -1404,11 +1392,39 @@
         },
         "bankTransfer": {
           "label": "Bank transfer",
-          "description": "Transfer funds using the boutique bank details provided after ordering."
+          "description": "Pay by bank transfer and upload a photo of your payment receipt."
         }
       },
+      "bankDetails": {
+        "title": "Boutique bank details",
+        "bankName": "Bank",
+        "accountHolder": "Account holder",
+        "iban": "IBAN",
+        "accountNumber": "Account number",
+        "copied": "{field} copied",
+        "copyAria": "Copy {field}"
+      },
+      "form": {
+        "holderName": "Account holder name on the transfer",
+        "holderNamePlaceholder": "Name as shown on the transfer",
+        "transferDate": "Transfer date",
+        "receipt": "Payment receipt photo",
+        "receiptHint": "Upload a clear photo or PDF of your bank transfer receipt (max 5 MB).",
+        "uploadCta": "Upload receipt photo",
+        "uploadFormats": "JPG, PNG, WEBP, or PDF",
+        "replaceReceipt": "Replace",
+        "removeReceipt": "Remove"
+      },
       "errors": {
-        "required": "Please select a payment method."
+        "required": "Please select a payment method.",
+        "holderNameRequired": "Please enter the transfer account holder name.",
+        "holderNameMax": "Account holder name must be 150 characters or fewer.",
+        "transferDateRequired": "Please select the transfer date.",
+        "transferDateInvalid": "Please enter a valid transfer date.",
+        "transferDateFuture": "Transfer date cannot be in the future.",
+        "receiptRequired": "Please upload a payment receipt photo.",
+        "receiptInvalidType": "Receipt must be a JPG, PNG, WEBP, or PDF file.",
+        "receiptTooLarge": "Receipt must be 5 MB or smaller."
       }
     },
     "summary": {

@@ -44,7 +44,7 @@ export function mapCartItemsToApi(items: CartItem[]): ApiCheckoutItemInput[] {
  */
 export function mapApiOrderToSummary(
   data: ApiPlaceOrderData,
-  paymentMethod: CheckoutPaymentMethod = "card",
+  paymentMethod: CheckoutPaymentMethod = "bankTransfer",
 ) {
   return mapOrderDetail(data as ApiOrderDetail, paymentMethod);
 }

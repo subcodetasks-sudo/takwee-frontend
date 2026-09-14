@@ -22,11 +22,20 @@ import { CheckoutOrderSummary } from "./CheckoutOrderSummary";
 import { CheckoutPaymentSection } from "./CheckoutPaymentSection";
 import { CheckoutShippingSection } from "./CheckoutShippingSection";
 
+function todayYmd(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 export function CheckoutView() {
   const t = useTranslations("CheckoutPage");
   const router = useRouter();
   const { items, itemCount, subtotalTRY, isHydrated } = useCart();
-  const { addresses, isLoading: isAddressesLoading, addAddress, isAdding } = useAddresses();
+  const { addresses, isLoading: isAddressesLoading, addAddress, isAdding } =
+    useAddresses();
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
 
@@ -34,7 +43,14 @@ export function CheckoutView() {
     () =>
       createCheckoutFormSchema({
         addressRequired: t("shipping.errors.required"),
-        paymentRequired: t("payment.errors.required"),
+        holderNameRequired: t("payment.errors.holderNameRequired"),
+        holderNameMax: t("payment.errors.holderNameMax"),
+        transferDateRequired: t("payment.errors.transferDateRequired"),
+        transferDateInvalid: t("payment.errors.transferDateInvalid"),
+        transferDateFuture: t("payment.errors.transferDateFuture"),
+        receiptRequired: t("payment.errors.receiptRequired"),
+        receiptInvalidType: t("payment.errors.receiptInvalidType"),
+        receiptTooLarge: t("payment.errors.receiptTooLarge"),
       }),
     [t],
   );
@@ -44,6 +60,7 @@ export function CheckoutView() {
 
   const {
     control,
+    register,
     handleSubmit,
     setValue,
     watch,
@@ -52,7 +69,9 @@ export function CheckoutView() {
     resolver: zodResolver(schema),
     defaultValues: {
       addressId: defaultAddressId,
-      paymentMethod: "card",
+      paymentMethod: "bankTransfer",
+      transferHolderName: "",
+      transferDate: todayYmd(),
     },
   });
 
@@ -67,6 +86,8 @@ export function CheckoutView() {
     isRemovingCoupon,
     placeOrder,
     isPlacingOrder,
+    submitBankTransferProof,
+    clearCartAfterCheckout,
   } = useCheckout({
     addressId: selectedAddressId,
     couponCode: couponCode || undefined,
@@ -133,24 +154,38 @@ export function CheckoutView() {
     const address = addresses.find((a) => a.id === values.addressId);
     if (!address || items.length === 0) return;
 
-    const orderPromise = placeOrder({
-      items,
-      addressId: values.addressId,
-      paymentMethod: values.paymentMethod,
-      couponCode: couponCode || undefined,
-      shippingAddress: mapAddressToShipping(address),
-      subtotalTRY,
-    });
+    const checkoutPromise = (async () => {
+      const { order } = await placeOrder({
+        items,
+        addressId: values.addressId,
+        paymentMethod: values.paymentMethod,
+        couponCode: couponCode || undefined,
+        shippingAddress: mapAddressToShipping(address),
+        subtotalTRY,
+      });
 
-    gooeyToast.promise(orderPromise, {
+      // Cart must clear once the order exists to avoid duplicate checkouts.
+      clearCartAfterCheckout();
+
+      const proof = await submitBankTransferProof({
+        orderId: order.id,
+        transferHolderName: values.transferHolderName,
+        transferDate: values.transferDate,
+        receipt: values.receipt,
+      });
+
+      return proof.order ?? order;
+    })();
+
+    gooeyToast.promise(checkoutPromise, {
       loading: t("toasts.placing"),
       success: t("toasts.success"),
       error: (err: unknown) =>
         err instanceof Error && err.message ? err.message : t("toasts.error"),
       description: {
-        success: (res) =>
+        success: (order) =>
           t("toasts.successDescription", {
-            number: res?.order?.number || "",
+            number: order?.number || "",
           }),
         error: (err: unknown) =>
           err instanceof Error && err.message ? err.message : undefined,
@@ -159,10 +194,11 @@ export function CheckoutView() {
     });
 
     try {
-      const { order } = await orderPromise;
+      const order = await checkoutPromise;
       saveCheckoutOrder(order);
       router.push("/checkout/confirmation");
     } catch {
+      // Order may already exist if proof upload failed after place-order.
       // Handled by gooeyToast.promise error state
     }
   });
@@ -215,7 +251,6 @@ export function CheckoutView() {
 
         <form id="checkout-form" onSubmit={onSubmit} className="contents">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 items-start">
-            {/* Shipping & payment first; summary last */}
             <div className="lg:col-span-7 xl:col-span-8 space-y-4 sm:space-y-5">
               <Controller
                 name="addressId"
@@ -232,16 +267,11 @@ export function CheckoutView() {
                 )}
               />
 
-              <Controller
-                name="paymentMethod"
+              <CheckoutPaymentSection
                 control={control}
-                render={({ field }) => (
-                  <CheckoutPaymentSection
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={errors.paymentMethod?.message}
-                  />
-                )}
+                register={register}
+                setValue={setValue}
+                errors={errors}
               />
             </div>
 

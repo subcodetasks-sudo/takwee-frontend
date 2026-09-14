@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@/lib/zod-resolver";
 import { gooeyToast } from "@/components/ui/goey-toaster";
+import { requestFcmWebToken } from "@/lib/firebase-messaging";
 import { useAuth } from "../hooks/useAuth";
 import { loginAction } from "../api/actions";
 import {
@@ -76,10 +77,16 @@ export function LoginForm() {
 
     const loginPromise = async () => {
       try {
+        const fcmToken = await requestFcmWebToken();
+        if (fcmToken) {
+          console.log("[FCM] login fcm_token:", fcmToken);
+        }
+
         const res = await loginAction({
           email: values.email,
           password: values.password,
           rememberMe: values.rememberMe,
+          fcm_token: fcmToken,
         });
 
         if (!res.success || !res.data) {

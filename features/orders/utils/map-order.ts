@@ -13,41 +13,63 @@ import type {
 import type {
   ApiOrderDetail,
   ApiOrderListItem,
+  ApiOrderPayment,
   ApiOrderShippingAddress,
   ApiOrderTrackingData,
   ApiShipmentInfo,
   ApiTrackingInfo,
   ApiTrackingStep,
 } from "../types/api";
+import { mapApiPaymentMethod } from "./map-payment-method";
 
 export function mapOrderStatus(status?: string): OrderStatus {
   const s = (status || "").toLowerCase().trim().replace(/[\s-]+/g, "_");
   if (s === "pending" || s === "placed" || s === "unpaid" || s === "awaiting_payment") return "pending";
-  if (s === "processing" || s === "tailoring" || s === "confirmed" || s === "in_production") return "processing";
-  if (s === "shipped" || s === "dispatched") return "shipped";
-  if (s === "in_transit" || s === "intransit" || s === "transit") return "in_transit";
-  if (s === "out_for_delivery" || s === "outfordelivery" || s === "out_delivery") return "out_for_delivery";
+  if (s === "confirmed") return "confirmed";
+  if (s === "processing" || s === "tailoring" || s === "in_production") return "processing";
+  if (
+    s === "shipped" ||
+    s === "dispatched" ||
+    s === "in_transit" ||
+    s === "intransit" ||
+    s === "transit" ||
+    s === "out_for_delivery" ||
+    s === "outfordelivery" ||
+    s === "out_delivery"
+  ) {
+    return "shipped";
+  }
   if (s === "delivered" || s === "completed" || s === "received") return "delivered";
-  if (s === "failed" || s === "delivery_failed" || s === "failed_delivery") return "failed";
-  if (s === "returned" || s === "refunded" || s === "return_completed") return "returned";
-  if (s === "cancelled" || s === "canceled" || s === "void") return "cancelled";
+  if (
+    s === "cancelled" ||
+    s === "canceled" ||
+    s === "void" ||
+    s === "failed" ||
+    s === "delivery_failed" ||
+    s === "failed_delivery" ||
+    s === "returned" ||
+    s === "refunded" ||
+    s === "return_completed"
+  ) {
+    return "cancelled";
+  }
   return "pending";
 }
 
 const STEP_KEY_MAP: Record<string, TrackingStepKey> = {
-  placed: "placed",
-  pending: "placed",
-  confirmed: "placed",
+  pending: "pending",
+  placed: "pending",
+  confirmed: "confirmed",
   processing: "processing",
   tailoring: "processing",
   shipped: "shipped",
   dispatched: "shipped",
-  in_transit: "in_transit",
-  intransit: "in_transit",
-  "in transit": "in_transit",
-  out_for_delivery: "out_for_delivery",
-  outfordelivery: "out_for_delivery",
-  "out for delivery": "out_for_delivery",
+  in_transit: "shipped",
+  intransit: "shipped",
+  "in transit": "shipped",
+  out_for_delivery: "shipped",
+  outfordelivery: "shipped",
+  "out for delivery": "shipped",
   delivered: "delivered",
   completed: "delivered",
 };
@@ -58,17 +80,16 @@ function mapTrackingSteps(
 ): OrderTrackingStep[] {
   if (!steps.length) {
     return [
-      { key: "placed", date: orderDate, completed: true, current: true },
+      { key: "pending", date: orderDate, completed: true, current: true },
+      { key: "confirmed", completed: false, current: false },
       { key: "processing", completed: false, current: false },
       { key: "shipped", completed: false, current: false },
-      { key: "in_transit", completed: false, current: false },
-      { key: "out_for_delivery", completed: false, current: false },
       { key: "delivered", completed: false, current: false },
     ];
   }
 
   return steps.map((st) => ({
-    key: STEP_KEY_MAP[st.status] || "placed",
+    key: STEP_KEY_MAP[st.status] || "pending",
     date: st.date || undefined,
     completed: Boolean(st.completed),
     current: Boolean(st.current),
@@ -158,20 +179,51 @@ function mapShippingAddress(
   };
 }
 
-function mapPaymentFromStatus(
-  paymentStatus?: string,
+function mapPaymentBlock(
+  payment?: ApiOrderPayment | null,
+  paymentMethodRaw?: string | null,
+  paymentStatus?: string | null,
+  fallbackMethod?: OrderPaymentMethod,
 ): OrderPaymentInfo | undefined {
+  const method =
+    mapApiPaymentMethod(payment?.method) ||
+    mapApiPaymentMethod(paymentMethodRaw) ||
+    fallbackMethod ||
+    mapPaymentMethodFromStatus(paymentStatus);
+
+  if (!method) return undefined;
+
+  const receiptRaw = payment?.receipt_url;
+  const receiptUrl = receiptRaw ? resolveImageUrl(receiptRaw) || receiptRaw : null;
+
+  return {
+    method,
+    status: payment?.status || paymentStatus || undefined,
+    transferHolderName: payment?.transfer_holder_name || undefined,
+    transferDate: payment?.transfer_date || undefined,
+    receiptUrl,
+    submittedAt: payment?.submitted_at || undefined,
+    paidAt: payment?.paid_at || undefined,
+    canSubmitProof: payment?.can_submit_proof,
+  };
+}
+
+/** Legacy list rows may only expose payment_status — default boutique method is bank transfer. */
+function mapPaymentMethodFromStatus(
+  paymentStatus?: string | null,
+): OrderPaymentMethod | undefined {
   if (!paymentStatus) return undefined;
   const s = paymentStatus.toLowerCase();
-  // API list/detail do not always expose method; infer COD only when explicit.
-  if (s.includes("cod") || s.includes("cash")) {
-    return { method: "cashOnDelivery" };
-  }
-  if (s.includes("transfer") || s.includes("bank")) {
-    return { method: "bankTransfer" };
-  }
-  if (s === "pending" || s === "paid" || s === "refunded") {
-    return { method: "card" };
+  if (s.includes("cod") || s.includes("cash")) return "cashOnDelivery";
+  if (s.includes("transfer") || s.includes("bank")) return "bankTransfer";
+  if (
+    s === "pending" ||
+    s === "under_review" ||
+    s === "paid" ||
+    s === "failed" ||
+    s === "refunded"
+  ) {
+    return "bankTransfer";
   }
   return undefined;
 }
@@ -189,6 +241,10 @@ function mapDetailItems(data: ApiOrderDetail): OrderItemSummary[] {
           : undefined;
 
     return {
+      productId:
+        it.product_id != null && Number.isFinite(it.product_id)
+          ? String(it.product_id)
+          : undefined,
       name: it.name,
       quantity: it.quantity,
       image: resolvedImg || undefined,
@@ -228,16 +284,14 @@ export function mapOrderListItem(item: ApiOrderListItem): OrderSummary {
     switch (st) {
       case "pending":
         return 1;
-      case "processing":
+      case "confirmed":
         return 2;
-      case "shipped":
+      case "processing":
         return 3;
-      case "in_transit":
+      case "shipped":
         return 4;
-      case "out_for_delivery":
-        return 5;
       case "delivered":
-        return 6;
+        return 5;
       default:
         return 1;
     }
@@ -262,6 +316,15 @@ export function mapOrderListItem(item: ApiOrderListItem): OrderSummary {
       }
     : undefined;
 
+  const cancelledAt =
+    status === "cancelled"
+      ? item.cancelled_at?.trim() || item.date
+      : undefined;
+  const cancellationReason =
+    status === "cancelled"
+      ? item.cancellation_reason?.trim() || undefined
+      : undefined;
+
   return {
     id: String(item.id),
     number: item.order_number,
@@ -271,7 +334,9 @@ export function mapOrderListItem(item: ApiOrderListItem): OrderSummary {
     itemCount: item.items_count ?? 0,
     items,
     tracking,
-    payment: mapPaymentFromStatus(item.payment_status),
+    payment: mapPaymentBlock(null, null, item.payment_status),
+    cancelledAt,
+    cancellationReason,
     canCancel: Boolean(item.can_cancel),
     paymentStatus: item.payment_status,
     shippingStatus: item.shipping_status,
@@ -296,9 +361,12 @@ export function mapOrderDetail(
   const status = mapOrderStatus(data.status);
   const shipment = data.shipment;
 
-  const payment: OrderPaymentInfo | undefined = paymentMethod
-    ? { method: paymentMethod }
-    : mapPaymentFromStatus(data.payment_status);
+  const payment = mapPaymentBlock(
+    data.payment,
+    data.payment_method,
+    data.payment_status,
+    paymentMethod,
+  );
 
   return {
     id: String(data.id),
@@ -317,7 +385,14 @@ export function mapOrderDetail(
     payment,
     tracking: mapTracking(shipment, data.tracking, data.date),
     deliveredAt: shipment?.delivered_at || undefined,
-    cancelledAt: status === "cancelled" ? data.date : undefined,
+    cancelledAt:
+      status === "cancelled"
+        ? data.cancelled_at?.trim() || data.date
+        : undefined,
+    cancellationReason:
+      status === "cancelled"
+        ? data.cancellation_reason?.trim() || undefined
+        : undefined,
     canCancel: Boolean(data.can_cancel),
     paymentStatus: data.payment_status,
     shippingStatus: data.shipping_status,
@@ -327,7 +402,7 @@ export function mapOrderDetail(
 /** @deprecated Prefer `mapOrderDetail` — kept as alias for checkout place-order. */
 export function mapApiOrderToSummary(
   data: ApiOrderDetail,
-  paymentMethod: OrderPaymentMethod = "card",
+  paymentMethod: OrderPaymentMethod = "bankTransfer",
 ): OrderSummary {
   return mapOrderDetail(data, paymentMethod);
 }

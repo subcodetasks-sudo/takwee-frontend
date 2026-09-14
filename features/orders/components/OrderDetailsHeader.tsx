@@ -109,10 +109,12 @@ export function OrderDetailsHeader({ order }: OrderDetailsHeaderProps) {
         </p>
       </div>
 
-      <OrderStatusBadge
-        status={order.status}
-        className="shrink-0 px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-sm"
-      />
+      {order.status !== "delivered" && (
+        <OrderStatusBadge
+          status={order.status}
+          className="shrink-0 px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-sm"
+        />
+      )}
     </div>
   );
 }

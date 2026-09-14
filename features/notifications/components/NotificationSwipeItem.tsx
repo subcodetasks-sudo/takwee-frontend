@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useMotionValue, type PanInfo } from "motion/react";
+import { motion, useMotionValue, useTransform, type PanInfo } from "motion/react";
 import { Check, Info, Package, Sparkles, Trash2 } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ import type { NotificationItem, NotificationKind } from "../types";
 const DELETE_OFFSET = 88;
 const DELETE_VELOCITY = 650;
 const EXIT_X = 420;
-const EXIT_MS = 220;
+const EXIT_MS = 200;
 
 function formatRelativeTime(iso: string, locale: string): string {
   const then = new Date(iso).getTime();
@@ -76,6 +76,26 @@ export function NotificationSwipeItem({
   const dragMoved = useRef(false);
   const deleting = useRef(false);
 
+  // Performance-friendly reactive transforms for the background reveal & trash scale
+  const bgOpacity = useTransform(
+    x,
+    [-DELETE_OFFSET * 1.5, -20, 0, 20, DELETE_OFFSET * 1.5],
+    [1, 0.7, 0, 0.7, 1],
+    { clamp: true },
+  );
+  const leftTrashScale = useTransform(
+    x,
+    [0, 24, DELETE_OFFSET],
+    [0.7, 0.9, 1.15],
+    { clamp: true },
+  );
+  const rightTrashScale = useTransform(
+    x,
+    [-DELETE_OFFSET, -24, 0],
+    [1.15, 0.9, 0.7],
+    { clamp: true },
+  );
+
   const commitDelete = async (direction: 1 | -1) => {
     if (deleting.current) return;
     deleting.current = true;
@@ -135,19 +155,40 @@ export function NotificationSwipeItem({
   };
 
   return (
-    <li
+    <motion.li
+      layout="position"
+      transition={{
+        layout: {
+          type: "spring",
+          stiffness: 450,
+          damping: 35,
+          mass: 0.8,
+        },
+      }}
       className={cn(
         "relative overflow-hidden rounded-lg sm:rounded-xl",
         exiting && "pointer-events-none",
       )}
     >
-      <div
+      {/* Background action revealed on swipe */}
+      <motion.div
         aria-hidden
-        className="absolute inset-0 flex items-center justify-between rounded-lg sm:rounded-xl bg-error px-4"
+        animate={exiting ? { opacity: 0 } : { opacity: 1 }}
+        transition={exiting ? { duration: 0.16, ease: "easeOut" } : undefined}
+        className="absolute inset-0 pointer-events-none"
       >
-        <Trash2 className="size-4 text-error-foreground sm:size-5" />
-        <Trash2 className="size-4 text-error-foreground sm:size-5" />
-      </div>
+        <motion.div
+          style={{ opacity: bgOpacity }}
+          className="size-full flex items-center justify-between rounded-lg sm:rounded-xl bg-error px-4"
+        >
+          <motion.div style={{ scale: leftTrashScale }}>
+            <Trash2 className="size-4 text-error-foreground sm:size-5" />
+          </motion.div>
+          <motion.div style={{ scale: rightTrashScale }}>
+            <Trash2 className="size-4 text-error-foreground sm:size-5" />
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       <motion.div
         drag={exiting ? false : "x"}
@@ -155,7 +196,7 @@ export function NotificationSwipeItem({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.85}
         style={{ x }}
-        animate={exiting ? { x: exitX } : { x: 0 }}
+        animate={exiting ? { x: exitX, opacity: 0 } : { x: 0, opacity: 1 }}
         transition={
           exiting
             ? { duration: EXIT_MS / 1000, ease: [0.32, 0.72, 0, 1] }
@@ -269,6 +310,6 @@ export function NotificationSwipeItem({
           </div>
         </div>
       </motion.div>
-    </li>
+    </motion.li>
   );
 }

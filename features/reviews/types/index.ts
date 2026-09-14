@@ -1,11 +1,6 @@
-export type ReviewFeedbackTag =
-  | "trueToSize"
-  | "luxuriousFabric"
-  | "flawlessCut"
-  | "breathable"
-  | "neatStitching";
-
 export interface ReviewProductItem {
+  /** API product id — required to POST a rating. */
+  productId?: string | number;
   name: string;
   image?: string;
   slug?: string;
@@ -14,16 +9,27 @@ export interface ReviewProductItem {
 }
 
 export interface CreateReviewInput {
-  productSlug?: string;
-  productName: string;
-  orderNumber: string;
+  productId: string | number;
+  customerName: string;
   rating: number;
-  tags: ReviewFeedbackTag[];
-  comment: string;
+  size?: string | null;
+  title?: string | null;
+  comment?: string | null;
+  locale?: string;
 }
 
-export interface SubmitReviewResponse {
-  success: boolean;
-  reviewId?: string;
-  error?: string;
+export interface SubmitReviewResult {
+  id: string;
+  productId: string;
+  rating: number;
+  customerName: string;
+  size?: string;
+  title?: string;
+  comment?: string;
 }
+
+export type {
+  ApiProductRating,
+  ApiResponse,
+  ApiSubmitRatingInput,
+} from "./api";
