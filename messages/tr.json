@@ -1354,7 +1354,9 @@
       "added": "Çantanıza eklendi",
       "removed": "Çantanızdan çıkarıldı",
       "cleared": "Çantanız temizlendi",
-      "updated": "Çanta güncellendi"
+      "updated": "Çanta güncellendi",
+      "stockLimit": "Stokta yalnızca {count, plural, one {# adet} other {# adet}} mevcut",
+      "stockLimitReached": "Stokta daha fazla ürün yok"
     }
   },
   "CheckoutPage": {

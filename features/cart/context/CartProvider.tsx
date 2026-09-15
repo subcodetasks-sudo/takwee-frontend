@@ -13,13 +13,22 @@ import { useAuth } from "@/features/auth";
 import { getProductById } from "@/features/product/utils/get-product";
 import type { Product } from "@/features/product/types";
 import { syncCartToServer } from "../api/sync-cart";
-import type { AddToCartOptions, CartItem } from "../types";
+import type {
+  AddToCartOptions,
+  CartItem,
+  CartStockChangeResult,
+} from "../types";
 import {
   readCartFromStorage,
   writeCartToStorage,
   generateCartItemId,
   CART_STORAGE_KEY,
 } from "../utils/cart-storage";
+import {
+  clampToAvailableStock,
+  getAvailableStock,
+  getProductStockLimit,
+} from "../utils/stock-limit";
 
 interface CartContextValue {
   items: CartItem[];
@@ -33,9 +42,15 @@ interface CartContextValue {
   isHydrated: boolean;
   isInCart: (productId: string, options?: AddToCartOptions) => boolean;
   getItemQuantity: (productId: string, options?: AddToCartOptions) => number;
-  addItem: (product: Product, options?: AddToCartOptions) => void;
+  addItem: (
+    product: Product,
+    options?: AddToCartOptions,
+  ) => CartStockChangeResult;
   removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
+  updateQuantity: (
+    itemId: string,
+    quantity: number,
+  ) => CartStockChangeResult;
   clear: () => void;
 }
 
@@ -50,9 +65,39 @@ function hydrateProducts(items: CartItem[]): CartItem[] {
   });
 }
 
+/** Enforce product-level stock across all color/size lines. */
+function clampCartToStock(items: CartItem[]): CartItem[] {
+  const remainingByProduct = new Map<string, number | undefined>();
+  const next: CartItem[] = [];
+
+  for (const item of items) {
+    const product = item.product;
+    if (!remainingByProduct.has(product.id)) {
+      remainingByProduct.set(product.id, getProductStockLimit(product));
+    }
+
+    const remaining = remainingByProduct.get(product.id);
+    if (remaining === undefined) {
+      next.push(item);
+      continue;
+    }
+
+    if (remaining <= 0) continue;
+
+    const quantity = Math.min(item.quantity, remaining);
+    remainingByProduct.set(product.id, remaining - quantity);
+    if (quantity > 0) {
+      next.push({ ...item, quantity });
+    }
+  }
+
+  return next;
+}
+
 function createCartItem(
   product: Product,
   options?: AddToCartOptions,
+  quantity = Math.max(1, options?.quantity ?? 1),
 ): CartItem {
   const selectedColorId = options?.selectedColorId ?? product.colors[0]?.id;
   const selectedSize = options?.selectedSize ?? product.sizes[0]?.name;
@@ -62,7 +107,7 @@ function createCartItem(
     id,
     productId: product.id,
     product,
-    quantity: Math.max(1, options?.quantity ?? 1),
+    quantity,
     selectedColorId,
     selectedSize,
     addedAt: new Date().toISOString(),
@@ -75,12 +120,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setItems(hydrateProducts(readCartFromStorage()));
+    setItems(clampCartToStock(hydrateProducts(readCartFromStorage())));
     setIsHydrated(true);
 
     const onStorage = (event: StorageEvent) => {
       if (event.key === CART_STORAGE_KEY || event.key === null) {
-        setItems(hydrateProducts(readCartFromStorage()));
+        setItems(clampCartToStock(hydrateProducts(readCartFromStorage())));
       }
     };
 
@@ -90,7 +135,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const persist = useCallback(
     (nextItems: CartItem[]) => {
-      const hydrated = hydrateProducts(nextItems);
+      const hydrated = clampCartToStock(hydrateProducts(nextItems));
       writeCartToStorage(hydrated);
       setItems(hydrated);
       void syncCartToServer(hydrated, isAuthenticated);
@@ -137,8 +182,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const addItem = useCallback(
-    (product: Product, options?: AddToCartOptions) => {
-      const current = hydrateProducts(readCartFromStorage());
+    (product: Product, options?: AddToCartOptions): CartStockChangeResult => {
+      const current = clampCartToStock(
+        hydrateProducts(readCartFromStorage()),
+      );
       const selectedColorId = options?.selectedColorId ?? product.colors[0]?.id;
       const selectedSize = options?.selectedSize ?? product.sizes[0]?.name;
       const targetId = generateCartItemId(
@@ -146,22 +193,58 @@ export function CartProvider({ children }: { children: ReactNode }) {
         selectedColorId,
         selectedSize,
       );
-      const addQty = Math.max(1, options?.quantity ?? 1);
+      const requestedQty = Math.max(1, options?.quantity ?? 1);
+      const stockLimit = getProductStockLimit(product);
+      const available = getAvailableStock(product, current);
+      const addQty = clampToAvailableStock(requestedQty, available);
+      const capped =
+        available !== undefined && (addQty < requestedQty || addQty === 0);
+
+      if (addQty <= 0) {
+        return {
+          quantity:
+            current.find((item) => item.id === targetId)?.quantity ?? 0,
+          added: 0,
+          capped: true,
+          available: available ?? 0,
+          stockLimit,
+        };
+      }
 
       const existingIndex = current.findIndex((item) => item.id === targetId);
 
       if (existingIndex > -1) {
         const next = [...current];
         const existing = next[existingIndex]!;
+        const quantity = existing.quantity + addQty;
         next[existingIndex] = {
           ...existing,
-          quantity: existing.quantity + addQty,
+          quantity,
           product,
         };
         persist(next);
-      } else {
-        persist([createCartItem(product, options), ...current]);
+        return {
+          quantity,
+          added: addQty,
+          capped,
+          available:
+            available === undefined ? undefined : Math.max(0, available - addQty),
+          stockLimit,
+        };
       }
+
+      persist([
+        createCartItem(product, options, addQty),
+        ...current,
+      ]);
+      return {
+        quantity: addQty,
+        added: addQty,
+        capped,
+        available:
+          available === undefined ? undefined : Math.max(0, available - addQty),
+        stockLimit,
+      };
     },
     [persist],
   );
@@ -175,17 +258,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const updateQuantity = useCallback(
-    (itemId: string, quantity: number) => {
-      const current = hydrateProducts(readCartFromStorage());
-      if (quantity <= 0) {
-        persist(current.filter((item) => item.id !== itemId));
-        return;
+    (itemId: string, quantity: number): CartStockChangeResult => {
+      const current = clampCartToStock(
+        hydrateProducts(readCartFromStorage()),
+      );
+      const existing = current.find((item) => item.id === itemId);
+
+      if (!existing) {
+        return { quantity: 0, added: 0, capped: false };
       }
 
+      if (quantity <= 0) {
+        persist(current.filter((item) => item.id !== itemId));
+        return { quantity: 0, added: 0, capped: false };
+      }
+
+      const stockLimit = getProductStockLimit(existing.product);
+      const availableForLine = getAvailableStock(
+        existing.product,
+        current,
+        itemId,
+      );
+      const nextQty = Math.max(
+        1,
+        clampToAvailableStock(quantity, availableForLine),
+      );
+      const capped =
+        availableForLine !== undefined && nextQty < Math.floor(quantity);
+
       const next = current.map((item) =>
-        item.id === itemId ? { ...item, quantity } : item,
+        item.id === itemId ? { ...item, quantity: nextQty } : item,
       );
       persist(next);
+
+      return {
+        quantity: nextQty,
+        added: 0,
+        capped,
+        available:
+          availableForLine === undefined
+            ? undefined
+            : Math.max(0, availableForLine - nextQty),
+        stockLimit,
+      };
     },
     [persist],
   );

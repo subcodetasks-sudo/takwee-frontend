@@ -19,6 +19,20 @@ export interface AddToCartOptions {
   selectedColorId?: string;
 }
 
+/** Result of addItem / updateQuantity when stock limits apply. */
+export interface CartStockChangeResult {
+  /** Final line quantity after the change (0 when the line was removed or not added). */
+  quantity: number;
+  /** Units newly added to the bag (addItem only; 0 when blocked). */
+  added: number;
+  /** True when the requested amount exceeded available stock. */
+  capped: boolean;
+  /** Remaining units that can still be added for this product, when stock is known. */
+  available?: number;
+  /** Product stock ceiling when known. */
+  stockLimit?: number;
+}
+
 export interface CartState {
   items: CartItem[];
   /** Total sum of all quantities. */

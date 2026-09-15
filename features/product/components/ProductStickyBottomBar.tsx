@@ -25,6 +25,7 @@ export function ProductStickyBottomBar({
 
   const quantity = context?.quantity ?? 1;
   const setQuantity = context?.setQuantity;
+  const maxQuantity = context?.maxQuantity ?? 1;
   const isAdded = context?.isAdded ?? false;
   const inCart = context?.isInCart ?? false;
   const selectedSize = context?.selectedSize;
@@ -133,8 +134,10 @@ export function ProductStickyBottomBar({
             <button
               type="button"
               aria-label={t("increaseQuantity")}
-              disabled={!product.inStock}
-              onClick={() => setQuantity?.((q) => Math.min(10, q + 1))}
+              disabled={!product.inStock || quantity >= maxQuantity}
+              onClick={() =>
+                setQuantity?.((q) => Math.min(maxQuantity, q + 1))
+              }
               className="flex size-8 sm:size-9 items-center justify-center rounded-e-lg text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-30"
             >
               <Plus className="size-3.5" />
@@ -147,6 +150,7 @@ export function ProductStickyBottomBar({
             size="sm"
             disabled={
               !product.inStock ||
+              maxQuantity <= 0 ||
               (product.sizes.length > 0 && !selectedSize)
             }
             onClick={onAddToCartClick}

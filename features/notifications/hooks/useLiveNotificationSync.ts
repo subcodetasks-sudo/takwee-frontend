@@ -28,7 +28,7 @@ export function useLiveNotificationSync() {
   const locale = useLocale();
   const queryClient = useQueryClient();
   const { session, isAuthenticated } = useAuth();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotifications({ loadList: false });
   const prevUnreadRef = useRef<number | null>(null);
   const token = session?.token;
 
@@ -68,9 +68,6 @@ export function useLiveNotificationSync() {
         void queryClient.refetchQueries({
           queryKey: ORDERS_QUERY_KEY,
           type: "active",
-        });
-        void queryClient.invalidateQueries({
-          queryKey: NOTIFICATIONS_QUERY_KEY,
         });
       } catch (error) {
         console.error("[LiveSync] Failed to refresh after unread bump:", error);

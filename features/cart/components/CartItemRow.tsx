@@ -17,10 +17,13 @@ import {
 import { cn } from "@/lib/utils";
 import type { ProductColor } from "@/features/product/types";
 import type { CartItem } from "../types";
+import { getProductStockLimit } from "../utils/stock-limit";
 
 interface CartItemRowProps {
   item: CartItem;
   index?: number;
+  /** Total units of this product across all cart lines (for stock caps). */
+  productQuantityInCart?: number;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
 }
@@ -56,6 +59,7 @@ const itemVariants: Variants = {
 export function CartItemRow({
   item,
   index = 0,
+  productQuantityInCart,
   onUpdateQuantity,
   onRemove,
 }: CartItemRowProps) {
@@ -87,6 +91,11 @@ export function CartItemRow({
     if (tColors.has(color.nameKey)) return tColors(color.nameKey);
     return color.name?.trim() || color.nameKey || color.id;
   };
+
+  const stockLimit = getProductStockLimit(item.product);
+  const totalForProduct = productQuantityInCart ?? item.quantity;
+  const atStockLimit =
+    stockLimit !== undefined && totalForProduct >= stockLimit;
 
   return (
     <motion.div
@@ -211,8 +220,9 @@ export function CartItemRow({
             variant="ghost"
             size="icon"
             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+            disabled={atStockLimit}
             aria-label={tItem("increase")}
-            className="size-7 sm:size-8 rounded-lg text-foreground hover:bg-muted active:scale-90 transition-transform"
+            className="size-7 sm:size-8 rounded-lg text-foreground hover:bg-muted active:scale-90 transition-transform disabled:pointer-events-none disabled:opacity-30"
           >
             <Plus className="size-3 sm:size-3.5" />
           </Button>

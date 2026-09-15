@@ -8,7 +8,7 @@ import { ArrowRight, Check, Minus, Plus, Sparkles, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { useCart } from "@/features/cart";
+import { getMaxSelectableQuantity, useCart } from "@/features/cart";
 import { StaggerContainer, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import {
@@ -54,7 +54,7 @@ export function ProductDetailsHero({
   const t = useTranslations("ProductDetails");
   const tColors = useTranslations("ProductCard.colors");
 
-  const { isInCart: isCartInCart, isHydrated } = useCart();
+  const { isInCart: isCartInCart, getItemQuantity, isHydrated } = useCart();
   const context = useProductDetails();
   const { data: sizeGuide } = useAbayaSizeGuide();
 
@@ -91,6 +91,12 @@ export function ProductDetailsHero({
   const setSelectedSize = context ? context.setSelectedSize : setLocalSize;
   const quantity = context ? context.quantity : localQuantity;
   const setQuantity = context ? context.setQuantity : setLocalQuantity;
+  const maxQuantity = context
+    ? context.maxQuantity
+    : getMaxSelectableQuantity(
+        product,
+        isHydrated ? getItemQuantity(product.id) : 0,
+      );
   const isAdded = context ? context.isAdded : localIsAdded;
   const setIsAdded = context ? context.setIsAdded : setLocalIsAdded;
   const inCart = context
@@ -606,8 +612,11 @@ export function ProductDetailsHero({
                 <button
                   type="button"
                   aria-label={t("increaseQuantity")}
-                  onClick={() => setQuantity((q) => Math.min(10, q + 1))}
-                  className="flex size-11 items-center justify-center rounded-e-xl text-foreground transition-colors hover:bg-muted"
+                  disabled={quantity >= maxQuantity}
+                  onClick={() =>
+                    setQuantity((q) => Math.min(maxQuantity, q + 1))
+                  }
+                  className="flex size-11 items-center justify-center rounded-e-xl text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-30"
                 >
                   <Plus className="size-4" />
                 </button>
@@ -639,6 +648,7 @@ export function ProductDetailsHero({
                   size="lg"
                   disabled={
                     !product.inStock ||
+                    maxQuantity <= 0 ||
                     (product.sizes.length > 0 && !selectedSize)
                   }
                   onClick={handleAddToCart}

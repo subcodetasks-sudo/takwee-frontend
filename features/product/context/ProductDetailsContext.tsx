@@ -2,7 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useCart, useCartFly } from "@/features/cart";
+import {
+  getMaxSelectableQuantity,
+  useCart,
+  useCartFly,
+} from "@/features/cart";
 import { useWishlist } from "@/features/wishlist";
 import { gooeyToast } from "@/components/ui/goey-toaster";
 import type { AbayaSize, Product } from "../types";
@@ -18,6 +22,7 @@ export interface ProductDetailsContextValue {
   setSelectedSize: (size: AbayaSize | null) => void;
   quantity: number;
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
+  maxQuantity: number;
   isAdded: boolean;
   setIsAdded: React.Dispatch<React.SetStateAction<boolean>>;
   isWishlisted: boolean;
@@ -47,7 +52,12 @@ export function ProductDetailsProvider({
   onAddToCart,
   children,
 }: ProductDetailsProviderProps) {
-  const { addItem, isInCart: isCartInCart, isHydrated } = useCart();
+  const {
+    addItem,
+    getItemQuantity,
+    isInCart: isCartInCart,
+    isHydrated,
+  } = useCart();
   const { flyToCart } = useCartFly();
   const { isWishlisted: isProductWishlisted, toggleItem } = useWishlist();
   const tCart = useTranslations("CartPage.toasts");
@@ -62,11 +72,21 @@ export function ProductDetailsProvider({
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
 
+  const inCartQty = isHydrated ? getItemQuantity(product.id) : 0;
+  const maxQuantity = getMaxSelectableQuantity(product, inCartQty);
+
   useEffect(() => {
     if (!isAdded) return;
     const timer = setTimeout(() => setIsAdded(false), 1600);
     return () => clearTimeout(timer);
   }, [isAdded]);
+
+  useEffect(() => {
+    setQuantity((q) => {
+      if (maxQuantity <= 0) return 1;
+      return Math.min(q, maxQuantity);
+    });
+  }, [maxQuantity]);
 
   const selectedColor =
     product.colors.find((color) => color.id === selectedColorId) ??
@@ -95,11 +115,21 @@ export function ProductDetailsProvider({
       product.images?.[0] ??
       product.colors[0]?.images[0] ??
       "";
-    addItem(product, {
+    const result = addItem(product, {
       selectedColorId: colorId,
       selectedSize: selectedSize ?? undefined,
       quantity,
     });
+
+    if (result.added <= 0) {
+      gooeyToast.error(
+        result.stockLimit != null && result.stockLimit > 0
+          ? tCart("stockLimit", { count: result.stockLimit })
+          : tCart("stockLimitReached"),
+      );
+      return;
+    }
+
     if (origin) {
       flyToCart({
         origin,
@@ -111,10 +141,14 @@ export function ProductDetailsProvider({
       product,
       colorId: colorId ?? "",
       size: (selectedSize ?? "") as AbayaSize,
-      quantity,
+      quantity: result.added,
     });
     setIsAdded(true);
-    gooeyToast.success(tCart("added"));
+    if (result.capped && result.stockLimit != null) {
+      gooeyToast.warning(tCart("stockLimit", { count: result.stockLimit }));
+    } else {
+      gooeyToast.success(tCart("added"));
+    }
   };
 
   const handleToggleWishlist = () => {
@@ -138,6 +172,7 @@ export function ProductDetailsProvider({
         setSelectedSize,
         quantity,
         setQuantity,
+        maxQuantity,
         isAdded,
         setIsAdded,
         isWishlisted,

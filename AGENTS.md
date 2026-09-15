@@ -136,7 +136,7 @@ Home content is loaded from the backend **`GET /api/v1/home`**.
 - [`HeroCarousel`](features/home/components/HeroCarousel.tsx) → `heroes`
 - [`CategoriesSection`](features/home/components/CategoriesSection.tsx) → `categories` (home page tiles only)
 - [`AdditionalSections`](features/home/components/AdditionalSections.tsx) → `sections` (products grouped by category)
-- [`Header`](components/common/Header.tsx) announcement ribbon → **`advertisement_tapes` only** (via `announcementText`); falls back to `Navigation.announcement` i18n when empty
+- [`Header`](components/common/Header.tsx) announcement ribbon → **`advertisement_tapes` only** (via `announcementText`); hidden when empty / no response
 
 Header / footer **nav category lists** come from [`features/categories`](features/categories/) (`GET /api/v1/categories`), not from this home endpoint.
 

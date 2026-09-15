@@ -49,7 +49,14 @@ export function CartContent() {
   };
 
   const handleUpdateQuantity = (id: string, qty: number) => {
-    updateQuantity(id, qty);
+    const result = updateQuantity(id, qty);
+    if (result.capped) {
+      gooeyToast.warning(
+        result.stockLimit != null && result.stockLimit > 0
+          ? tToasts("stockLimit", { count: result.stockLimit })
+          : tToasts("stockLimitReached"),
+      );
+    }
   };
 
   if (!isHydrated) {
@@ -89,15 +96,22 @@ export function CartContent() {
               className="space-y-2.5 sm:space-y-4"
             >
               <AnimatePresence mode="popLayout">
-                {items.map((item, index) => (
-                  <CartItemRow
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemove={handleRemoveItem}
-                  />
-                ))}
+                {items.map((item, index) => {
+                  const productQuantityInCart = items
+                    .filter((line) => line.productId === item.productId)
+                    .reduce((sum, line) => sum + line.quantity, 0);
+
+                  return (
+                    <CartItemRow
+                      key={item.id}
+                      item={item}
+                      index={index}
+                      productQuantityInCart={productQuantityInCart}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      onRemove={handleRemoveItem}
+                    />
+                  );
+                })}
               </AnimatePresence>
             </motion.div>
 

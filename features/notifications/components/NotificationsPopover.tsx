@@ -56,7 +56,7 @@ export function NotificationsPopover() {
     deleteNotification,
     isLoading,
     isAuthenticated,
-  } = useNotifications();
+  } = useNotifications({ loadList: open });
 
   const hasUnread = unreadCount > 0;
   const isRtl = locale === "ar";

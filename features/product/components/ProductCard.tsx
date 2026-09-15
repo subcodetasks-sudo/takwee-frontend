@@ -33,7 +33,7 @@ import { Plus } from "@/components/animate-ui/icons/plus";
 import { cn } from "@/lib/utils";
 import { gooeyToast } from "@/components/ui/goey-toaster";
 import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
-import { useCart, useCartFly } from "@/features/cart";
+import { getMaxSelectableQuantity, useCart, useCartFly } from "@/features/cart";
 import { PRODUCT_SWATCH_CLASSES, type Product, type ProductColor } from "../types";
 import { ProductPrice } from "./ProductPrice";
 import { Check } from "@/components/animate-ui/icons/check";
@@ -62,7 +62,7 @@ export function ProductCard({
   const locale = useLocale();
   const isRtl = locale === "ar";
   const { isWishlisted: isProductWishlisted, toggleItem } = useWishlist();
-  const { addItem, isInCart, isHydrated } = useCart();
+  const { addItem, getItemQuantity, isInCart, isHydrated } = useCart();
   const { flyToCart } = useCartFly();
 
   const [selectedColorId, setSelectedColorId] = useState(product.colors[0]?.id);
@@ -79,6 +79,9 @@ export function ProductCard({
   const [isAdded, setIsAdded] = useState(false);
   const isWishlisted = isProductWishlisted(product.id);
   const inCart = (isHydrated && isInCart(product.id)) || isAdded;
+  const atStockLimit =
+    isHydrated &&
+    getMaxSelectableQuantity(product, getItemQuantity(product.id)) <= 0;
 
   useEffect(() => {
     if (!isAdded) return;
@@ -95,11 +98,21 @@ export function ProductCard({
     const colorId = selectedColor?.id ?? product.colors[0]?.id;
     const imageUrl =
       selectedColor?.images[0] ?? product.colors[0]?.images[0] ?? "";
-    addItem(product, {
+    const result = addItem(product, {
       selectedColorId: colorId,
       selectedSize: product.sizes[0]?.name,
       quantity: 1,
     });
+
+    if (result.added <= 0) {
+      gooeyToast.error(
+        result.stockLimit != null && result.stockLimit > 0
+          ? tCart("stockLimit", { count: result.stockLimit })
+          : tCart("stockLimitReached"),
+      );
+      return;
+    }
+
     flyToCart({
       origin: e.currentTarget,
       imageUrl,
@@ -107,7 +120,11 @@ export function ProductCard({
     });
     onAddToCart?.(product, colorId);
     setIsAdded(true);
-    gooeyToast.success(tCart("added"));
+    if (result.capped && result.stockLimit != null) {
+      gooeyToast.warning(tCart("stockLimit", { count: result.stockLimit }));
+    } else {
+      gooeyToast.success(tCart("added"));
+    }
   };
 
   const handleToggleWishlist = (e: React.MouseEvent<HTMLElement>) => {
@@ -353,18 +370,20 @@ export function ProductCard({
                   <TooltipTrigger
                     type="button"
                     onClick={handleAddToCart}
-                    disabled={!product.inStock}
+                    disabled={!product.inStock || atStockLimit}
                     aria-label={
                       !product.inStock
                         ? t("outOfStock")
-                        : isAdded
-                          ? t("addedToCart")
-                          : t("addToCart")
+                        : atStockLimit
+                          ? tCart("stockLimitReached")
+                          : isAdded
+                            ? t("addedToCart")
+                            : t("addToCart")
                     }
                     className={cn(
                       "flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-md border transition-all duration-200 outline-none select-none",
                       "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                      !product.inStock
+                      !product.inStock || atStockLimit
                         ? "cursor-not-allowed border-border/60 bg-muted text-muted-foreground opacity-60"
                         : isAdded
                           ? "cursor-pointer bg-success text-success-foreground border-success"

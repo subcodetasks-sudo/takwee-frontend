@@ -1354,7 +1354,9 @@
       "added": "Added to shopping bag",
       "removed": "Removed from shopping bag",
       "cleared": "Shopping bag cleared",
-      "updated": "Cart updated"
+      "updated": "Cart updated",
+      "stockLimit": "Only {count, plural, one {# item} other {# items}} available in stock",
+      "stockLimitReached": "No more units available in stock"
     }
   },
   "CheckoutPage": {

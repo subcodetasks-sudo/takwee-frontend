@@ -22,7 +22,12 @@ export const notificationsQueryKey = (locale: string) =>
 export const unreadCountQueryKey = (locale: string) =>
   [...NOTIFICATIONS_QUERY_KEY, locale, "unread-count"] as const;
 
-export function useNotifications() {
+export interface UseNotificationsOptions {
+  loadList?: boolean;
+}
+
+export function useNotifications(options?: UseNotificationsOptions) {
+  const { loadList = true } = options ?? {};
   const locale = useLocale();
   const queryClient = useQueryClient();
   const { session, isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -33,8 +38,8 @@ export function useNotifications() {
   const listQuery = useQuery<NotificationItem[]>({
     queryKey: listKey,
     queryFn: () => fetchNotifications(token!, locale),
-    enabled: isAuthenticated && Boolean(token),
-    staleTime: 0,
+    enabled: isAuthenticated && Boolean(token) && loadList,
+    staleTime: 30_000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     refetchOnReconnect: true,
@@ -44,10 +49,8 @@ export function useNotifications() {
     queryKey: unreadKey,
     queryFn: () => fetchUnreadCount(token!, locale),
     enabled: isAuthenticated && Boolean(token),
-    staleTime: 0,
-    // Near-realtime while the tab is focused (FCM still accelerates when present).
-    refetchInterval: 3000,
-    refetchIntervalInBackground: false,
+    staleTime: 30_000,
+    // Realtime FCM pushes invalidate this query immediately via useFcmPush.
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     refetchOnReconnect: true,

@@ -56,7 +56,7 @@ export function Header() {
 
   const brandLabel = t("brandName");
   const isArabic = locale === "ar";
-  const ribbonText = announcementText || t("announcement");
+  const ribbonText = announcementText?.trim() || "";
   const showFavoriteCount = isWishlistHydrated && favoriteItemCount > 0;
   const showCartCount = isCartHydrated && cartItemCount > 0;
 
@@ -157,23 +157,25 @@ export function Header() {
     <header
       className={cn("sticky top-0 z-40 w-full", isMenuOpen && "z-[70]")}
     >
-      {/* Always pinned */}
-      <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary text-secondary-foreground">
-        <TextLoop
-          key={`${locale}-${ribbonText}`}
-          text={ribbonText}
-          dir={locale === "ar" ? "rtl" : "ltr"}
-          shape="line"
-          separator="❖"
-          speed={35}
-          fontSize={11}
-          fontWeight={600}
-          letterSpacing={1.25}
-          ribbon={false}
-          color="currentColor"
-          className="py-1 text-secondary-foreground"
-        />
-      </div>
+      {/* Always pinned — rendered only when advertisement text is present */}
+      {ribbonText ? (
+        <div className="relative z-20 w-full overflow-hidden border-b border-border/40 bg-secondary text-secondary-foreground">
+          <TextLoop
+            key={`${locale}-${ribbonText}`}
+            text={ribbonText}
+            dir={locale === "ar" ? "rtl" : "ltr"}
+            shape="line"
+            separator="❖"
+            speed={35}
+            fontSize={11}
+            fontWeight={600}
+            letterSpacing={1.25}
+            ribbon={false}
+            color="currentColor"
+            className="py-1 text-secondary-foreground"
+          />
+        </div>
+      ) : null}
 
       {/* Mobile: main bar slides under TextLoop (old animation). Desktop: stays pinned. */}
       <motion.div
