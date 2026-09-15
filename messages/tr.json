@@ -1,6 +1,6 @@
 {
   "HomePage": {
-    "title": "Linen Line Butik",
+    "title": "Takween",
     "description": "Özellik geliştirmeye hazır boş ana sayfa.",
     "switchLocale": "English"
   },
@@ -37,7 +37,7 @@
     },
     "preferences": {
       "title": "Tercihler ve Deneyim",
-      "subtitle": "İletişim kanallarını, butik temasını ve bölgesel gezinme seçeneklerini yönetin.",
+      "subtitle": "İletişim kanallarını, mağaza temasını ve bölgesel gezinme seçeneklerini yönetin.",
       "saved": "Tercihler başarıyla kaydedildi.",
       "notifications": {
         "title": "Bildirim Kanalları",
@@ -51,10 +51,10 @@
       },
       "appearance": {
         "title": "Görünüm ve Tema",
-        "subtitle": "Butik görsel atmosferini ve katalog yerleşim yoğunluğunu özelleştirin.",
+        "subtitle": "Mağaza görsel atmosferini ve katalog yerleşim yoğunluğunu özelleştirin.",
         "theme": "Renk teması",
         "themeSystem": "Sistem varsayılanı",
-        "themeLight": "Doğal Keten (Açık)",
+        "themeLight": "Doğal El yapımı (Açık)",
         "themeDark": "Zarif Gece (Koyu)",
         "compactMode": "Kompakt yerleşim",
         "compactModeHint": "Daha yoğun katalog görünümleri ve daraltılmış boşluklar."
@@ -66,7 +66,7 @@
     },
     "orders": {
       "metaTitle": "Siparişlerim",
-      "metaDescription": "Linen Line siparişlerinizi görüntüleyin ve takip edin.",
+      "metaDescription": "Takween siparişlerinizi görüntüleyin ve takip edin.",
       "title": "Siparişlerim",
       "subtitle": "Son alışverişlerinizin sakin bir kaydı.",
       "backToAccount": "Hesaba dön",
@@ -191,7 +191,7 @@
         "submitError": "Değerlendirme gönderilemedi. Lütfen tekrar deneyin.",
         "submitSuccess": "Değerlendirmeniz başarıyla gönderildi.",
         "successTitle": "Değerlendirmeniz için teşekkürler!",
-        "successMessage": "Geri bildiriminiz atölyemize ve mütevazı moda tutkunlarına ilham veriyor."
+        "successMessage": "Geri bildiriminiz atölyemize ve el yapımı moda tutkunlarına ilham veriyor."
       },
       "empty": {
         "title": "Henüz sipariş yok",
@@ -367,45 +367,47 @@
   },
   "Categories": {
     "title": "Kategoriye Göre Alışveriş",
-    "subtitle": "Günlük ketenden özel gün silüetlerine kadar özenle seçilmiş abaya ve temel parçaları keşfedin.",
+    "subtitle": "Günlük el yapımıden özel gün silüetlerine kadar özenle seçilmiş el yapımı parça ve temel parçaları keşfedin.",
     "loading": "Kategoriler yükleniyor",
-    "linen": "Keten Koleksiyonu",
-    "casual": "Günlük Abayalar",
-    "formal": "Özel Gün & Abiye",
-    "travel": "Seyahat Abayaları",
-    "inners": "İçlik & Elbiseler",
-    "accessories": "Şal & Aksesuarlar"
+    "linen": "El Yapımı Koleksiyon",
+    "casual": "Günlük Şallar",
+    "formal": "Özel Gün & Aksesuar",
+    "travel": "Seyahat Şapka & Şalları",
+    "inners": "Yumuşak Katmanlar",
+    "accessories": "Şapka & Aksesuarlar"
   },
   "Hero": {
     "cta": "Koleksiyonu keşfedin",
     "ordersCta": "Siparişlerinizi takip edin",
     "loading": "Öne çıkan koleksiyon yükleniyor",
     "goToSlide": "{index}. slayta git",
-    "slide1Tag": "Saf Doğal Keten",
-    "slide1Title": "Doğal Ketende Kusursuz Zarafet",
-    "slide1Description": "Hafif, nefes alabilen keten dokuları ve çağdaş mütevazı lüks için tasarlanmış mimari kesimler.",
+    "slide1Tag": "Doğal El Yapımı Elyaf",
+    "slide1Title": "El Yapımında Kusursuz Sıcaklık",
+    "slide1Description": "Hafif, nefes alabilen el yapımı dokuları ve çağdaş el yapımı lüks için tasarlanmış mimari kesimler.",
     "slide1Cta": "Koleksiyonu Keşfet",
     "slide2Tag": "Usta İşi Nakış",
     "slide2Title": "Zeytin Yeşili Miras Serisi",
     "slide2Description": "Akdeniz renklerinden ilham alan ve rafine minimalist kesimlerle birleşen el işçiliği nakış detayları.",
     "slide2Cta": "Seriyi İncele",
     "slide3Tag": "Özel Gün Şıklığı",
-    "slide3Title": "İpek & Keten Gece Işıltısı",
-    "slide3Description": "Özel davetleriniz için tasarlanmış, zarif altın işlemeli dökümlü asil abaya tasarımı.",
-    "slide3Cta": "Abiyeleri Keşfet"
+    "slide3Title": "İpek & Elyaf Gece Işıltısı",
+    "slide3Description": "Özel davetleriniz için tasarlanmış, zarif altın işlemeli dökümlü asil el yapımı parça tasarımı.",
+    "slide3Cta": "Yumuşak Şapkaları Keşfet"
   },
   "Navigation": {
+    "brandName": "Takween",
+    "logoTagline": "El Yapımı Butik",
     "home": "Ana Sayfa",
     "newArrivals": "Yeni Gelenler",
     "allAbayas": "Tüm Koleksiyonlar",
-    "linenCollection": "Keten Koleksiyonu",
-    "casualAbayas": "Günlük Abayalar",
-    "formalAbayas": "Özel Gün & Abiye",
-    "travelAbayas": "Seyahat Abayaları",
-    "dressesAndInners": "İçlik & Elbiseler",
-    "accessories": "Şal & Aksesuarlar",
+    "linenCollection": "El Yapımı Koleksiyon",
+    "casualAbayas": "Günlük Şallar",
+    "formalAbayas": "Özel Gün & Aksesuar",
+    "travelAbayas": "Seyahat Şapka & Şalları",
+    "dressesAndInners": "Yumuşak Katmanlar",
+    "accessories": "Şapka & Aksesuarlar",
     "sale": "İndirim",
-    "searchPlaceholder": "Abaya, kumaş veya kesim arayın...",
+    "searchPlaceholder": "El yapımı parça, kumaş veya kesim arayın...",
     "searchButton": "Ara",
     "searchResults": "Arama sonuçları",
     "searchResultCount": "{count} ürün",
@@ -427,19 +429,19 @@
     "language": "Dil",
     "storeSettings": "Ayarlar",
     "menu": "Menü",
-    "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf Keten Koleksiyonumuzu Keşfedin"
+    "announcement": "Dünya Çapında & Bölgesel Hızlı Teslimat | Saf El Yapımı Koleksiyonmuzu Keşfedin"
   },
   "GlobalSettings": {
-    "metaTitle": "Butik Tercihleri ve Ayarlar",
-    "metaDescription": "Butik gezinme deneyiminizi, temayı, dili ve para birimini özelleştirin.",
-    "title": "Butik Tercihleri",
-    "subtitle": "Butik atmosferini, tercih ettiğiniz dili ve bölgesel para biriminizi ayarlayın.",
+    "metaTitle": "Mağaza Tercihleri ve Ayarlar",
+    "metaDescription": "Mağaza gezinme deneyiminizi, temayı, dili ve para birimini özelleştirin.",
+    "title": "Mağaza Tercihleri",
+    "subtitle": "Mağaza atmosferini, tercih ettiğiniz dili ve bölgesel para biriminizi ayarlayın.",
     "backHome": "Butiğe dön",
     "sections": {
       "appearance": "Atmosfer ve Tema",
       "appearanceDesc": "Ortamınıza en uygun aydınlatma ve tema estetiğini seçin.",
       "language": "Dil Seçimi",
-      "languageDesc": "Butikte tercih ettiğiniz görüntüleme ve okuma dilini belirleyin.",
+      "languageDesc": "Mağazate tercih ettiğiniz görüntüleme ve okuma dilini belirleyin.",
       "currency": "Para Birimi",
       "currencyDesc": "Anlık fiyatlandırma ve sepet tutarları için para biriminizi seçin.",
       "density": "Görünüm Yoğunluğu",
@@ -448,8 +450,8 @@
     "theme": {
       "system": "Sistem Varsayılanı",
       "systemDesc": "Cihazınızın görüntü moduyla otomatik olarak eşitlenir",
-      "light": "Keten Işıltısı (Açık)",
-      "lightDesc": "Ham keten kumaşlarını yansıtan yumuşak fildişi tonları",
+      "light": "El yapımı Işıltısı (Açık)",
+      "lightDesc": "Ham el yapımı kumaşlarını yansıtan yumuşak fildişi tonları",
       "dark": "Gece Zarafeti (Koyu)",
       "darkDesc": "Zarif ve dinlendirici bir akşam şıklığı için koyu tonlar"
     },
@@ -479,7 +481,7 @@
       "authenticatedTitle": "Hesap ve güvenlik ayarlarını mı arıyorsunuz?",
       "authenticatedSubtitle": "Adınızı, şifrenizi, teslimat adreslerinizi ve bildirim kanallarınızı özel hesabınızdan yönetin.",
       "manageAccount": "Hesap Ayarlarına Git",
-      "guestTitle": "Linen Line hesabınız var mı?",
+      "guestTitle": "Takween hesabınız var mı?",
       "guestSubtitle": "Kayıtlı sipariş geçmişinize, özel dikim taleplerinize ve teslimat adreslerinize erişmek için giriş yapın.",
       "signIn": "Hesaba Giriş Yap"
     },
@@ -501,7 +503,7 @@
     "delete": "Bildirimi sil",
     "signInHint": "Güncellemeleri görmek için oturum açın",
     "signInTitle": "Oturum açma gerekli",
-    "signInDescription": "Sipariş güncellemeleri ve seçili butik fırsatları için oturum açın.",
+    "signInDescription": "Sipariş güncellemeleri ve seçili mağaza fırsatları için oturum açın.",
     "signInCta": "Oturum aç"
   },
   "AdditionalSections": {
@@ -511,17 +513,17 @@
     "sections": {
       "newArrivals": {
         "title": "Yeni Gelenler",
-        "description": "Günlük rahatlık ve özel günler için özenle kesilmiş, toprak tonlarında keten abayalar.",
+        "description": "Günlük rahatlık ve özel günler için özenle kesilmiş, toprak tonlarında el yapımı el yapımı parçalar.",
         "bannerAlt": "Yeni gelenler koleksiyonu afişi"
       },
       "linenEdit": {
-        "title": "Keten Seçkisi",
-        "description": "Sıcak günler için nefes alan saf keten kesimler — sade, hafif ve her güne uygun.",
-        "bannerAlt": "Keten seçkisi afişi"
+        "title": "El yapımı Seçkisi",
+        "description": "Sıcak günler için nefes alan doğal elyaf kesimler — sade, hafif ve her güne uygun.",
+        "bannerAlt": "El yapımı seçkisi afişi"
       },
       "eveningEdit": {
         "title": "Akşam & Özel Gün",
-        "description": "Sakin bir lüks arayan akşamlar için, ince detaylı akışkan ipek-keten silüetler.",
+        "description": "Sakin bir lüks arayan akşamlar için, ince detaylı akışkan ipek karışımı silüetler.",
         "bannerAlt": "Akşam ve özel gün koleksiyonu afişi"
       }
     }
@@ -554,11 +556,11 @@
     }
   },
   "Products": {
-    "turkishJacquardPinkCord": "Pembe Kordonlu Türk Jakar Siyah Abaya",
-    "linenAline": "Klasik Keten A Kesim Abaya",
-    "oliveHeritage": "Zeytin Yeşili Nakışlı Miras Abaya",
-    "midnightSilk": "Gece İpek & Keten Abaya",
-    "travelKimono": "Seyahat Kimono Abaya"
+    "turkishJacquardPinkCord": "Pembe Kordonlu Türk Jakar Siyah El yapımı parça",
+    "linenAline": "Klasik El yapımı A Kesim El yapımı parça",
+    "oliveHeritage": "Zeytin Yeşili Nakışlı Miras El yapımı parça",
+    "midnightSilk": "Gece İpek & Elyaf El yapımı parça",
+    "travelKimono": "Seyahat Örgü Şalı"
   },
   "ProductDetails": {
     "modelNumber": "Model No.",
@@ -647,11 +649,11 @@
     },
     "heightCalculator": {
       "title": "Boyunuza Göre Beden Hesaplayın",
-      "subtitle": "İdeal abaya boyunuzu bulmak için boyunuzu girin",
+      "subtitle": "İdeal el yapımı parça boyunuzu bulmak için boyunuzu girin",
       "placeholder": "Örn. 165",
       "unit": "cm",
       "recommended": "Önerilen beden:",
-      "garmentLength": "Abaya boyu: {length} cm",
+      "garmentLength": "Ürün boyutu: {length} cm",
       "apply": "{size} bedenini seç",
       "applied": "Seçildi",
       "heelsTip": "Topuklu ayakkabı tercih ediyorsanız bir beden büyüğünü seçebilirsiniz.",
@@ -659,10 +661,10 @@
     },
     "sizeGuide": {
       "view": "Beden rehberi",
-      "title": "Abaya Beden ve Kalıp Rehberi",
-      "description": "Boyunuza en uygun abaya uzunluğunu seçin. Göğüs genişliği zarif ve rahat bir döküm sağlayacak şekilde tasarlanmıştır.",
+      "title": "Beden ve Kalıp Rehberi",
+      "description": "Boyunuza en uygun el yapımı parça uzunluğunu seçin. Göğüs genişliği zarif ve rahat bir döküm sağlayacak şekilde tasarlanmıştır.",
       "size": "Beden",
-      "length": "Abaya Boyu",
+      "length": "Ürün Boyutu",
       "bust": "Göğüs Genişliği",
       "height": "Önerilen Boy",
       "cm": "{value} cm",
@@ -672,10 +674,10 @@
       "tabHowToMeasure": "Nasıl Ölçülür",
       "unitCm": "CM",
       "unitInch": "İnç",
-      "measureLengthTitle": "Abaya Uzunluğu",
+      "measureLengthTitle": "Ürün Boyutu",
       "measureLengthDesc": "Omuzun en yüksek noktasından ayak bileğinize veya dilediğiniz etek hizasına kadar ölçün.",
       "measureBustTitle": "Göğüs ve Kalıp",
-      "measureBustDesc": "Kolların altından göğsün en geniş yerini ölçün. Abayalar rahat ve dökümlü bir siluete sahiptir.",
+      "measureBustDesc": "Kolların altından göğsün en geniş yerini ölçün. El yapımı parçalar rahat ve dökümlü bir siluete sahiptir.",
       "measureSleeveTitle": "Kol Boyu",
       "measureSleeveDesc": "Omuz kemiğinin dış ucundan el bileği kemiğine kadar ölçün.",
       "conciergeTitle": "Özel Boy ve Kalıp Danışmanlığı",
@@ -683,11 +685,11 @@
     },
     "products": {
       "turkishJacquardPinkCord": {
-        "description": "Hafif Türk yıkanmış jakardan mat siyah A kesim abaya; ön kenarlarda ve kare kol manşetlerinde yumuşak pembe kordon detayı, uyumlu şalla birlikte.",
+        "description": "Hafif Türk yıkanmış jakardan mat siyah A kesim el yapımı parça; ön kenarlarda ve kare kol manşetlerinde yumuşak pembe kordon detayı, uyumlu şalla birlikte.",
         "specs": {
           "design": {
             "title": "Tasarım",
-            "body": "Mat siyah sadelikle pembe kordon dokunuşunu birleştiren açık ön abaya."
+            "body": "Mat siyah sadelikle pembe kordon dokunuşunu birleştiren açık ön el yapımı parça."
           },
           "silhouette": {
             "title": "Kesim",
@@ -725,11 +727,11 @@
         }
       },
       "linenAline": {
-        "description": "Nefes alabilir saf ketenden klasik A kesim abaya; günlük zarafet ve uyumlu şal ile.",
+        "description": "Nefes alabilir doğal elyafden klasik A kesim el yapımı parça; günlük zarafet ve uyumlu şal ile.",
         "specs": {
           "design": {
             "title": "Tasarım",
-            "body": "Zamansız açık ön keten abaya; mimari ama yumuşak duruş."
+            "body": "Zamansız açık ön el yapımı el yapımı parça; mimari ama yumuşak duruş."
           },
           "silhouette": {
             "title": "Kesim",
@@ -737,7 +739,7 @@
           },
           "fabric": {
             "title": "Kumaş",
-            "body": "%100 saf organik keten — nefes alan, dokulu ve doğal zarif."
+            "body": "%100 saf doğal elyaf — nefes alan, dokulu ve doğal zarif."
           },
           "color": {
             "title": "Renk",
@@ -745,7 +747,7 @@
           },
           "finishes": {
             "title": "Detaylar & bitişler",
-            "body": "Sade butik bitişler.",
+            "body": "Sade mağaza bitişler.",
             "bullets": [
               "Temiz kenar işçiliği",
               "Hafif yapılı omuz",
@@ -767,11 +769,11 @@
         }
       },
       "oliveHeritage": {
-        "description": "İnce nakışlı zeytin yeşili miras abaya; özel günler için zarif kesim ve uyumlu şal.",
+        "description": "İnce nakışlı zeytin yeşili miras el yapımı parça; özel günler için zarif kesim ve uyumlu şal.",
         "specs": {
           "design": {
             "title": "Tasarım",
-            "body": "Modern mütevazı temel üzerinde miras nakış ilhamı."
+            "body": "Modern el yapımı temel üzerinde miras nakış ilhamı."
           },
           "silhouette": {
             "title": "Kesim",
@@ -779,7 +781,7 @@
           },
           "fabric": {
             "title": "Kumaş",
-            "body": "Yumuşak dokunuşlu premium krep-keten karışımı."
+            "body": "Yumuşak dokunuşlu premium krep-elyaf karışımı."
           },
           "color": {
             "title": "Renk",
@@ -809,11 +811,11 @@
         }
       },
       "midnightSilk": {
-        "description": "İpek-keten karışımı gece abayası — akışkan döküm, derin siyah ve akşam zarafeti.",
+        "description": "İpek-el yapımı karışımı gece el yapımı parçası — akışkan döküm, derin siyah ve akşam zarafeti.",
         "specs": {
           "design": {
             "title": "Tasarım",
-            "body": "İpek-keten derinliğiyle rafine bir akşam abayası."
+            "body": "İpek-el yapımı derinliğiyle rafine bir akşam el yapımı parçası."
           },
           "silhouette": {
             "title": "Kesim",
@@ -821,7 +823,7 @@
           },
           "fabric": {
             "title": "Kumaş",
-            "body": "Serin konfor ve hafif ışıltı için ipek-keten karışımı."
+            "body": "Serin konfor ve hafif ışıltı için ipek karışımı karışımı."
           },
           "color": {
             "title": "Renk",
@@ -846,24 +848,24 @@
           },
           "sheila": {
             "title": "Şal",
-            "body": "Uyumlu ipek-keten şal dahildir."
+            "body": "Uyumlu ipek karışımı şal dahildir."
           }
         }
       },
       "travelKimono": {
-        "description": "Hareket için tasarlanmış hafif seyahat kimono abayası — kolay katmanlar, nötr tonlar, paketlenir konfor.",
+        "description": "Hareket için tasarlanmış hafif seyahat örgü şalı — kolay katmanlar, nötr tonlar, paketlenir konfor.",
         "specs": {
           "design": {
             "title": "Tasarım",
-            "body": "Seyahat günleri ve şehir yürüyüşleri için kimono ilhamlı açık abaya."
+            "body": "Seyahat günleri ve şehir yürüyüşleri için açık ön örgü şal."
           },
           "silhouette": {
             "title": "Kesim",
-            "body": "Yumuşak omuz düşüşlü rahat kimono kesim."
+            "body": "Yumuşak omuz düşüşlü rahat şal kesimi."
           },
           "fabric": {
             "title": "Kumaş",
-            "body": "Yolda buruşmaya dirençli hafif keten karışımı."
+            "body": "Yolda buruşmaya dirençli hafif el yapımı karışımı."
           },
           "color": {
             "title": "Renk",
@@ -873,18 +875,18 @@
             "title": "Detaylar & bitişler",
             "body": "Seyahat kolaylığı için pratik detaylar.",
             "bullets": [
-              "Geniş kimono kollar",
+              "Geniş yumuşak kollar",
               "Hareket için yan yırtmaç",
               "Paketlenir hafif yapı"
             ]
           },
           "sleeves": {
             "title": "Kollar",
-            "body": "Yumuşak kıvrılabilir manşetli geniş kimono kollar."
+            "body": "Yumuşak kıvrılabilir manşetli geniş kollar."
           },
           "closure": {
             "title": "Kapama",
-            "body": "Tamamen açık kimono ön."
+            "body": "Tamamen açık şal önü."
           }
         }
       }
@@ -893,24 +895,24 @@
   "ShopPage": {
     "meta": {
       "title": "Mağaza",
-      "description": "Linen Line’ın premium abaye, keten silüet ve mütevazı temel parçalar koleksiyonunu keşfedin."
+      "description": "Takween'in premium el yapımı parça, el yapımı silüet ve el yapımı temel parçalar koleksiyonunu keşfedin."
     },
     "hero": {
       "title": "Koleksiyon",
-      "subtitle": "Her kategoriden özenle seçilmiş parçalar — keten, abaye, elbise ve aksesuarlar günlük zarafet için tamamlandı."
+      "subtitle": "Her kategoriden özenle seçilmiş parçalar — el yapımı, el yapımı parça, elbise ve aksesuarlar günlük zarafet için tamamlandı."
     },
     "filters": {
       "new-in": {
         "title": "Yeni Gelenler",
-        "subtitle": "Atölyeden yeni silüetler ve taze keten parçalar."
+        "subtitle": "Atölyeden yeni silüetler ve taze el yapımı parçalar."
       },
       "abayas": {
         "title": "Tüm Abayeler",
-        "subtitle": "Modern, mütevazı ve özel gün abayelerinin tamamını keşfedin."
+        "subtitle": "Modern, el yapımı ve özel gün el yapımı parçalarinin tamamını keşfedin."
       },
       "linen": {
-        "title": "Keten Koleksiyonu",
-        "subtitle": "Nefes alan saf keten ve keten karışımı abayeler."
+        "title": "El Yapımı Koleksiyon",
+        "subtitle": "Nefes alan doğal elyaf ve el yapımı karışımı el yapımı parçalar."
       },
       "casual": {
         "title": "Günlük Abayeler",
@@ -922,10 +924,10 @@
       },
       "travel": {
         "title": "Seyahat Abayeleri",
-        "subtitle": "Kolay paketlenir hafif kimono ve seyahat katmanları."
+        "subtitle": "Kolay paketlenir hafif şapka ve seyahat şalları."
       },
       "inners": {
-        "title": "İçlikler",
+        "title": "Yumuşak Katmanlar",
         "subtitle": "Abayenizin altında kusursuz oturan temel katmanlar."
       },
       "accessories": {
@@ -978,19 +980,21 @@
     "KWD": "Kuveyt Dinarı (KWD)"
   },
   "Footer": {
-    "brandTagline": "Saf ketenin zarafetini kutlayan seçkin mütevazı moda.",
+    "brandName": "Takween",
+    "logoTagline": "El Yapımı Butik",
+    "brandTagline": "Saf el yapımıin zarafetini kutlayan seçkin el yapımı moda.",
     "brandDescription": "Zahmetsiz bir duruş, mimari kesimler ve zamansız doğal lüks arayan modern kadınlar için tasarlandı.",
     "newsletter": {
       "badge": "Özel Ayrıcalıklar",
-      "title": "Keten Çemberine Katılın",
-      "description": "Yeni sezon koleksiyonlarına, özel stil önerilerine ve sınırlı sayıda üretilen abayalara öncelikli erişim sağlayın.",
+      "title": "El yapımı Çemberine Katılın",
+      "description": "Yeni sezon koleksiyonlarına, özel stil önerilerine ve sınırlı sayıda üretilen el yapımı parçalara öncelikli erişim sağlayın.",
       "guest": {
         "signupCta": "Hesap oluştur",
         "loginCta": "Giriş yapın",
-        "note": "Keten Çemberine katılmak ve üyelik ayrıcalıklarını açmak için hesap oluşturun veya giriş yapın."
+        "note": "El yapımı Çemberine katılmak ve üyelik ayrıcalıklarını açmak için hesap oluşturun veya giriş yapın."
       },
       "member": {
-        "title": "Keten Çemberindesiniz",
+        "title": "El yapımı Çemberindesiniz",
         "description": "Üyelik ayrıcalıklarınız aktif — özel sezon davetleri, stil önerileri ve sınırlı edisyonlara öncelikli erişim.",
         "status": "Ayrıcalıklar aktif",
         "ordersCta": "Siparişlerinizi görüntüleyin",
@@ -1000,7 +1004,7 @@
     },
     "perks": {
       "organicLinen": {
-        "title": "%100 Saf Doğal Keten",
+        "title": "%100 Doğal El Yapımı Elyaf",
         "desc": "Özenle dokunmuş nefes alabilir ve etik kumaşlar"
       },
       "shipping": {
@@ -1013,7 +1017,7 @@
       },
       "concierge": {
         "title": "Özel Stil Danışmanlığı",
-        "desc": "Abaya boy ve beden seçiminde uzman desteği"
+        "desc": "El yapımı parça boy ve beden seçiminde uzman desteği"
       }
     },
     "columns": {
@@ -1021,24 +1025,24 @@
       "services": "Müşteri Hizmetleri",
       "atelier": "Hakkımızda",
       "more": "Daha fazla",
-      "connect": "İletişim & Butik"
+      "connect": "İletişim & Mağaza"
     },
     "links": {
       "newArrivals": "Yeni Gelenler",
-      "linenCollection": "Saf Keten Serisi",
+      "linenCollection": "El Yapımı Temeller",
       "formal": "Özel Gün & Davet",
-      "casual": "Günlük Abayalar",
-      "travel": "Seyahat & Kimono Abayalar",
+      "casual": "Günlük Şallar",
+      "travel": "Seyahat Şapka & Şalları",
       "inners": "İç Elbiseler",
-      "sheilas": "Şallar & Aksesuarlar",
+      "sheilas": "Şapka & Aksesuarlar",
       "sizeGuide": "Beden & Boy Kılavuzu",
-      "fabricCare": "Keten Bakım Rehberi",
+      "fabricCare": "El yapımı Bakım Rehberi",
       "orderTracking": "Sipariş Takibi",
       "shippingInfo": "Teslimat & Kargo",
       "returns": "İade ve Değişim",
       "faq": "Sıkça Sorulan Sorular",
       "aboutUs": "Hikayemiz & Mirasımız",
-      "linenPhilosophy": "Keten Felsefesi",
+      "linenPhilosophy": "Zanaat Felsefesi",
       "sustainability": "Zanaatkarlık & Sürdürülebilirlik",
       "boutiques": "Mağazalarımız",
       "contact": "Bize Ulaşın",
@@ -1050,7 +1054,7 @@
       "title": "Doğrudan Danışmanlık",
       "hours": "Pzt - Cmt: 09:00 - 21:00 (TSİ)",
       "whatsapp": "WhatsApp ile İletişime Geçin",
-      "email": "concierge@linenlinestore.com",
+      "email": "concierge@takween.com",
       "liveSupport": "Canlı Destek",
       "viewMap": "Haritada görüntüle"
     },
@@ -1078,15 +1082,16 @@
     "hoursLabel": "Danışmanlık saatleri"
   },
   "Auth": {
-    "brandHeadline": "Ketenle sakin bir lüks",
-    "brandTagline": "Gündelik konfor ve özel anlar için özenle tasarlanmış abayeler ve mütevazı parçalar.",
-    "brandImageAlt": "Linen Line abaye editoryal portresi",
+    "brandName": "Takween",
+    "brandHeadline": "El yapımında sakin bir sıcaklık",
+    "brandTagline": "Gündelik konfor ve özel anlar için özenle tasarlanmış el yapımı parçalar ve el yapımı parçalar.",
+    "brandImageAlt": "Takween el yapımı parça editoryal portresi",
     "backToStore": "Mağazaya dönün",
     "login": {
       "metaTitle": "Giriş yapın",
-      "metaDescription": "Siparişlerinizi, favorilerinizi ve tercihlerinizi yönetmek için Linen Line hesabınıza giriş yapın.",
+      "metaDescription": "Siparişlerinizi, favorilerinizi ve tercihlerinizi yönetmek için Takween hesabınıza giriş yapın.",
       "title": "Giriş yapın",
-      "subtitle": "Linen Line’a hoş geldiniz. Hesabınıza devam edin.",
+      "subtitle": "Takween'e hoş geldiniz. Hesabınıza devam edin.",
       "email": "E-posta adresi",
       "emailPlaceholder": "name@example.com",
       "password": "Şifre",
@@ -1106,16 +1111,16 @@
         "passwordMinLength": "Şifre en az 8 karakter olmalıdır"
       },
       "welcomeBackTitle": "Tekrar hoş geldiniz, {name}!",
-      "welcomeBackDescription": "Sizi aramızda yeniden görmek harika. Linen Line ile ayrıcalıklı butik koleksiyonlarımızı keşfedin.",
+      "welcomeBackDescription": "Sizi aramızda yeniden görmek harika. Takween ile ayrıcalıklı mağaza koleksiyonlarımızı keşfedin.",
       "errorTitle": "Giriş yapılamadı",
       "errorDescription": "Lütfen e-posta adresinizi ve şifrenizi kontrol edip tekrar deneyin.",
       "networkErrorDescription": "Bağlantı hatası oluştu. Lütfen ağınızı kontrol edip tekrar deneyin."
     },
     "register": {
       "metaTitle": "Hesap oluşturun",
-      "metaDescription": "Sipariş takibi, yeni koleksiyonlara erken erişim ve kayıtlı tercihler için Linen Line’a katılın.",
+      "metaDescription": "Sipariş takibi, yeni koleksiyonlara erken erişim ve kayıtlı tercihler için Takween'e katılın.",
       "title": "Hesap oluşturun",
-      "subtitle": "Linen Line’a katılın. Sorunsuz alışverişin, sipariş takibinin ve özel ayrıcalıkların tadını çıkarın.",
+      "subtitle": "Takween'e katılın. Sorunsuz alışverişin, sipariş takibinin ve özel ayrıcalıkların tadını çıkarın.",
       "name": "Ad Soyad",
       "namePlaceholder": "Loai Hassan",
       "email": "E-posta adresi",
@@ -1153,7 +1158,7 @@
     },
     "verify": {
       "metaTitle": "Hesabınızı doğrulayın",
-      "metaDescription": "Linen Line kaydınızı tamamlamak için e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.",
+      "metaDescription": "Takween kaydınızı tamamlamak için e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.",
       "title": "E-postanızı doğrulayın",
       "subtitle": "6 haneli doğrulama kodunu şu adrese gönderdik:",
       "subtitleFallback": "Hesap kaydınızı tamamlamak için e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.",
@@ -1188,7 +1193,7 @@
     },
     "forgotPassword": {
       "metaTitle": "Şifrenizi mi unuttunuz",
-      "metaDescription": "Linen Line hesap şifrenizi e-posta yoluyla güvenli şekilde sıfırlayın.",
+      "metaDescription": "Takween hesap şifrenizi e-posta yoluyla güvenli şekilde sıfırlayın.",
       "title": "Şifrenizi mi unuttunuz",
       "subtitle": "Hesabınıza bağlı e-posta adresinizi girin. Hesap varsa bir sıfırlama bağlantısı gönderilir.",
       "email": "E-posta adresi",
@@ -1206,7 +1211,7 @@
     },
     "resetPassword": {
       "metaTitle": "Şifreyi sıfırlayın",
-      "metaDescription": "Linen Line hesabınız için yeni bir şifre belirleyin.",
+      "metaDescription": "Takween hesabınız için yeni bir şifre belirleyin.",
       "title": "Şifreyi sıfırlayın",
       "subtitle": "Hesabınız için yeni bir şifre belirleyin. En az 8 karakter kullanın.",
       "invalidSubtitle": "Bu sıfırlama bağlantısı eksik veya artık geçerli değil.",
@@ -1233,10 +1238,9 @@
       }
     }
   },
-
   "WishlistPage": {
     "metaTitle": "İstek Listesi",
-    "metaDescription": "Linen Line Store'da kaydettiğiniz abaya ve özel tasarımları inceleyin.",
+    "metaDescription": "Takween'da kaydettiğiniz el yapımı parça ve özel tasarımları inceleyin.",
     "title": "İstek Listesi",
     "subtitle": "Kaydettiğiniz ve beğendiğiniz özel parçaların koleksiyonu.",
     "backToShop": "Mağazaya Dön",
@@ -1244,7 +1248,7 @@
     "empty": {
       "eyebrow": "Kişisel İstek Listeniz",
       "title": "Favori parçalarınızı bekleyen sakin bir köşe",
-      "description": "Tarzınıza hitap eden saf keten abaya ve özel tasarımları kaydedin. Kesimleri karşılaştırın, beden durumunu takip edin ve kişisel gardırobunuzu kendi ritminizde oluşturun.",
+      "description": "Tarzınıza hitap eden doğal elyaf el yapımı parça ve özel tasarımları kaydedin. Kesimleri karşılaştırın, beden durumunu takip edin ve kişisel gardırobunuzu kendi ritminizde oluşturun.",
       "cta": "Butiği Keşfet",
       "curatedTitle": "Popüler Koleksiyonlar",
       "features": {
@@ -1263,8 +1267,8 @@
       },
       "quickLinks": {
         "newIn": "Yeni Gelenler",
-        "linen": "Saf Keten",
-        "casual": "Günlük Abaya",
+        "linen": "Doğal Elyaf",
+        "casual": "Günlük Şal",
         "formal": "Özel Davet"
       }
     },
@@ -1279,10 +1283,9 @@
       "cleared": "Favori listeniz temizlendi"
     }
   },
-
   "CartPage": {
     "metaTitle": "Alışveriş Çantası",
-    "metaDescription": "Linen Line Store'da seçtiğiniz abaya ve özel tasarımları inceleyin.",
+    "metaDescription": "Takween'da seçtiğiniz el yapımı parça ve özel tasarımları inceleyin.",
     "title": "Alışveriş Çantası",
     "subtitle": "Özenle seçtiğiniz parçalar, tamamlanmayı bekliyor.",
     "backToShop": "Mağazaya Dön",
@@ -1290,7 +1293,7 @@
     "empty": {
       "eyebrow": "Çantanız Boş",
       "title": "Seçimlerinizi bekleyen zarif bir alan",
-      "description": "Henüz çantanıza bir abaya veya özel tasarım eklemediniz. Saf keten koleksiyonlarımızı ve zarif silüetlerimizi keşfedin.",
+      "description": "Henüz çantanıza bir el yapımı parça veya özel tasarım eklemediniz. Saf el yapımı koleksiyonlarımızı ve zarif silüetlerimizi keşfedin.",
       "cta": "Butiği Keşfet",
       "curatedTitle": "Popüler Koleksiyonlar",
       "features": {
@@ -1299,18 +1302,18 @@
           "description": "Tüm Körfez bölgesine hızlı ve güvenilir teslimat"
         },
         "packaging": {
-          "title": "Lüks Butik Paketleme",
+          "title": "Lüks Mağaza Paketleme",
           "description": "Hediye edilmeye hazır, zarif kutu ve sunum deneyimi"
         },
         "craft": {
-          "title": "Saf Keten & Usta İşçilik",
+          "title": "Doğal Elyaf & Usta İşçilik",
           "description": "Kusursuz terzilikle işlenmiş doğal ve kaliteli dokular"
         }
       },
       "quickLinks": {
         "newIn": "Yeni Gelenler",
-        "linen": "Saf Keten",
-        "casual": "Günlük Abaya",
+        "linen": "Doğal Elyaf",
+        "casual": "Günlük Şal",
         "formal": "Özel Davet"
       }
     },
@@ -1326,14 +1329,14 @@
       "subtotal": "Ara Toplam",
       "itemCount": "{count, plural, =0 {0 ürün} one {# ürün} other {# ürün}}",
       "estimatedTax": "Tahmini Vergi (%10 KDV)",
-      "taxTooltip": "Lüks butik ürünleri için tahmini katma değer vergisi.",
+      "taxTooltip": "Lüks mağaza ürünleri için tahmini katma değer vergisi.",
       "total": "Tahmini Toplam",
       "totalNote": "Ürün KDV (%10) dahildir.",
       "checkoutButton": "Ödemeye Geç",
       "scrollToSummary": "Sipariş Özeti",
       "guarantees": {
         "secure": "256-bit SSL ile güvenli ödeme",
-        "packaging": "Özel butik kutusunda lüks paketleme",
+        "packaging": "Özel mağaza kutusunda lüks paketleme",
         "returns": "14 gün içinde kolay iade imkanı"
       }
     },
@@ -1356,7 +1359,7 @@
   },
   "CheckoutPage": {
     "metaTitle": "Ödeme",
-    "metaDescription": "Linen Line siparişinizi güvenli butik ödeme ile tamamlayın.",
+    "metaDescription": "Takween siparişinizi güvenli mağaza ödeme ile tamamlayın.",
     "title": "Ödeme",
     "subtitle": "Siparişi vermek için teslimat bilgilerini ve ödemeyi onaylayın.",
     "backToCart": "Alışveriş çantasına dön",
@@ -1364,7 +1367,7 @@
     "itemCount": "{count, plural, =0 {Ürün yok} one {# ürün} other {# ürün}}",
     "empty": {
       "title": "Ödenecek bir şey yok",
-      "description": "Alışveriş çantanız boş. Ödemeye geçmeden önce butikten bir parça ekleyin.",
+      "description": "Alışveriş çantanız boş. Ödemeye geçmeden önce mağazaten bir parça ekleyin.",
       "ctaShop": "Koleksiyonu keşfedin",
       "ctaCart": "Alışveriş çantasını görüntüle"
     },
@@ -1380,7 +1383,7 @@
     },
     "payment": {
       "title": "Ödeme belgesi",
-      "subtitle": "Sipariş tutarını butik hesabına transfer edin, ardından dekont fotoğrafını yükleyin.",
+      "subtitle": "Sipariş tutarını mağaza hesabına transfer edin, ardından dekont fotoğrafını yükleyin.",
       "methods": {
         "card": {
           "label": "Kartla ödeme",
@@ -1396,7 +1399,7 @@
         }
       },
       "bankDetails": {
-        "title": "Butik banka bilgileri",
+        "title": "Mağaza banka bilgileri",
         "bankName": "Banka",
         "accountHolder": "Hesap sahibi",
         "iban": "IBAN",
@@ -1438,7 +1441,7 @@
       "totalNote": "Ürün KDV’sini (%10) içerir. Kargo ücretsizdir.",
       "placeOrder": "Siparişi onayla",
       "placingOrder": "Sipariş onaylanıyor…",
-      "secureNote": "Güvenli butik ödeme",
+      "secureNote": "Güvenli mağaza ödeme",
       "scrollToSummary": "Sipariş Özeti",
       "itemCount": "{count, plural, =0 {0 ürün} one {# ürün} other {# ürün}}",
       "size": "Beden",
@@ -1465,7 +1468,7 @@
     },
     "confirmation": {
       "metaTitle": "Sipariş onaylandı",
-      "metaDescription": "Linen Line siparişiniz alındı.",
+      "metaDescription": "Takween siparişiniz alındı.",
       "eyebrow": "Sipariş onaylandı",
       "title": "Siparişiniz için teşekkürler",
       "description": "{number} numaralı siparişiniz alındı ve atölyede hazırlanıyor.",
@@ -1492,9 +1495,9 @@
       "total": "Toplam",
       "perks": {
         "craftTitle": "Özel Atölye İşçiliği",
-        "craftDesc": "Doğal ve kaliteli kumaşlardan özenle dikilmiş seçkin abaya tasarımları.",
+        "craftDesc": "Doğal ve kaliteli kumaşlardan özenle dikilmiş seçkin el yapımı parça tasarımları.",
         "packagingTitle": "Lüks Hediye Kutusu",
-        "packagingDesc": "Özel korumalı lüks Linen Line kutusunda şık unboxing deneyimi.",
+        "packagingDesc": "Özel korumalı lüks Takween kutusunda şık unboxing deneyimi.",
         "supportTitle": "Ayrıcalıklı Danışmanlık",
         "supportDesc": "Sipariş sonrası her türlü sorunuz için müşteri danışmanlarımız hazır."
       },
@@ -1508,7 +1511,6 @@
       }
     }
   },
-
   "OrderReceipt": {
     "title": "Sipariş makbuzu",
     "view": "Makbuz",
@@ -1529,7 +1531,7 @@
     "complimentary": "Ücretsiz",
     "total": "Toplam",
     "shippingAddress": "Teslimat",
-    "thankYou": "Linen Line’dan alışveriş yaptığınız için teşekkür ederiz. Sizi yeniden ağırlamayı dileriz.",
+    "thankYou": "Takween'den alışveriş yaptığınız için teşekkür ederiz. Sizi yeniden ağırlamayı dileriz.",
     "print": "Yazdır",
     "download": "PDF indir",
     "downloading": "PDF hazırlanıyor…",

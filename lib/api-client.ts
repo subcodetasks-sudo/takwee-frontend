@@ -29,6 +29,14 @@ export class ApiError<T = unknown> extends Error {
   }
 }
 
+/**
+ * Checks whether an HTTP status code corresponds to an unauthorized / unauthenticated error.
+ * Includes standard 401 Unauthorized as well as 402 (custom backend payment / unauthenticated code).
+ */
+export function isUnauthorizedStatus(status: number): boolean {
+  return status === 401 || status === 402;
+}
+
 export type QueryParams = Record<
   string,
   string | number | boolean | undefined | null | (string | number | boolean)[]
@@ -55,6 +63,101 @@ export interface RequestOptions extends Omit<RequestInit, "body"> {
    * Authentication bearer token or custom token resolver
    */
   token?: string | null;
+  /**
+   * Automatically logout the user and clear session cookies if a 401/402 response is received.
+   * Defaults to true.
+   */
+  handleUnauthorized?: boolean;
+}
+
+let isHandlingUnauthorized = false;
+
+/**
+ * Endpoints that should NOT trigger automatic logout when returning 401/402
+ * (e.g. login/register/reset where 401/402 represents invalid credentials).
+ */
+const BYPASS_UNAUTHORIZED_PATTERNS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/otp",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/verify",
+  "/api/auth/clear-session",
+];
+
+function shouldHandleUnauthorized(
+  endpoint: string,
+  options: RequestOptions,
+): boolean {
+  if (options.handleUnauthorized === false) return false;
+  return !BYPASS_UNAUTHORIZED_PATTERNS.some((pattern) =>
+    endpoint.includes(pattern),
+  );
+}
+
+/**
+ * Executes client-side unauthorized handling:
+ * 1. Clears accessible client cookies.
+ * 2. Calls the server route to delete HttpOnly cookies.
+ * 3. Dispatches "auth:unauthorized" window event for React Query / UI sync.
+ * 4. Redirects to login if current page is protected (/me, /checkout).
+ */
+export async function handleClientUnauthorized(
+  endpoint?: string,
+): Promise<void> {
+  if (typeof window === "undefined") return;
+
+  if (isHandlingUnauthorized) return;
+  isHandlingUnauthorized = true;
+
+  try {
+    // 1. Delete client-accessible cookies
+    const cookieNames = ["ll_session", "ll_refresh_token", "ll_user", "token"];
+    for (const name of cookieNames) {
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0`;
+      if (window.location.hostname) {
+        document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0`;
+      }
+    }
+
+    // 2. Call internal route to delete secure HttpOnly cookies
+    await fetch("/api/auth/clear-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+    }).catch(() => null);
+
+    // 3. Dispatch window event for React Query / listeners
+    window.dispatchEvent(
+      new CustomEvent("auth:unauthorized", {
+        detail: { endpoint, timestamp: Date.now() },
+      }),
+    );
+
+    // 4. Redirect if user is on a protected route
+    const pathname = window.location.pathname;
+    const isProtected =
+      pathname.includes("/me") || pathname.includes("/checkout");
+
+    if (isProtected) {
+      const segments = pathname.split("/").filter(Boolean);
+      const firstSegment = segments[0];
+      const hasLocale = ["ar", "en", "tr"].includes(firstSegment);
+      const loginBase = hasLocale ? `/${firstSegment}/login` : "/login";
+      const redirectTarget = encodeURIComponent(
+        pathname + window.location.search,
+      );
+      window.location.href = `${loginBase}?redirect=${redirectTarget}`;
+    }
+  } catch (err) {
+    console.error("[api-client] Failed to handle unauthorized error:", err);
+  } finally {
+    // Reset debounce lock after 2 seconds
+    setTimeout(() => {
+      isHandlingUnauthorized = false;
+    }, 2000);
+  }
 }
 
 /**
@@ -209,6 +312,14 @@ export async function apiRequest<T = unknown>(
           ? (responseData as { message?: unknown; error?: unknown }).message ||
             (responseData as { message?: unknown; error?: unknown }).error
           : undefined;
+
+      if (
+        isUnauthorizedStatus(response.status) &&
+        shouldHandleUnauthorized(endpoint, options)
+      ) {
+        // Trigger client logout flow asynchronously (non-blocking)
+        void handleClientUnauthorized(endpoint);
+      }
 
       throw new ApiError(
         response.status,

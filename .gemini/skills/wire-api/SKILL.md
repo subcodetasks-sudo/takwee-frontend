@@ -1,14 +1,14 @@
 ---
 name: wire-api
 description: >-
-  Wire backend API endpoints into Linen Line Store features using lib/api-client
+  Wire backend API endpoints into Takween features using lib/api-client
   (http), optional lib/api-server (serverFetch / createServerAction), React Query
   hooks, TypeScript DTO↔view-model mappers, and lib/images resolveImageUrl. Use
   when connecting Postman/backend endpoints, replacing mocks with real API data,
   adding feature fetchers, or wiring home/catalog/auth/server-state.
 ---
 
-# Wire API (Linen Line Store)
+# Wire API (Takween)
 
 Follow this workflow whenever connecting a backend endpoint to the storefront.
 Canonical project rules also live in [`AGENTS.md`](../../../AGENTS.md) §§2, 4–5.

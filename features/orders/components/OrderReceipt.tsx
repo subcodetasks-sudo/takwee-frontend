@@ -90,8 +90,8 @@ export const OrderReceipt = forwardRef<HTMLDivElement, OrderReceiptProps>(
     const discountTRY = order.discountTRY ?? 0;
     const taxTRY = order.taxTRY ?? 0;
 
-    const logoSrc = siteLogo || "/imgs/logo-2.webp";
-    const displayName = appName || "Linen Line";
+    const logoSrc = siteLogo || "/imgs/logo.webp";
+    const displayName = appName || "Takween";
 
     /* Never use uppercase / letter-spacing on Arabic — breaks shaping in PDF capture */
     const sectionTitleClass = cn(
@@ -117,14 +117,12 @@ export const OrderReceipt = forwardRef<HTMLDivElement, OrderReceiptProps>(
         />
 
         <header className="flex flex-col items-center gap-2 border-b border-dashed border-primary-300 pb-4 text-center">
-          {/* plain img for reliable print/PDF capture */}
+          {/* plain img for reliable print/PDF capture — height-led so circular logos stay round */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={logoSrc}
             alt={displayName}
-            width={112}
-            height={40}
-            className="h-10 w-28 object-contain object-center"
+            className="mx-auto h-10 w-auto max-w-[7rem] object-contain object-center"
           />
           <p
             className={cn(

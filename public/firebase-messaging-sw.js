@@ -1,4 +1,4 @@
-/* Linen Line Store — Firebase Cloud Messaging service worker */
+/* Takween — Firebase Cloud Messaging service worker */
 /* global firebase, clients, importScripts, self */
 
 importScripts(
@@ -101,7 +101,7 @@ function payloadCopy(payload) {
   const title =
     (payload.notification && payload.notification.title) ||
     (payload.data && payload.data.title) ||
-    "Linen Line";
+    "Takween";
   const body =
     (payload.notification && payload.notification.body) ||
     (payload.data && (payload.data.body || payload.data.message)) ||

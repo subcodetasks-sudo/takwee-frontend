@@ -49,9 +49,11 @@ export function OrderReceiptDialog({
   const [open, setOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const receiptFileName = `Takween-Receipt-${order.number}`;
+
   const handlePrint = useReactToPrint({
     contentRef: receiptRef,
-    documentTitle: `Linen-Line-Receipt-${order.number}`,
+    documentTitle: receiptFileName,
     pageStyle: `
       @page { margin: 12mm; size: auto; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -80,6 +82,15 @@ export function OrderReceiptDialog({
             if (/[\u0600-\u06FF]/.test(el.textContent ?? "")) {
               el.style.textTransform = "none";
             }
+          });
+          // html2canvas often ignores object-fit — keep logo aspect ratio (circle, not oval)
+          cloned.querySelectorAll("img").forEach((img) => {
+            img.style.width = "auto";
+            img.style.height = "40px";
+            img.style.maxWidth = "112px";
+            img.style.objectFit = "contain";
+            img.removeAttribute("width");
+            img.removeAttribute("height");
           });
         },
       });
@@ -110,7 +121,7 @@ export function OrderReceiptDialog({
         heightLeft -= pageHeightMm;
       }
 
-      pdf.save(`Linen-Line-Receipt-${order.number}.pdf`);
+      pdf.save(`${receiptFileName}.pdf`);
     } catch {
       gooeyToast.error(t("downloadError"));
     } finally {

@@ -81,11 +81,29 @@ export function localizedSetting(
   return values.en ?? values.ar ?? values.tr;
 }
 
+const LEGACY_APP_NAMES = new Set([
+  "linenline",
+  "linenlinestore",
+  "linenlinestoreecommerce",
+]);
+
+/** Drop retired Linen Line brand strings so storefront falls back to Takween. */
+export function resolveAppName(
+  value: string | null | undefined,
+  fallback = "Takween",
+): string {
+  const trimmed = value?.trim();
+  if (!trimmed) return fallback;
+  const normalized = trimmed.toLowerCase().replace(/[\s_-]+/g, "");
+  if (LEGACY_APP_NAMES.has(normalized)) return fallback;
+  return trimmed;
+}
+
 export function mapSettings(items: ApiSettingItem[]): AppSettings {
   const map = new Map(items.map((item) => [item.key, item]));
 
   return {
-    appName: asString(pick(map, "app_name")) ?? "LINEN LINE",
+    appName: resolveAppName(asString(pick(map, "app_name"))),
     siteLogo: resolveMedia(pick(map, "site_logo")),
     siteFavicon: resolveMedia(pick(map, "site_favicon")),
     contactPhone: asString(pick(map, "contact_phone")),

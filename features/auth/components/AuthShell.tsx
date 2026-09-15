@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { LanguageDropdown } from "@/components/common/LanguageDropdown";
+import { getSettings } from "@/features/settings/api/get-settings";
 import { AuthGrainientBackground } from "./AuthGrainientBackground";
 import {
   AuthBrandCopyItem,
@@ -17,13 +18,16 @@ import {
 
 export async function AuthShell({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("Auth");
+  const settings = await getSettings();
+  const logoSrc = settings?.siteLogo || "/imgs/logo.webp";
+  const brandLabel = settings?.appName || t("brandName");
 
   return (
     <div className="flex min-h-dvh flex-1 flex-col lg:flex-row">
       <AuthBrandPanelMotion className="relative hidden min-h-dvh overflow-hidden lg:flex lg:w-[46%] xl:w-1/2">
         <AuthBrandImageMotion>
           <Image
-            src="/imgs/hero-slide-2.jpg"
+            src="/imgs/auth-brand.jpg"
             alt={t("brandImageAlt")}
             fill
             priority
@@ -39,18 +43,21 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
             <AuthBrandCopyItem>
               <Link
                 href="/"
-                className="inline-flex items-end gap-3 transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-3 transition-opacity hover:opacity-90"
                 aria-label={t("backToStore")}
               >
-                <Image
-                  src="/imgs/logo-2.webp"
-                  alt="Linen Line Store"
-                  width={140}
-                  height={52}
-                  className="h-10 w-auto object-contain brightness-0 invert"
-                />
-                <span className="font-heading text-sm font-semibold tracking-[0.2em] text-background uppercase">
-                  Linen Line
+                <span className="relative flex h-10 w-10 shrink-0 items-center justify-center">
+                  <Image
+                    src={logoSrc}
+                    alt={brandLabel}
+                    width={40}
+                    height={40}
+                    priority
+                    className="h-10 w-10 object-contain"
+                  />
+                </span>
+                <span className="font-heading text-sm font-semibold leading-none tracking-[0.2em] text-background uppercase">
+                  {brandLabel}
                 </span>
               </Link>
             </AuthBrandCopyItem>
@@ -59,7 +66,7 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
           <AuthBrandCopyMotion className="max-w-md space-y-3">
             <AuthBrandCopyItem>
               <p className="text-xs font-medium tracking-[0.22em] text-primary-200/90 uppercase">
-                Linen Line
+                {brandLabel}
               </p>
             </AuthBrandCopyItem>
             <AuthBrandCopyItem>
@@ -85,15 +92,18 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
             className="inline-flex items-center gap-2.5 lg:invisible lg:pointer-events-none"
             aria-label={t("backToStore")}
           >
-            <Image
-              src="/imgs/logo-2.webp"
-              alt="Linen Line Store"
-              width={120}
-              height={44}
-              className="h-8 w-auto object-contain sm:h-9"
-            />
-            <span className="hidden font-heading text-sm font-semibold tracking-wider text-foreground uppercase sm:inline">
-              Linen Line
+            <span className="relative flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9">
+              <Image
+                src={logoSrc}
+                alt={brandLabel}
+                width={36}
+                height={36}
+                priority
+                className="h-8 w-8 object-contain sm:h-9 sm:w-9"
+              />
+            </span>
+            <span className="hidden font-heading text-sm font-semibold leading-none tracking-wider text-foreground uppercase sm:inline">
+              {brandLabel}
             </span>
           </Link>
           <LanguageDropdown />

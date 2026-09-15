@@ -44,7 +44,7 @@ export function Header() {
   } = useCategories();
   const isCategoriesLoading =
     isCategoriesPending || isCategoriesQueryLoading || categories.length === 0;
-  const { appName, siteLogo } = useSettings();
+  const { siteLogo } = useSettings();
   const { itemCount: favoriteItemCount, isHydrated: isWishlistHydrated } =
     useWishlist();
   const { itemCount: cartItemCount, isHydrated: isCartHydrated } = useCart();
@@ -54,6 +54,8 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDesktopNav, setIsDesktopNav] = useState(false);
 
+  const brandLabel = t("brandName");
+  const isArabic = locale === "ar";
   const ribbonText = announcementText || t("announcement");
   const showFavoriteCount = isWishlistHydrated && favoriteItemCount > 0;
   const showCartCount = isCartHydrated && cartItemCount > 0;
@@ -198,12 +200,12 @@ export function Header() {
               href="/"
               draggable={false}
               className="flex shrink-0 items-center gap-2 transition-transform focus:outline-none active:scale-95 group sm:gap-3 select-none"
-              aria-label={`${appName} Home`}
+              aria-label={`${brandLabel} Home`}
             >
               <div className="relative flex h-7 w-auto items-center justify-center sm:h-12">
                 <Image
-                  src={siteLogo || "/imgs/logo-2.webp"}
-                  alt={`${appName} Logo`}
+                  src={siteLogo || "/imgs/logo.webp"}
+                  alt={`${brandLabel} Logo`}
                   width={150}
                   height={56}
                   priority
@@ -212,11 +214,25 @@ export function Header() {
                 />
               </div>
               <div className="hidden flex-col sm:flex">
-                <span className="font-heading text-base font-bold tracking-wider text-foreground uppercase transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-300 sm:text-lg">
-                  {appName}
+                <span
+                  className={cn(
+                    "text-base font-bold text-foreground transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-300 sm:text-lg",
+                    isArabic
+                      ? "font-noto-arabic"
+                      : "font-heading tracking-wider uppercase",
+                  )}
+                >
+                  {brandLabel}
                 </span>
-                <span className="text-[10px] -mt-0.5 font-medium tracking-widest text-muted-foreground uppercase">
-                  Abaya Boutique
+                <span
+                  className={cn(
+                    "text-[10px] -mt-0.5 font-medium text-muted-foreground",
+                    isArabic
+                      ? "font-noto-arabic"
+                      : "tracking-widest uppercase",
+                  )}
+                >
+                  {t("logoTagline")}
                 </span>
               </div>
             </Link>

@@ -20,8 +20,8 @@ export function MaintenancePage({ settings }: MaintenancePageProps) {
   const t = useTranslations("MaintenancePage");
   const whatsappUrl = whatsappHref(settings.contactWhatsapp);
   const email = settings.contactEmail;
-  const logoSrc = settings.siteLogo || "/imgs/logo-2.webp";
-  const brandName = settings.appName || "LINEN LINE";
+  const logoSrc = settings.siteLogo || "/imgs/logo.webp";
+  const brandName = settings.appName || "Takween";
 
   return (
     <main className="relative flex min-h-dvh flex-1 flex-col overflow-hidden bg-background text-foreground">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { getSession } from "../api/session";
 import { logoutAction } from "../api/actions";
 import {
@@ -32,6 +32,21 @@ export function useAuth(): UseAuthReturn {
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
   });
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, UNAUTHENTICATED_SNAPSHOT);
+      void queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      void queryClient.invalidateQueries({ queryKey: ["user-orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["user-addresses"] });
+      void queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
+  }, [queryClient]);
 
   const refresh = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: AUTH_SESSION_QUERY_KEY });

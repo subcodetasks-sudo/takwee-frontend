@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { LanguageDropdown } from "@/components/common/LanguageDropdown";
+import { getSettings } from "@/features/settings/api/get-settings";
 import { AuthGrainientBackground } from "./AuthGrainientBackground";
 import {
   AuthFormBodyMotion,
@@ -15,6 +16,9 @@ export async function AuthCenteredShell({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("Auth");
+  const settings = await getSettings();
+  const logoSrc = settings?.siteLogo || "/imgs/logo.webp";
+  const brandLabel = settings?.appName || t("brandName");
 
   return (
     <div className="relative flex min-h-dvh flex-col bg-background">
@@ -26,15 +30,18 @@ export async function AuthCenteredShell({
           className="inline-flex items-center gap-2.5 transition-opacity hover:opacity-85"
           aria-label={t("backToStore")}
         >
-          <Image
-            src="/imgs/logo-2.webp"
-            alt="Linen Line Store"
-            width={120}
-            height={44}
-            className="h-8 w-auto object-contain sm:h-9"
-          />
-          <span className="font-heading text-sm font-semibold tracking-wider text-foreground uppercase">
-            Linen Line
+          <span className="relative flex h-8 w-8 shrink-0 items-center justify-center sm:h-9 sm:w-9">
+            <Image
+              src={logoSrc}
+              alt={brandLabel}
+              width={36}
+              height={36}
+              priority
+              className="h-8 w-8 object-contain sm:h-9 sm:w-9"
+            />
+          </span>
+          <span className="font-heading text-sm font-semibold leading-none tracking-wider text-foreground uppercase">
+            {brandLabel}
           </span>
         </Link>
         <LanguageDropdown />

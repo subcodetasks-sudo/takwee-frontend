@@ -114,25 +114,25 @@ function AdditionalSectionBlock({
                 className={cn(
                   "pointer-events-none absolute inset-0",
                   tone === "secondary"
-                    ? "bg-linear-to-r from-secondary-950/50 via-secondary-800/30 to-secondary-500/5 rtl:bg-linear-to-l"
-                    : "bg-linear-to-r from-primary-950/50 via-primary-800/30 to-primary-400/5 rtl:bg-linear-to-l",
+                    ? "bg-linear-to-r from-secondary-950/25 via-secondary-800/10 to-transparent rtl:bg-linear-to-l"
+                    : "bg-linear-to-r from-primary-950/25 via-primary-800/10 to-transparent rtl:bg-linear-to-l",
                 )}
               />
               <div
                 className={cn(
                   "pointer-events-none absolute inset-0 bg-linear-to-t to-transparent",
                   tone === "secondary"
-                    ? "from-secondary-950/30 via-secondary-900/10"
-                    : "from-primary-950/30 via-primary-900/10",
+                    ? "from-secondary-950/15 via-transparent"
+                    : "from-primary-950/15 via-transparent",
                 )}
               />
 
               <div className="relative z-10 flex w-full max-w-xl flex-col items-start gap-3 p-5 sm:gap-4 sm:p-8 md:p-10">
-                <h2 className="text-2xl font-bold tracking-tight text-primary-50 drop-shadow-sm sm:text-3xl md:text-4xl">
+                <h2 className="text-2xl font-bold tracking-tight text-primary-50 drop-shadow-md sm:text-3xl md:text-4xl">
                   {title}
                 </h2>
                 {hasDescription ? (
-                  <p className="text-sm leading-relaxed text-primary-50/90 drop-shadow-sm sm:text-base">
+                  <p className="text-sm leading-relaxed text-primary-50/95 drop-shadow-md sm:text-base">
                     {description}
                   </p>
                 ) : null}

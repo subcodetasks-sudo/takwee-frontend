@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
-import { useTheme } from "next-themes";
+import { useCallback } from "react";
 import { getPreferencesAction, updatePreferencesAction } from "../api/actions";
 import type { ProfilePreferencesData } from "../types";
 
@@ -22,7 +21,6 @@ export const DEFAULT_PREFERENCES: ProfilePreferencesData = {
 
 export function usePreferences() {
   const queryClient = useQueryClient();
-  const { setTheme } = useTheme();
 
   const query = useQuery<ProfilePreferencesData>({
     queryKey: PREFERENCES_QUERY_KEY,
@@ -38,13 +36,6 @@ export function usePreferences() {
   });
 
   const preferences = query.data ?? DEFAULT_PREFERENCES;
-
-  // Sync server preferences into next-themes when they load
-  useEffect(() => {
-    if (query.data?.ui?.theme) {
-      setTheme(query.data.ui.theme);
-    }
-  }, [query.data?.ui?.theme, setTheme]);
 
   const updateMutation = useMutation({
     mutationFn: async (newPreferences: ProfilePreferencesData) => {
@@ -63,7 +54,6 @@ export function usePreferences() {
         PREFERENCES_QUERY_KEY,
         newPreferences,
       );
-      setTheme(newPreferences.ui.theme);
 
       return { previousPreferences };
     },
@@ -73,7 +63,6 @@ export function usePreferences() {
           PREFERENCES_QUERY_KEY,
           context.previousPreferences,
         );
-        setTheme(context.previousPreferences.ui.theme);
       }
     },
     onSettled: () => {

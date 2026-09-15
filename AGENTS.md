@@ -10,16 +10,16 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Project Architecture & Agent Guidelines
 
-## Project Context: Linen Line Store (Abaya E-Commerce Boutique)
-**Linen Line Store** is an elegant, high-end e-commerce boutique specializing in premium **Abayas** (modern, luxury, minimalist, and traditional modest wear) crafted with fine linen and premium fabrics.
-- **Brand Aesthetic & Identity**: Elegant, modest, clean, luxurious, and earthy/minimalist. The user experience should feel sophisticated, seamless, and tailored for fashion-forward modest clothing shoppers.
+## Project Context: Takween / تكوين (Handmade Goods Store)
+**Takween** (**تكوين**) is an artisanal e-commerce store specializing in **handmade crafts** — scarves, hats, wraps, soft accessories, and similar handcrafted pieces made with care and natural materials.
+- **Brand Aesthetic & Identity**: Warm, handcrafted, clean, and earthy/minimalist. The user experience should feel approachable, thoughtful, and tailored for shoppers who value artisan work and everyday handmade accessories.
 - **Domain Essentials**:
-  - **Product Types**: Abayas (e.g., Casual, Formal/Event, Travel, Embroidered, Silk/Linen Blends), matching Sheilas/Hijabs, inner dresses, and accessories. Catalog routes are product-type agnostic so the store can expand beyond abayas.
-  - **Attributes & Filters**: Fabric/Material (Pure Linen, Crepe, Silk, Cotton blends), Cuts & Silhouettes (A-Line, Butterfly/Farasha, Classic, Kimono/Open front, Cloche), Sizes (standard abaya lengths e.g., 52, 54, 56, 58, 60, bust width/custom sizing), Colorways (natural earth tones, classic black, olive, sand, neutrals).
-  - **Cultural & Localization**: Primary focus on Middle Eastern / GCC, Turkish, and regional modest fashion markets with seamless trilingual support: **Arabic (`ar` - RTL, default)**, **English (`en` - LTR)**, and **Turkish (`tr` - LTR)**. Default currency is set to **Turkish Lira (TRY / ₺)** (with support for localized currencies like SAR, AED, USD, etc.).
+  - **Product Types**: Scarves, hats, wraps, beanies, mittens, soft accessories, and small handmade home/wearable crafts. Catalog routes are product-type agnostic so the store can expand across handmade categories.
+  - **Attributes & Filters**: Material / fiber (wool, cotton, linen blends, yarn, felt), Craft technique (knit, crochet, weave, embroidered, hand-sewn), Sizes (one-size, S/M/L, child/adult where relevant), Colorways (natural earth tones, soft neutrals, seasonal accents).
+  - **Cultural & Localization**: Primary focus on Middle Eastern / GCC, Turkish, and regional handmade markets with seamless trilingual support: **Arabic (`ar` - RTL, default)**, **English (`en` - LTR)**, and **Turkish (`tr` - LTR)**. Default currency is set to **Turkish Lira (TRY / ₺)** (with support for localized currencies like SAR, AED, USD, etc.).
   - **i18n & Font System**:
-    - Supported locales: `ar`, `en`, `tr` (configured in [`i18n/routing.ts`](file:///c:/Loai/work/linen-line-store/i18n/routing.ts)).
-    - Message catalogs: All new UI strings must be provided in [`messages/ar.json`](file:///c:/Loai/work/linen-line-store/messages/ar.json), [`messages/en.json`](file:///c:/Loai/work/linen-line-store/messages/en.json), and [`messages/tr.json`](file:///c:/Loai/work/linen-line-store/messages/tr.json).
+    - Supported locales: `ar`, `en`, `tr` (configured in [`i18n/routing.ts`](i18n/routing.ts)).
+    - Message catalogs: All new UI strings must be provided in [`messages/ar.json`](messages/ar.json), [`messages/en.json`](messages/en.json), and [`messages/tr.json`](messages/tr.json).
     - Typography: `Noto_Kufi_Arabic` for Arabic (`font-noto-arabic`), `Outfit` (with `latin` and `latin-ext` subsets) for English & Turkish (`font-outfit`).
 
 ## 1. Feature-Driven Architecture (Feature-Sliced / Modular)
@@ -94,9 +94,9 @@ All locale routes live under `app/[locale]/…` (default locale `ar` uses `local
 | `/shop/[filter]` | [`app/[locale]/shop/[filter]/page.tsx`](app/[locale]/shop/[filter]/page.tsx) | Filtered listing (category / collection / promo) |
 | `/products` | [`app/[locale]/products/page.tsx`](app/[locale]/products/page.tsx) | **Redirects to `/shop`** (no bare catalog under `/products`) |
 | `/products/[slug]` | [`app/[locale]/products/[slug]/page.tsx`](app/[locale]/products/[slug]/page.tsx) | Product details (PDP) — one product by SEO slug |
-| `/[slug]` (content) | [`app/[locale]/(root)/[slug]/page.tsx`](app/[locale]/(root)/[slug]/page.tsx) | Static boutique pages (terms, privacy, client care, atelier) |
+| `/[slug]` (content) | [`app/[locale]/(root)/[slug]/page.tsx`](app/[locale]/(root)/[slug]/page.tsx) | Static store pages (terms, privacy, client care, workshop) |
 
-**Content pages** are loaded from **`GET /api/v1/pages`** (list) and **`GET /api/v1/pages/{slug}`** (detail), with Accept-Language localization. Footer **Client Care** (`group: support`) and **The Atelier** (`group: about`) columns come from the list; `group: legal` (or terms/privacy/cookies slugs) appear in the footer bottom bar when present. Legacy mock slugs remain as a fallback in [`getContentPage`](features/content/api/get-content-page.ts). Unknown / missing `[slug]` values must call `notFound()` so [`(root)/not-found.tsx`](app/[locale]/(root)/not-found.tsx) / [`[slug]/not-found.tsx`](app/[locale]/(root)/[slug]/not-found.tsx) render — never leave the dynamic segment empty.
+**Content pages** are loaded from **`GET /api/v1/pages`** (list) and **`GET /api/v1/pages/{slug}`** (detail), with Accept-Language localization. Footer **Client Care** (`group: support`) and **The Workshop** (`group: about`) columns come from the list; `group: legal` (or terms/privacy/cookies slugs) appear in the footer bottom bar when present. Legacy mock slugs remain as a fallback in [`getContentPage`](features/content/api/get-content-page.ts). Unknown / missing `[slug]` values must call `notFound()` so [`(root)/not-found.tsx`](app/[locale]/(root)/not-found.tsx) / [`[slug]/not-found.tsx`](app/[locale]/(root)/[slug]/not-found.tsx) render — never leave the dynamic segment empty.
 
 | Layer | Path | Role |
 |---|---|---|
@@ -105,7 +105,7 @@ All locale routes live under `app/[locale]/…` (default locale `ar` uses `local
 | Hook | [`features/content/hooks/usePages.ts`](features/content/hooks/usePages.ts) | React Query — key `["content-pages", locale]` |
 | Mapper | [`features/content/utils/map-pages.ts`](features/content/utils/map-pages.ts) | API → footer links + `ContentPage` |
 
-Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `boutique-locations`, `contact-us`), `support` (`size-guide`, `linen-care`, `track-order`, `shipping-delivery`, `return-policy`).
+Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `boutique-locations`, `contact-us`), `support` (`size-guide`, `linen-care`, `track-order`, `shipping-delivery`, `return-policy`). (Slugs may still use legacy API keys; storefront copy should speak in Takween handmade voice.)
 
 **Shop `/shop/[filter]` resolution** ([`resolveShopPath`](features/shop/utils/resolve-shop-path.ts)):
 1. Match an API category slug from `GET /api/v1/categories` (via [`categorySlug`](features/categories/utils/category-href.ts) / `StorefrontCategory.slug`) → products filtered by `product.categoryId`.
@@ -115,7 +115,7 @@ Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `
 Nav / footer / home category tiles use unique `/shop/{slug}` hrefs from [`categoryHref`](features/categories/utils/category-href.ts) (one slug per API category — not shared buckets).
 
 **Rules:**
-- Category / occasion / promo live under **`/shop/...`**, never as top-level paths like `/casual` or `/abayas`.
+- Category / occasion / promo live under **`/shop/...`**, never as top-level paths like `/casual` or `/scarves`.
 - Product detail URLs stay **flat** at `/products/[slug]` (category is not part of the PDP path — products can belong to multiple filters).
 - Product cards and deep links use `/products/${product.slug}`.
 - Do not invent parallel listing routes (`/collections/...`, top-level category pages) without updating this section.
@@ -158,7 +158,7 @@ Public catalog categories are loaded from **`GET /api/v1/categories`** (paginate
 | Href helper | [`features/categories/utils/category-href.ts`](features/categories/utils/category-href.ts) | Unique `/shop/{slug}` per category name (+ id fallback) |
 
 **Consumers (shared query):**
-- [`Header`](components/common/Header.tsx) — desktop category tabs + mobile CardNav (Home + All Abayas stay static i18n; other tabs from API names)
+- [`Header`](components/common/Header.tsx) — desktop category tabs + mobile CardNav (Home + All Collections stay static i18n; other tabs from API names)
 - [`Footer`](components/common/Footer.tsx) — Collections column
 - [`ShopHero`](features/shop/components/ShopHero.tsx) — category title / image on `/shop/[filter]` when the slug matches an API category
 
@@ -194,7 +194,7 @@ PDP stays slug-routed (`/products/[slug]`). Resolve slug via the products list, 
 
 ## 4b. App Settings (`features/settings`)
 
-Public boutique settings are loaded from **`GET /api/v1/settings`** (key/value list).
+Public store settings are loaded from **`GET /api/v1/settings`** (key/value list).
 
 | Layer | Path | Role |
 |---|---|---|
@@ -207,7 +207,7 @@ Public boutique settings are loaded from **`GET /api/v1/settings`** (key/value l
 - Locale layout (`app/[locale]/layout.tsx`) — SEO defaults (`meta_title_*`, `meta_description_*`, `meta_keywords`, favicon, Open Graph), **maintenance gate**, currency provider seeds (`default_currency` / `supported_currencies`), Google Analytics (`google_analytics_id`), React Query hydration for settings
 - [`proxy.ts`](proxy.ts) — `default_language` drives next-intl `defaultLocale` for unprefixed routes (soft-fail to `ar`)
 - [`CurrencyProvider`](hooks/useCurrency.tsx) / [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — only list API-supported currencies; default when no localStorage pick
-- [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Atelier** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
+- [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Workshop** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
 - Checkout bank transfer — `bank_name`, `bank_account_holder`, `bank_iban`, `bank_account_number`, `bank_transfer_instructions` (shown in [`CheckoutPaymentSection`](features/checkout/components/CheckoutPaymentSection.tsx); place-order sends `payment_method: bank_transfer`)
 
 ---
@@ -314,7 +314,7 @@ Product and CMS media are hosted on the **same origin as the API** (`API_BASE_UR
 | [`app/api/images/route.ts`](app/api/images/route.ts) | Same-origin image proxy (SSRF allowlist from API hostnames) |
 | [`next.config.ts`](next.config.ts) | `images.remotePatterns` from API env hostnames |
 
-- Local boutique assets under `public/imgs/` are never proxied.
+- Local store assets under `public/imgs/` are never proxied.
 - Absolute API URLs and `/storage/…` paths go through the proxy (or `mode: "direct"` when intentionally using `remotePatterns`).
 - Do **not** hardcode CDN env vars like `NEXT_PUBLIC_IMAGES_BASE_URL` unless reintroduced — media shares the API base.
 
@@ -357,7 +357,7 @@ Before reaching for any new package, **always leverage the already installed lib
 ## 8. UI Styling & Color System Rules
 
 - **Zero Hardcoded Hex Codes**: Do **NOT** use raw hex colors (`#...`), arbitrary values (e.g. `bg-[#b4a094]`), or inline styles with hardcoded color values anywhere in UI components.
-- **Use Brand & Semantic Tokens from [`app/globals.css`](file:///c:/Loai/work/linen-line-store/app/globals.css)**:
+- **Use Brand & Semantic Tokens from [`app/globals.css`](app/globals.css)**:
   - **Semantic tokens**: `bg-primary`, `text-primary-foreground`, `bg-secondary`, `text-secondary-foreground`, `bg-background`, `text-foreground`, `border-border`, `bg-muted`, `text-muted-foreground`, `bg-card`, `bg-accent`, `ring-ring`.
   - **Status feedback tokens**:
     - **Success** (Herb / Olive): `bg-success`, `text-success`, `text-success-foreground`, `bg-success-muted`.

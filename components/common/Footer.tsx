@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Sparkles,
   PackageCheck,
@@ -39,9 +39,10 @@ import { useSettings } from "@/features/settings";
 
 export function Footer() {
   const t = useTranslations("Footer");
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   const { isAuthenticated } = useAuth();
   const {
-    appName,
     siteLogo,
     contactEmail,
     contactPhone,
@@ -78,8 +79,8 @@ export function Footer() {
 
   const email = contactEmail || t("concierge.email");
   const hours = workingHours || t("concierge.hours");
-  const brandLabel = appName || "Linen Line";
-  const logoSrc = siteLogo || "/imgs/logo-4.webp";
+  const brandLabel = t("brandName");
+  const logoSrc = siteLogo || "/imgs/logo.webp";
 
   const perks = [
     {
@@ -227,7 +228,14 @@ export function Footer() {
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <div className="lg:col-span-6 space-y-3">
-                <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                <h2
+                  className={cn(
+                    "text-2xl sm:text-3xl font-bold text-foreground",
+                    isArabic
+                      ? "font-noto-arabic"
+                      : "font-heading tracking-tight",
+                  )}
+                >
                   {isAuthenticated
                     ? t("newsletter.member.title")
                     : t("newsletter.title")}
@@ -349,11 +357,25 @@ export function Footer() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-heading font-bold text-lg tracking-wider text-foreground uppercase group-hover:text-secondary-700 dark:group-hover:text-secondary-300 transition-colors">
+                <span
+                  className={cn(
+                    "font-bold text-lg text-foreground transition-colors group-hover:text-secondary-700 dark:group-hover:text-secondary-300",
+                    isArabic
+                      ? "font-noto-arabic"
+                      : "font-heading tracking-wider uppercase",
+                  )}
+                >
                   {brandLabel}
                 </span>
-                <span className="text-[10px] tracking-widest text-muted-foreground uppercase -mt-0.5 font-medium">
-                  Abaya Boutique
+                <span
+                  className={cn(
+                    "text-[10px] text-muted-foreground -mt-0.5 font-medium",
+                    isArabic
+                      ? "font-noto-arabic"
+                      : "tracking-widest uppercase",
+                  )}
+                >
+                  {t("logoTagline")}
                 </span>
               </div>
             </Link>
@@ -479,7 +501,14 @@ export function Footer() {
                   className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
                   aria-expanded={openSections.collections}
                 >
-                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                  <h3
+                    className={cn(
+                      "text-sm font-semibold text-foreground",
+                      isArabic
+                        ? "font-noto-arabic"
+                        : "font-heading tracking-wider uppercase",
+                    )}
+                  >
                     {t("columns.collections")}
                   </h3>
                   <ChevronDown
@@ -531,7 +560,14 @@ export function Footer() {
                   className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
                   aria-expanded={openSections.services}
                 >
-                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                  <h3
+                    className={cn(
+                      "text-sm font-semibold text-foreground",
+                      isArabic
+                        ? "font-noto-arabic"
+                        : "font-heading tracking-wider uppercase",
+                    )}
+                  >
                     {t("columns.services")}
                   </h3>
                   <ChevronDown
@@ -583,7 +619,14 @@ export function Footer() {
                   className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
                   aria-expanded={openSections.atelier}
                 >
-                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                  <h3
+                    className={cn(
+                      "text-sm font-semibold text-foreground",
+                      isArabic
+                        ? "font-noto-arabic"
+                        : "font-heading tracking-wider uppercase",
+                    )}
+                  >
                     {t("columns.atelier")}
                   </h3>
                   <ChevronDown
@@ -634,7 +677,14 @@ export function Footer() {
                   className="flex w-full items-center justify-between py-2 md:py-0 text-left cursor-pointer md:cursor-default"
                   aria-expanded={openSections.more}
                 >
-                  <h3 className="font-heading text-sm font-semibold tracking-wider uppercase text-foreground">
+                  <h3
+                    className={cn(
+                      "text-sm font-semibold text-foreground",
+                      isArabic
+                        ? "font-noto-arabic"
+                        : "font-heading tracking-wider uppercase",
+                    )}
+                  >
                     {t("columns.more")}
                   </h3>
                   <ChevronDown

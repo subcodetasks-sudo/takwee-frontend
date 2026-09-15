@@ -5,7 +5,7 @@ description: Guide and standard workflow for creating UI pages or sections using
 
 # Create UI Section or Page Skill
 
-This skill provides step-by-step instructions and architectural patterns for creating pages or sections in the **Linen Line Store** boutique.
+This skill provides step-by-step instructions and architectural patterns for creating pages or sections in the **Takween** (**تكوين**) handmade store.
 
 ## Core Architectural Principles
 
@@ -23,7 +23,7 @@ This skill provides step-by-step instructions and architectural patterns for cre
    - For Server Components, use `await getTranslations(...)` from `next-intl/server`.
    - Update message keys across `messages/ar.json`, `messages/en.json`, and `messages/tr.json`.
    - **Formal, gender-neutral address (unknown visitors)**: UI copy speaks to an unknown person who may be a man or a woman. Prefer formal tone; never assume feminine (or masculine-only) second-person forms.
-     - **Arabic (`ar`)**: Avoid feminine imperatives/endings that address women only (e.g. تتبعي، تسوقي، اكتشفي، أضيفي). Prefer impersonal / verbal-noun CTAs (e.g. تتبع الطلبات، تسوق التشكيلة، اكتشف المجموعة) or neutral noun phrases (e.g. طلباتي، عرض الطلبات). Do not default to feminine boutique address.
+     - **Arabic (`ar`)**: Avoid feminine imperatives/endings that address women only (e.g. تتبعي، تسوقي، اكتشفي، أضيفي). Prefer impersonal / verbal-noun CTAs (e.g. تتبع الطلبات، تسوق التشكيلة، اكتشف المجموعة) or neutral noun phrases (e.g. طلباتي، عرض الطلبات). Do not default to feminine store address.
      - **English (`en`)**: Use neutral formal phrasing toward the visitor (e.g. "Track your orders", "Shop the collection") rather than gendered or overly casual voice.
      - **Turkish (`tr`)**: Prefer polite formal *siz* where the visitor is addressed (e.g. Siparişlerinizi takip edin), not informal *sen* (e.g. takip et) unless matching an existing casual string in the same surface.
      - Apply this to CTAs, empty states, toasts, tooltips, `aria-label`s, and any new or edited message strings—not only marketing headlines.

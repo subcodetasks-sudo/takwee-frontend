@@ -6,6 +6,7 @@ import { fetchSettings } from "../api/get-settings";
 import type { AppSettings } from "../types";
 import {
   localizedSetting,
+  resolveAppName,
   whatsappHref,
 } from "../utils/map-settings";
 import { settingsQueryKey } from "../utils/query-key";
@@ -13,7 +14,7 @@ import { settingsQueryKey } from "../utils/query-key";
 export { settingsQueryKey };
 
 const EMPTY_SETTINGS: AppSettings = {
-  appName: "LINEN LINE",
+  appName: "Takween",
   siteLogo: null,
   siteFavicon: null,
   contactPhone: null,
@@ -63,7 +64,8 @@ export function useSettings() {
   return {
     ...query,
     settings: query.data ?? null,
-    appName: settings.appName,
+    // Strip retired "LINEN LINE" API values so chrome always shows Takween.
+    appName: resolveAppName(settings.appName),
     siteLogo: settings.siteLogo,
     contactEmail: settings.contactEmail,
     contactPhone: settings.contactPhone,

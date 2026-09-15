@@ -1,7 +1,16 @@
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { ApiError, apiRequest, type RequestOptions } from "./api-client";
-import { SESSION_COOKIE_NAME } from "@/features/auth/utils/session-cookie";
+import {
+  ApiError,
+  apiRequest,
+  isUnauthorizedStatus,
+  type RequestOptions,
+} from "./api-client";
+import {
+  SESSION_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+  USER_COOKIE_NAME,
+} from "@/features/auth/utils/session-cookie";
 
 export { ApiError } from "./api-client";
 
@@ -67,6 +76,23 @@ export function isNextInternalError(error: unknown): boolean {
     typeof digest === "string" &&
     (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND"))
   );
+}
+
+/**
+ * Deletes all session cookies on the server.
+ * Safe to call in Server Actions and Route Handlers.
+ * In read-only Server Component render phases, cookie mutation is suppressed.
+ */
+export async function clearServerSessionCookies(): Promise<void> {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete(SESSION_COOKIE_NAME);
+    cookieStore.delete(REFRESH_COOKIE_NAME);
+    cookieStore.delete(USER_COOKIE_NAME);
+    cookieStore.delete("token");
+  } catch {
+    // In Server Component (RSC) rendering context, cookies cannot be mutated
+  }
 }
 
 /**
@@ -138,6 +164,9 @@ export function createServerAction<TInput = void, TOutput = unknown>(
       }
 
       if (error instanceof ApiError) {
+        if (isUnauthorizedStatus(error.status)) {
+          await clearServerSessionCookies();
+        }
         return {
           success: false,
           message: error.message,
@@ -183,6 +212,9 @@ export async function safeServerAction<T>(
     }
 
     if (error instanceof ApiError) {
+      if (isUnauthorizedStatus(error.status)) {
+        await clearServerSessionCookies();
+      }
       return {
         success: false,
         message: error.message,
@@ -220,29 +252,36 @@ export async function serverFetch<T = unknown>(
     }
   }
 
-  const result = await apiRequest<T>(endpoint, {
-    ...requestOptions,
-    token,
-  });
+  try {
+    const result = await apiRequest<T>(endpoint, {
+      ...requestOptions,
+      token,
+    });
 
-  if (schema) {
-    const validation = schema.safeParse(result);
-    if (!validation.success) {
-      const issues = validation.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join(", ");
+    if (schema) {
+      const validation = schema.safeParse(result);
+      if (!validation.success) {
+        const issues = validation.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
 
-      throw new ApiError(
-        500,
-        "Response Validation Error",
-        validation.error.flatten(),
-        `API response validation failed for ${endpoint}: ${issues}`,
-      );
+        throw new ApiError(
+          500,
+          "Response Validation Error",
+          validation.error.flatten(),
+          `API response validation failed for ${endpoint}: ${issues}`,
+        );
+      }
+      return validation.data;
     }
-    return validation.data;
-  }
 
-  return result;
+    return result;
+  } catch (error: unknown) {
+    if (error instanceof ApiError && isUnauthorizedStatus(error.status)) {
+      await clearServerSessionCookies();
+    }
+    throw error;
+  }
 }
 
 /**

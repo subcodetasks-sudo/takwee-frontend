@@ -123,12 +123,12 @@ export async function generateMetadata({
   const { locale } = await params;
   const settings = await getSettings();
 
-  const siteName = settings?.appName?.trim() || "Linen Line Store";
+  const siteName = settings?.appName?.trim() || "Takween";
   const title =
     (settings && localizedSetting(settings.metaTitle, locale)) || siteName;
   const description =
     (settings && localizedSetting(settings.metaDescription, locale)) ||
-    "Linen Line Store eCommerce";
+    "Takween handmade boutique";
 
   const keywords = settings?.metaKeywords
     ? settings.metaKeywords
@@ -187,8 +187,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const activeFontClass = `${gotham.className} ${locale === "ar" ? notoKufiArabic.className : outfit.className}`;
+  // Locale-primary stack so `font-heading` / `font-sans` match body text
+  // (Gotham first would make Arabic headings fall back differently from Noto Kufi).
   const activeFontVar =
-    "var(--font-gotham), var(--font-noto-arabic), var(--font-outfit), sans-serif";
+    locale === "ar"
+      ? "var(--font-noto-arabic), var(--font-gotham), sans-serif"
+      : "var(--font-outfit), var(--font-gotham), sans-serif";
 
   const inMaintenance = settings?.maintenanceMode === true;
   const dehydratedSettings = dehydrateSettings(settings);

@@ -18,7 +18,6 @@ import {
   type ProductColor,
 } from "../types";
 import { ProductPrice } from "./ProductPrice";
-import { SizeGuideDialog } from "./SizeGuideDialog";
 import { HeightSizeCalculator } from "./HeightSizeCalculator";
 import { useProductDetails } from "../context/ProductDetailsContext";
 import { ProductImageZoom } from "./ProductImageZoom";
@@ -54,7 +53,6 @@ export function ProductDetailsHero({
 }: ProductDetailsHeroProps) {
   const t = useTranslations("ProductDetails");
   const tColors = useTranslations("ProductCard.colors");
-  const tGuide = useTranslations("ProductDetails.sizeGuide");
 
   const { isInCart: isCartInCart, isHydrated } = useCart();
   const context = useProductDetails();
@@ -526,9 +524,6 @@ export function ProductDetailsHero({
                       </span>
                     ) : null}
                   </div>
-                  {hasGuideCompatibleSizes ? (
-                    <SizeGuideDialog guide={sizeGuide} />
-                  ) : null}
                 </div>
 
                 <StaggerContainer

@@ -75,10 +75,15 @@ export async function saveSessionCookies(
  * Clears all session cookies.
  */
 export async function clearSessionCookies(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE_NAME);
-  cookieStore.delete(REFRESH_COOKIE_NAME);
-  cookieStore.delete(USER_COOKIE_NAME);
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete(SESSION_COOKIE_NAME);
+    cookieStore.delete(REFRESH_COOKIE_NAME);
+    cookieStore.delete(USER_COOKIE_NAME);
+    cookieStore.delete("token");
+  } catch {
+    // Suppress error if called in read-only RSC render context
+  }
 }
 
 /**
