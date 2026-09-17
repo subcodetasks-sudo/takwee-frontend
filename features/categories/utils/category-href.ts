@@ -1,10 +1,15 @@
 import { slugify } from "@/features/product/utils/slugify";
 
-
-/** Stable kebab slug for `/shop/[filter]` from a category name (+ id fallback). */
+/**
+ * Locale-stable kebab slug for `/shop/[filter]`.
+ * Always prefers `category-{id}` so AR/EN/TR and panel WhatsApp links share
+ * one path (name-only slugs diverge when Accept-Language changes).
+ */
 export function categorySlug(name: string, id?: string | number): string {
-  const slug = slugify(name);
-  return slug || (id != null ? `category-${id}` : "category");
+  if (id != null && String(id).trim() !== "") {
+    return `category-${id}`;
+  }
+  return slugify(name) || "category";
 }
 
 /** Unique category PLP href — one slug per API category (no shared buckets). */

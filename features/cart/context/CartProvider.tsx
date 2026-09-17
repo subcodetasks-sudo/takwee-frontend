@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 import { useAuth } from "@/features/auth";
-import { getProductById } from "@/features/product/utils/get-product";
 import type { Product } from "@/features/product/types";
 import { syncCartToServer } from "../api/sync-cart";
 import type {
@@ -56,13 +55,8 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-/** Prefer live catalog data when available; keep stored snapshot as fallback. */
 function hydrateProducts(items: CartItem[]): CartItem[] {
-  return items.map((item) => {
-    const live = getProductById(item.productId);
-    if (!live) return item;
-    return { ...item, product: live };
-  });
+  return items;
 }
 
 /** Enforce product-level stock across all color/size lines. */

@@ -108,11 +108,11 @@ All locale routes live under `app/[locale]/…` (default locale `ar` uses `local
 Current API groups: `about` (`our-story`, `linen-philosophy`, `craftsmanship`, `boutique-locations`, `contact-us`), `support` (`size-guide`, `linen-care`, `track-order`, `shipping-delivery`, `return-policy`). (Slugs may still use legacy API keys; storefront copy should speak in Takween handmade voice.)
 
 **Shop `/shop/[filter]` resolution** ([`resolveShopPath`](features/shop/utils/resolve-shop-path.ts)):
-1. Match an API category slug from `GET /api/v1/categories` (via [`categorySlug`](features/categories/utils/category-href.ts) / `StorefrontCategory.slug`) → products filtered by `product.categoryId`.
+1. Match an API category via locale-stable [`categorySlug`](features/categories/utils/category-href.ts) (`category-{id}`), legacy name slug, or bare id → products filtered by `product.categoryId`.
 2. Else match a promo filter from [`SHOP_FILTERS`](features/product/utils/shop-filters.ts) (`new-in`, `sale`).
 3. Else `notFound()`.
 
-Nav / footer / home category tiles use unique `/shop/{slug}` hrefs from [`categoryHref`](features/categories/utils/category-href.ts) (one slug per API category — not shared buckets).
+Nav / footer / home category tiles use unique `/shop/category-{id}` hrefs from [`categoryHref`](features/categories/utils/category-href.ts) (one slug per API category — not shared buckets).
 
 **Rules:**
 - Category / occasion / promo live under **`/shop/...`**, never as top-level paths like `/casual` or `/scarves`.
@@ -155,7 +155,7 @@ Public catalog categories are loaded from **`GET /api/v1/categories`** (paginate
 | Fetcher | [`features/categories/api/get-categories.ts`](features/categories/api/get-categories.ts) | `fetchCategories` via `http.get`; maps with [`map-categories.ts`](features/categories/utils/map-categories.ts) |
 | Soft RSC | [`features/categories/utils/get-categories.ts`](features/categories/utils/get-categories.ts) | `getCategories` for shop path resolution / metadata |
 | Hook | [`features/categories/hooks/useCategories.ts`](features/categories/hooks/useCategories.ts) | React Query cache — key `["categories", locale]` |
-| Href helper | [`features/categories/utils/category-href.ts`](features/categories/utils/category-href.ts) | Unique `/shop/{slug}` per category name (+ id fallback) |
+| Href helper | [`features/categories/utils/category-href.ts`](features/categories/utils/category-href.ts) | Locale-stable `/shop/category-{id}` (legacy name slugs still resolve) |
 
 **Consumers (shared query):**
 - [`Header`](components/common/Header.tsx) — desktop category tabs + mobile CardNav (Home + All Collections stay static i18n; other tabs from API names)

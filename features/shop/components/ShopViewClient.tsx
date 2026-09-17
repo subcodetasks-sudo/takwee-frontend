@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { notFound } from "next/navigation";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useProducts } from "../hooks/useProducts";
 import { resolveShopPath } from "../utils/resolve-shop-path";
@@ -21,7 +22,11 @@ export function ShopViewClient({
   pathFilter,
   searchQuery,
 }: ShopViewClientProps) {
-  const { categories, isLoading: isCategoriesLoading } = useCategories();
+  const {
+    categories,
+    isLoading: isCategoriesLoading,
+    isFetched: categoriesFetched,
+  } = useCategories();
   const { allProducts, isLoading: isProductsLoading } = useProducts({
     search: searchQuery,
   });
@@ -47,8 +52,15 @@ export function ShopViewClient({
 
   const bounds = useMemo(() => getPriceBounds(products), [products]);
 
+  const waitingForCategoryPath = Boolean(pathFilter) && isCategoriesLoading;
   const isLoading =
-    (isProductsLoading || isCategoriesLoading) && allProducts.length === 0;
+    waitingForCategoryPath ||
+    ((isProductsLoading || isCategoriesLoading) && allProducts.length === 0);
+
+  // Unknown `/shop/[filter]` — do not fall back to the full catalog.
+  if (pathFilter && categoriesFetched && !isCategoriesLoading && !resolved) {
+    notFound();
+  }
 
   return (
     <>

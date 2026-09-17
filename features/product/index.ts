@@ -23,7 +23,11 @@ export * from "./utils/sample-products";
 export * from "./utils/shop-filters";
 export * from "./utils/format-price";
 export * from "./utils/get-product";
-export * from "./utils/get-product-page";
+export {
+  getProductPageBySlug,
+  parseProductIdAlias,
+  type ProductPageData,
+} from "./utils/get-product-page";
 export * from "./utils/get-related-products";
 export * from "./utils/map-product";
 export * from "./utils/slugify";

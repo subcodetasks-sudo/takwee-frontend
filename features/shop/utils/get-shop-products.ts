@@ -29,7 +29,12 @@ export async function getShopProducts(
 
     const resolved = resolveShopPath(pathFilter, categories);
 
-    if (!resolved || resolved.kind === "all") {
+    // Unknown filter: return empty rather than the full catalog.
+    if (!resolved) {
+      return { products: [], category: null };
+    }
+
+    if (resolved.kind === "all") {
       return { products, category: null };
     }
 

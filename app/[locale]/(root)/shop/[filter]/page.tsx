@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SHOP_FILTERS } from "@/features/product";
 import { getCategories } from "@/features/categories/utils/get-categories";

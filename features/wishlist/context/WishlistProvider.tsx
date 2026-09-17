@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 import { useAuth } from "@/features/auth";
-import { getProductById } from "@/features/product/utils/get-product";
 import type { Product } from "@/features/product/types";
 import { syncWishlistToServer } from "../api/sync-wishlist";
 import type { ToggleWishlistOptions, WishlistItem } from "../types";
@@ -35,13 +34,8 @@ interface WishlistContextValue {
 
 const WishlistContext = createContext<WishlistContextValue | null>(null);
 
-/** Prefer live catalog data when available; keep stored snapshot as fallback. */
 function hydrateProducts(items: WishlistItem[]): WishlistItem[] {
-  return items.map((item) => {
-    const live = getProductById(item.productId);
-    if (!live) return item;
-    return { ...item, product: live };
-  });
+  return items;
 }
 
 function createWishlistItem(
