@@ -1,4 +1,5 @@
 import { asArray } from "@/lib/as-array";
+import type { Product } from "@/features/product";
 import type { AdditionalSection } from "../types";
 
 export function getActiveAdditionalSections(
@@ -9,6 +10,6 @@ export function getActiveAdditionalSections(
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((section) => ({
       ...section,
-      products: asArray(section.products).slice(0, 4),
+      products: asArray<Product>(section.products).slice(0, 4),
     }));
 }
