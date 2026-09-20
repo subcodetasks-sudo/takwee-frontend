@@ -1,3 +1,4 @@
+import { asArray } from "@/lib/as-array";
 import { resolveImageUrl } from "@/lib/images";
 import type { ApiCategory, StorefrontCategory } from "../types";
 import { categoryHref, categorySlug } from "./category-href";
@@ -19,7 +20,7 @@ export function mapCategory(category: ApiCategory): StorefrontCategory {
 
 /** Active categories only, sorted by `sort_order` then id. */
 export function mapCategories(categories: ApiCategory[]): StorefrontCategory[] {
-  return [...(categories ?? [])]
+  return asArray<ApiCategory>(categories)
     .filter((category) => category.status === "active")
     .sort((a, b) => a.sort_order - b.sort_order || a.id - b.id)
     .map(mapCategory);

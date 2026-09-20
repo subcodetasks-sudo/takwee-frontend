@@ -1,6 +1,7 @@
+import { asArray } from "@/lib/as-array";
 import { ApiError, getApiBaseUrl, http } from "@/lib/api-client";
 import type { Product } from "@/features/product";
-import type { ApiProductsResponse } from "@/features/product/types/api";
+import type { ApiProduct, ApiProductsResponse } from "@/features/product/types/api";
 import { mapProducts } from "@/features/product/utils/map-product";
 
 const PRODUCTS_PATH = "/api/v1/products";
@@ -42,7 +43,7 @@ export async function fetchProducts(
     },
   });
 
-  if (!json?.success || !Array.isArray(json.data?.data)) {
+  if (!json?.success) {
     throw new ApiError(
       500,
       "Invalid Payload",
@@ -51,5 +52,5 @@ export async function fetchProducts(
     );
   }
 
-  return mapProducts(json.data.data);
+  return mapProducts(asArray<ApiProduct>(json.data));
 }

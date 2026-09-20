@@ -1,5 +1,6 @@
+import { asArray } from "@/lib/as-array";
 import { ApiError, getApiBaseUrl, http } from "@/lib/api-client";
-import type { ApiPageResponse, ApiPagesResponse, StorefrontPageLink } from "../types";
+import type { ApiPage, ApiPageResponse, ApiPagesResponse, StorefrontPageLink } from "../types";
 import { mapPageToLink } from "../utils/map-pages";
 
 const PAGES_PATH = "/api/v1/pages";
@@ -25,7 +26,9 @@ export async function fetchPages(locale?: string): Promise<StorefrontPageLink[]>
     },
   });
 
-  if (!json?.success || !Array.isArray(json.data)) {
+  const pages = asArray<ApiPage>(json.data);
+
+  if (!json?.success) {
     throw new ApiError(
       500,
       "Invalid Payload",
@@ -34,7 +37,7 @@ export async function fetchPages(locale?: string): Promise<StorefrontPageLink[]>
     );
   }
 
-  return json.data.map(mapPageToLink);
+  return pages.map(mapPageToLink);
 }
 
 /**

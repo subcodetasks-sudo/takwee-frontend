@@ -1,8 +1,13 @@
+import { asArray } from "@/lib/as-array";
 import { resolveImageUrl } from "@/lib/images";
 import type {
   AdditionalSection,
   AdvertisementTape,
+  ApiAdvertisementTape,
+  ApiHomeCategory,
+  ApiHomeHero,
   ApiHomePageData,
+  ApiHomeProduct,
   CategoryItem,
   HeroSlide,
   HomePageData,
@@ -11,10 +16,8 @@ import { categoryHref } from "@/features/categories";
 import { mapHomeProduct } from "./map-home-product";
 import { slugify } from "./slugify";
 
-function mapAdvertisementTapes(
-  tapes: ApiHomePageData["advertisement_tapes"],
-): AdvertisementTape[] {
-  return (tapes ?? [])
+function mapAdvertisementTapes(tapes: unknown): AdvertisementTape[] {
+  return asArray<ApiAdvertisementTape>(tapes)
     .filter((tape) => tape.text?.trim())
     .map((tape) => ({
       id: String(tape.id),
@@ -22,8 +25,8 @@ function mapAdvertisementTapes(
     }));
 }
 
-function mapHeroes(heroes: ApiHomePageData["heroes"]): HeroSlide[] {
-  return [...(heroes ?? [])]
+function mapHeroes(heroes: unknown): HeroSlide[] {
+  return asArray<ApiHomeHero>(heroes)
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((hero) => ({
       id: String(hero.id),
@@ -34,10 +37,8 @@ function mapHeroes(heroes: ApiHomePageData["heroes"]): HeroSlide[] {
     }));
 }
 
-function mapCategories(
-  categories: ApiHomePageData["categories"],
-): CategoryItem[] {
-  return [...(categories ?? [])]
+function mapCategories(categories: unknown): CategoryItem[] {
+  return asArray<ApiHomeCategory>(categories)
     .filter((category) => category.status === "active")
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((category) => ({
@@ -54,7 +55,7 @@ function buildSections(data: ApiHomePageData): AdditionalSection[] {
     ReturnType<typeof mapHomeProduct>[]
   >();
 
-  for (const product of data.products ?? []) {
+  for (const product of asArray<ApiHomeProduct>(data.products)) {
     const key = String(product.category.id);
     const mapped = mapHomeProduct(product);
     const list = productsByCategory.get(key) ?? [];
@@ -64,7 +65,7 @@ function buildSections(data: ApiHomePageData): AdditionalSection[] {
 
   const tones: Array<"primary" | "secondary"> = ["primary", "secondary"];
 
-  return [...(data.categories ?? [])]
+  return asArray<ApiHomeCategory>(data.categories)
     .filter((category) => category.status === "active")
     .sort((a, b) => a.sort_order - b.sort_order)
     .flatMap((category, index) => {
@@ -101,7 +102,7 @@ export function mapHomePageData(data: ApiHomePageData): HomePageData {
     advertisementTapes: mapAdvertisementTapes(data.advertisement_tapes),
     categories: mapCategories(data.categories),
     sections: buildSections(data),
-    products: (data.products ?? []).map(mapHomeProduct),
+    products: asArray<ApiHomeProduct>(data.products).map(mapHomeProduct),
   };
 }
 
@@ -110,7 +111,7 @@ export function joinAdvertisementTapeText(
   tapes: AdvertisementTape[],
   separator = "❖",
 ): string {
-  return tapes
+  return asArray<AdvertisementTape>(tapes)
     .map((tape) => tape.text.trim())
     .filter(Boolean)
     .join(` ${separator} `);

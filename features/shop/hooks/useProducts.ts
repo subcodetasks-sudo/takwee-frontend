@@ -33,7 +33,7 @@ export function useProducts(options?: UseProductsOptions) {
     queryFn: () => fetchProducts(locale, { search, perPage }),
   });
 
-  const allProducts = query.data ?? [];
+  const allProducts = Array.isArray(query.data) ? query.data : [];
   const products = categoryId
     ? allProducts.filter((product) => product.categoryId === categoryId)
     : allProducts;

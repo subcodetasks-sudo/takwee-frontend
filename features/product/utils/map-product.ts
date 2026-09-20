@@ -10,6 +10,7 @@ import {
   type ProductSize,
   type ProductSwatchId,
 } from "../types";
+import { asArray } from "@/lib/as-array";
 import { resolveImageUrl } from "@/lib/images";
 import type {
   ApiProduct,
@@ -275,7 +276,7 @@ export function mapProduct(product: ApiProduct): Product {
 }
 
 export function mapProducts(products: ApiProduct[]): Product[] {
-  return [...(products ?? [])]
+  return asArray<ApiProduct>(products)
     .filter((product) => product.status === "active")
     .map(mapProduct);
 }

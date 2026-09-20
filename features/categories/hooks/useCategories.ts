@@ -21,6 +21,6 @@ export function useCategories() {
 
   return {
     ...query,
-    categories: query.data ?? [],
+    categories: Array.isArray(query.data) ? query.data : [],
   };
 }

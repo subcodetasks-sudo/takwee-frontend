@@ -1,5 +1,6 @@
+import { asArray } from "@/lib/as-array";
 import { ApiError, getApiBaseUrl, http } from "@/lib/api-client";
-import type { ApiCategoriesResponse, StorefrontCategory } from "../types";
+import type { ApiCategory, ApiCategoriesResponse, StorefrontCategory } from "../types";
 import { mapCategories } from "../utils/map-categories";
 
 const CATEGORIES_PATH = "/api/v1/categories";
@@ -28,7 +29,7 @@ export async function fetchCategories(
     },
   });
 
-  if (!json?.success || !Array.isArray(json.data?.data)) {
+  if (!json?.success) {
     throw new ApiError(
       500,
       "Invalid Payload",
@@ -37,5 +38,5 @@ export async function fetchCategories(
     );
   }
 
-  return mapCategories(json.data.data);
+  return mapCategories(asArray<ApiCategory>(json.data));
 }

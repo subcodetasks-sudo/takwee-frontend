@@ -1,13 +1,14 @@
+import { asArray } from "@/lib/as-array";
 import type { AdditionalSection } from "../types";
 
 export function getActiveAdditionalSections(
   sections: AdditionalSection[] = [],
 ): AdditionalSection[] {
-  return sections
+  return asArray<AdditionalSection>(sections)
     .filter((section) => section.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((section) => ({
       ...section,
-      products: section.products.slice(0, 4),
+      products: asArray(section.products).slice(0, 4),
     }));
 }
