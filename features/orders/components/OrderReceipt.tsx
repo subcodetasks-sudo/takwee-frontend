@@ -77,7 +77,9 @@ export const OrderReceipt = forwardRef<HTMLDivElement, OrderReceiptProps>(
             brand: order.payment.brand,
             last4: order.payment.last4,
           })
-        : order.payment?.method
+        : order.payment?.label
+          ? order.payment.label
+          : order.payment?.method
           ? tPayment(`paymentMethods.${order.payment.method}`)
           : null);
 

@@ -13,6 +13,17 @@ import type {
 
 export type CheckoutPaymentMethod = OrderPaymentMethod;
 
+/** Storefront payment account from `GET /api/v1/payment-ways`. */
+export interface PaymentWay {
+  id: string;
+  name: string;
+  logo: string | null;
+  accountName: string | null;
+  accountNumber: string | null;
+  sortOrder: number;
+  kind: "transfer" | "whatsapp";
+}
+
 export interface CheckoutLineLabel {
   id: string;
   name: string;
@@ -31,6 +42,8 @@ export interface PlaceOrderInput {
   labels?: CheckoutLineLabel[];
   addressId: string;
   paymentMethod: CheckoutPaymentMethod;
+  /** Id from `GET /api/v1/payment-ways` when the shopper picked a transfer account. */
+  paymentWayId?: string;
   couponCode?: string;
   shippingAddress?: OrderShippingAddress;
   subtotalTRY?: number;

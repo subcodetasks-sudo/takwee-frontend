@@ -28,8 +28,28 @@ export interface ApiPlaceOrderInput {
   items: ApiCheckoutItemInput[];
   address_id: number | string;
   coupon_code?: string;
-  /** Currently only `bank_transfer` (see payment.md). */
-  payment_method?: "bank_transfer" | string;
+  /** `bank_transfer` for transfer accounts, `whatsapp` to finish on WhatsApp. */
+  payment_method?: "bank_transfer" | "whatsapp" | string;
+  /** Selected row from `GET /api/v1/payment-ways`. */
+  payment_way_id?: number | string;
+}
+
+/** Raw row from `GET /api/v1/payment-ways`. */
+export interface ApiPaymentWay {
+  id: number | string;
+  name?: string | null;
+  logo?: string | null;
+  account_name?: string | null;
+  account_number?: string | null;
+  sort_order?: number | null;
+  type?: string | null;
+  code?: string | null;
+}
+
+export interface ApiPaymentWaysResponse {
+  success: boolean;
+  message?: string;
+  data?: ApiPaymentWay[] | null;
 }
 
 export interface ApiCheckoutItemData {

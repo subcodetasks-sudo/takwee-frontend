@@ -161,7 +161,8 @@
         "paymentMethods": {
           "card": "Card payment",
           "cashOnDelivery": "Cash on delivery",
-          "bankTransfer": "Bank transfer"
+          "bankTransfer": "Bank transfer",
+          "whatsapp": "WhatsApp"
         }
       },
       "reviewModal": {
@@ -1390,8 +1391,12 @@
       }
     },
     "payment": {
-      "title": "Payment proof",
-      "subtitle": "Transfer the order total to the store account, then upload your receipt photo.",
+      "title": "Payment",
+      "subtitle": "Choose a transfer account, or complete this order on WhatsApp.",
+      "empty": "No transfer accounts are available right now.",
+      "loadError": "Payment accounts could not be loaded. Please try again.",
+      "accountFallback": "Account {index}",
+      "whatsappUnavailable": "WhatsApp checkout is not available right now.",
       "methods": {
         "card": {
           "label": "Card payment",
@@ -1403,8 +1408,17 @@
         },
         "bankTransfer": {
           "label": "Bank transfer",
-          "description": "Pay by bank transfer and upload a photo of your payment receipt."
+          "description": "Pay by transfer and upload a photo of the receipt."
+        },
+        "whatsapp": {
+          "label": "Complete order on WhatsApp",
+          "description": "Send this order to the workshop on WhatsApp to confirm details and payment.",
+          "note": "After the order is placed, WhatsApp opens with the order summary so the workshop can confirm it."
         }
+      },
+      "whatsappDetails": {
+        "title": "Workshop WhatsApp",
+        "phone": "Phone number"
       },
       "bankDetails": {
         "title": "Store bank details",
@@ -1435,7 +1449,14 @@
         "transferDateFuture": "Transfer date cannot be in the future.",
         "receiptRequired": "Please upload a payment receipt photo.",
         "receiptInvalidType": "Receipt must be a JPG, PNG, WEBP, or PDF file.",
-        "receiptTooLarge": "Receipt must be 5 MB or smaller."
+        "receiptTooLarge": "Receipt must be 5 MB or smaller.",
+        "paymentWayRequired": "Please select a payment account."
+      },
+      "whatsappMessage": {
+        "intro": "Hello, I would like to complete this order on WhatsApp.",
+        "order": "Order: {number}",
+        "item": "{name} × {quantity}",
+        "total": "Total: {total}"
       }
     },
     "summary": {
@@ -1510,6 +1531,7 @@
         "supportDesc": "Our workshop client advisors are available for bespoke assistance."
       },
       "continueShopping": "Continue shopping",
+      "continueOnWhatsapp": "Continue on WhatsApp",
       "viewOrders": "View my orders",
       "paymentCard": "{brand} ···· {last4}",
       "missing": {

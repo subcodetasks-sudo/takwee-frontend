@@ -1,21 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { gooeyToast } from "@/components/ui/goey-toaster";
 import { AddressDialog, useAddresses } from "@/features/addresses";
 import type { AddressFormData } from "@/features/addresses/types";
 import { useCart } from "@/features/cart";
+import type { CartItem } from "@/features/cart/types";
+import { useSettings } from "@/features/settings";
+import { useCurrency } from "@/hooks/useCurrency";
 import { zodResolver } from "@/lib/zod-resolver";
 import { useCheckout } from "../hooks/useCheckout";
+import { usePaymentWays } from "../hooks/usePaymentWays";
 import {
   createCheckoutFormSchema,
   type CheckoutFormValues,
 } from "../schemas";
 import { saveCheckoutOrder } from "../utils/checkout-session";
 import { mapAddressToShipping } from "../utils/map-address-to-shipping";
+import {
+  buildWhatsappOrderText,
+  formatOrderAmount,
+  resolveOrderWhatsappTarget,
+  withWhatsappText,
+} from "../utils/whatsapp-order";
 import { CheckoutEmptyState } from "./CheckoutEmptyState";
 import { CheckoutHeader } from "./CheckoutHeader";
 import { CheckoutOrderSummary } from "./CheckoutOrderSummary";
@@ -30,30 +40,55 @@ function todayYmd(): string {
   return `${y}-${m}-${d}`;
 }
 
+function productLineName(
+  item: CartItem,
+  tProducts: ReturnType<typeof useTranslations>,
+) {
+  return (
+    item.product.name?.trim() ||
+    (tProducts.has(item.product.nameKey)
+      ? tProducts(item.product.nameKey)
+      : item.product.nameKey)
+  );
+}
+
 export function CheckoutView() {
   const t = useTranslations("CheckoutPage");
+  const tProducts = useTranslations("Products");
+  const locale = useLocale();
   const router = useRouter();
   const { items, itemCount, subtotalTRY, isHydrated } = useCart();
+  const { contactPhone, contactWhatsapp } = useSettings();
+  const { currencyConfig } = useCurrency();
+  const { paymentWays } = usePaymentWays();
   const { addresses, isLoading: isAddressesLoading, addAddress, isAdding } =
     useAddresses();
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
 
+  const hasTransferWays = paymentWays.some((way) => way.kind === "transfer");
+
   const schema = useMemo(
     () =>
-      createCheckoutFormSchema({
-        addressRequired: t("shipping.errors.required"),
-        holderNameRequired: t("payment.errors.holderNameRequired"),
-        holderNameMax: t("payment.errors.holderNameMax"),
-        transferDateRequired: t("payment.errors.transferDateRequired"),
-        transferDateInvalid: t("payment.errors.transferDateInvalid"),
-        transferDateFuture: t("payment.errors.transferDateFuture"),
-        receiptRequired: t("payment.errors.receiptRequired"),
-        receiptInvalidType: t("payment.errors.receiptInvalidType"),
-        receiptTooLarge: t("payment.errors.receiptTooLarge"),
-      }),
-    [t],
+      createCheckoutFormSchema(
+        {
+          addressRequired: t("shipping.errors.required"),
+          paymentWayRequired: t("payment.errors.paymentWayRequired"),
+          holderNameRequired: t("payment.errors.holderNameRequired"),
+          holderNameMax: t("payment.errors.holderNameMax"),
+          transferDateRequired: t("payment.errors.transferDateRequired"),
+          transferDateInvalid: t("payment.errors.transferDateInvalid"),
+          transferDateFuture: t("payment.errors.transferDateFuture"),
+          receiptRequired: t("payment.errors.receiptRequired"),
+          receiptInvalidType: t("payment.errors.receiptInvalidType"),
+          receiptTooLarge: t("payment.errors.receiptTooLarge"),
+        },
+        { requirePaymentWay: hasTransferWays },
+      ),
+    [hasTransferWays, t],
   );
+  const schemaRef = useRef(schema);
+  schemaRef.current = schema;
 
   const defaultAddressId =
     addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? "";
@@ -66,10 +101,12 @@ export function CheckoutView() {
     watch,
     formState: { errors },
   } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(schema),
+    resolver: (values, context, options) =>
+      zodResolver(schemaRef.current)(values, context, options),
     defaultValues: {
       addressId: defaultAddressId,
       paymentMethod: "bankTransfer",
+      paymentWayId: "",
       transferHolderName: "",
       transferDate: todayYmd(),
     },
@@ -154,11 +191,27 @@ export function CheckoutView() {
     const address = addresses.find((a) => a.id === values.addressId);
     if (!address || items.length === 0) return;
 
+    const apiWhatsapp = paymentWays.find((way) => way.kind === "whatsapp");
+    const whatsappTarget = resolveOrderWhatsappTarget([
+      contactPhone,
+      contactWhatsapp,
+      apiWhatsapp?.accountNumber,
+    ]).href;
+    const isWhatsapp = values.paymentMethod === "whatsapp";
+
+    if (isWhatsapp && !whatsappTarget) {
+      gooeyToast.error(t("payment.whatsappUnavailable"));
+      return;
+    }
+
+    const whatsappPopup = isWhatsapp ? window.open("about:blank", "_blank") : null;
+
     const checkoutPromise = (async () => {
       const { order } = await placeOrder({
         items,
         addressId: values.addressId,
         paymentMethod: values.paymentMethod,
+        paymentWayId: values.paymentWayId,
         couponCode: couponCode || undefined,
         shippingAddress: mapAddressToShipping(address),
         subtotalTRY,
@@ -167,6 +220,20 @@ export function CheckoutView() {
       // Cart must clear once the order exists to avoid duplicate checkouts.
       clearCartAfterCheckout();
 
+      if (isWhatsapp) {
+        return {
+          ...order,
+          payment: {
+            ...order.payment,
+            method: "whatsapp" as const,
+          },
+        };
+      }
+
+      if (!(values.receipt instanceof File) || !values.transferHolderName || !values.transferDate) {
+        throw new Error(t("payment.errors.receiptRequired"));
+      }
+
       const proof = await submitBankTransferProof({
         orderId: order.id,
         transferHolderName: values.transferHolderName,
@@ -174,7 +241,17 @@ export function CheckoutView() {
         receipt: values.receipt,
       });
 
-      return proof.order ?? order;
+      const placed = proof.order ?? order;
+      const selected = paymentWays.find((way) => way.id === values.paymentWayId);
+      return {
+        ...placed,
+        payment: placed.payment
+          ? {
+              ...placed.payment,
+              label: selected?.name || placed.payment.label,
+            }
+          : placed.payment,
+      };
     })();
 
     gooeyToast.promise(checkoutPromise, {
@@ -195,11 +272,32 @@ export function CheckoutView() {
 
     try {
       const order = await checkoutPromise;
+      if (isWhatsapp && whatsappPopup && whatsappTarget) {
+        const amountTRY = preview?.pricing.total ?? order.totalTRY ?? subtotalTRY;
+        const text = buildWhatsappOrderText({
+          intro: t("payment.whatsappMessage.intro"),
+          orderLine: t("payment.whatsappMessage.order", { number: order.number }),
+          itemLines: items.map((item) =>
+            t("payment.whatsappMessage.item", {
+              name: productLineName(item, tProducts),
+              quantity: item.quantity,
+            }),
+          ),
+          totalLine: t("payment.whatsappMessage.total", {
+            total: formatOrderAmount(
+              amountTRY,
+              currencyConfig.symbol,
+              currencyConfig.rateAgainstTRY,
+              locale,
+            ),
+          }),
+        });
+        whatsappPopup.location.href = withWhatsappText(whatsappTarget, text);
+      }
       saveCheckoutOrder(order);
       router.push("/checkout/confirmation");
     } catch {
-      // Order may already exist if proof upload failed after place-order.
-      // Handled by gooeyToast.promise error state
+      whatsappPopup?.close();
     }
   });
 

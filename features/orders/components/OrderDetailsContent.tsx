@@ -16,6 +16,7 @@ import {
   Building2,
   XCircle,
 } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { Link } from "@/i18n/routing";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -160,11 +161,13 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
   const discountTRY = order.discountTRY ?? 0;
 
   const PaymentIcon =
-    order.payment?.method === "cashOnDelivery"
-      ? Banknote
-      : order.payment?.method === "bankTransfer"
-        ? Building2
-        : CreditCard;
+    order.payment?.method === "whatsapp"
+      ? SiWhatsapp
+      : order.payment?.method === "cashOnDelivery"
+        ? Banknote
+        : order.payment?.method === "bankTransfer"
+          ? Building2
+          : CreditCard;
 
   return (
     <section className="w-full flex-1 py-5 sm:py-8 md:py-12">
@@ -456,7 +459,8 @@ export function OrderDetailsContent({ orderId }: OrderDetailsContentProps) {
                         brand: order.payment.brand ?? "Card",
                         last4: order.payment.last4,
                       })
-                    : t(`details.paymentMethods.${order.payment.method}`)}
+                    : order.payment.label ||
+                      t(`details.paymentMethods.${order.payment.method}`)}
                 </p>
               )}
 

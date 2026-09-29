@@ -54,7 +54,11 @@ export interface OrderShippingAddress {
 }
 
 /** Storefront payment method ids (camelCase). API uses snake_case, e.g. `bank_transfer`. */
-export type OrderPaymentMethod = "bankTransfer" | "card" | "cashOnDelivery";
+export type OrderPaymentMethod =
+  | "bankTransfer"
+  | "card"
+  | "cashOnDelivery"
+  | "whatsapp";
 
 export type OrderPaymentStatus =
   | "pending"
@@ -66,6 +70,8 @@ export type OrderPaymentStatus =
 
 export interface OrderPaymentInfo {
   method: OrderPaymentMethod;
+  /** API payment-way name when it should be shown instead of the method label. */
+  label?: string;
   status?: OrderPaymentStatus;
   /** Last 4 digits when method is card (legacy) */
   last4?: string;

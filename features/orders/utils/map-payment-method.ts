@@ -6,6 +6,9 @@ export function mapApiPaymentMethod(
 ): OrderPaymentMethod | undefined {
   if (!raw) return undefined;
   const s = raw.toLowerCase().trim();
+  if (s.includes("whatsapp") || s.includes("واتساب") || s.includes("واتس")) {
+    return "whatsapp";
+  }
   if (s === "bank_transfer" || s.includes("bank") || s.includes("transfer")) {
     return "bankTransfer";
   }
@@ -27,5 +30,7 @@ export function toApiPaymentMethod(method: OrderPaymentMethod): string {
       return "cash_on_delivery";
     case "card":
       return "card";
+    case "whatsapp":
+      return "whatsapp";
   }
 }

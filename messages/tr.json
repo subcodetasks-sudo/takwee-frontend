@@ -161,7 +161,8 @@
         "paymentMethods": {
           "card": "Kart ile ödeme",
           "cashOnDelivery": "Kapıda ödeme",
-          "bankTransfer": "Banka havalesi"
+          "bankTransfer": "Banka havalesi",
+          "whatsapp": "WhatsApp"
         }
       },
       "reviewModal": {
@@ -1390,8 +1391,12 @@
       }
     },
     "payment": {
-      "title": "Ödeme belgesi",
-      "subtitle": "Sipariş tutarını mağaza hesabına transfer edin, ardından dekont fotoğrafını yükleyin.",
+      "title": "Ödeme",
+      "subtitle": "Havale için bir hesap seçin veya bu siparişi WhatsApp üzerinden tamamlayın.",
+      "empty": "Şu anda kullanılabilir bir havale hesabı yok.",
+      "loadError": "Ödeme hesapları yüklenemedi. Lütfen yeniden deneyin.",
+      "accountFallback": "Hesap {index}",
+      "whatsappUnavailable": "WhatsApp ile sipariş tamamlama şu anda kullanılamıyor.",
       "methods": {
         "card": {
           "label": "Kartla ödeme",
@@ -1403,8 +1408,17 @@
         },
         "bankTransfer": {
           "label": "Banka havalesi",
-          "description": "Banka havalesi ile ödeyin ve dekont fotoğrafını yükleyin."
+          "description": "Havale ile ödeyin ve dekont fotoğrafını yükleyin."
+        },
+        "whatsapp": {
+          "label": "Siparişi WhatsApp ile tamamlayın",
+          "description": "Ayrıntıları ve ödemeyi onaylamak için bu siparişi atölyeye WhatsApp üzerinden gönderin.",
+          "note": "Sipariş oluşturulduktan sonra WhatsApp, atölyenin onaylayabilmesi için sipariş özeti ile açılır."
         }
+      },
+      "whatsappDetails": {
+        "title": "Atölye WhatsApp",
+        "phone": "Telefon numarası"
       },
       "bankDetails": {
         "title": "Mağaza banka bilgileri",
@@ -1435,7 +1449,14 @@
         "transferDateFuture": "Havale tarihi gelecekte olamaz.",
         "receiptRequired": "Lütfen bir ödeme dekontu fotoğrafı yükleyin.",
         "receiptInvalidType": "Dekont JPG, PNG, WEBP veya PDF olmalıdır.",
-        "receiptTooLarge": "Dekont en fazla 5 MB olabilir."
+        "receiptTooLarge": "Dekont en fazla 5 MB olabilir.",
+        "paymentWayRequired": "Lütfen bir ödeme hesabı seçin."
+      },
+      "whatsappMessage": {
+        "intro": "Merhaba, bu siparişi WhatsApp üzerinden tamamlamak istiyorum.",
+        "order": "Sipariş: {number}",
+        "item": "{name} × {quantity}",
+        "total": "Toplam: {total}"
       }
     },
     "summary": {
@@ -1510,6 +1531,7 @@
         "supportDesc": "Sipariş sonrası her türlü sorunuz için müşteri danışmanlarımız hazır."
       },
       "continueShopping": "Alışverişe devam",
+      "continueOnWhatsapp": "WhatsApp ile devam edin",
       "viewOrders": "Siparişlerinizi görüntüleyin",
       "paymentCard": "{brand} ···· {last4}",
       "missing": {

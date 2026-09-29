@@ -12,6 +12,7 @@ import type {
 } from "../types";
 import { mapCartItemsToApi, mapApiOrderToSummary } from "../utils/map-checkout";
 import { toApiPaymentMethod } from "@/features/orders/utils/map-payment-method";
+import { WHATSAPP_CHECKOUT_ID } from "../utils/map-payment-ways";
 
 const PREVIEW_PATH = "/api/v1/checkout/preview";
 const CHECKOUT_PATH = "/api/v1/checkout";
@@ -172,11 +173,19 @@ export async function placeOrder({
     address_id: number | string;
     coupon_code?: string;
     payment_method: string;
+    payment_way_id?: number | string;
   } = {
     items: mapCartItemsToApi(input.items),
     address_id,
     payment_method: toApiPaymentMethod(input.paymentMethod),
   };
+
+  const paymentWayId = input.paymentWayId?.trim();
+  if (paymentWayId && paymentWayId !== WHATSAPP_CHECKOUT_ID) {
+    const wayNum = Number(paymentWayId);
+    payload.payment_way_id =
+      Number.isFinite(wayNum) && !Number.isNaN(wayNum) ? wayNum : paymentWayId;
+  }
 
   if (input.couponCode?.trim()) {
     payload.coupon_code = input.couponCode.trim();

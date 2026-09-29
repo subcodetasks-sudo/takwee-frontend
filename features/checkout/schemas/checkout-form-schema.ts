@@ -10,6 +10,7 @@ const RECEIPT_MIME_TYPES = new Set([
 
 export type CheckoutFormErrorMessages = {
   addressRequired: string;
+  paymentWayRequired: string;
   holderNameRequired: string;
   holderNameMax: string;
   transferDateRequired: string;
@@ -28,34 +29,91 @@ function todayYmd(): string {
   return `${y}-${m}-${d}`;
 }
 
-export function createCheckoutFormSchema(messages: CheckoutFormErrorMessages) {
-  return z.object({
-    addressId: z.string().trim().min(1, messages.addressRequired),
-    paymentMethod: z.literal("bankTransfer"),
-    transferHolderName: z
-      .string()
-      .trim()
-      .min(1, messages.holderNameRequired)
-      .max(150, messages.holderNameMax),
-    transferDate: z
-      .string()
-      .trim()
-      .min(1, messages.transferDateRequired)
-      .regex(/^\d{4}-\d{2}-\d{2}$/, messages.transferDateInvalid)
-      .refine((value) => value <= todayYmd(), {
-        message: messages.transferDateFuture,
-      }),
-    receipt: z
-      .custom<File>((value) => value instanceof File, {
-        message: messages.receiptRequired,
-      })
-      .refine((file) => RECEIPT_MIME_TYPES.has(file.type), {
-        message: messages.receiptInvalidType,
-      })
-      .refine((file) => file.size <= RECEIPT_MAX_BYTES, {
-        message: messages.receiptTooLarge,
-      }),
-  });
+export function createCheckoutFormSchema(
+  messages: CheckoutFormErrorMessages,
+  options?: { requirePaymentWay?: boolean },
+) {
+  const requirePaymentWay = options?.requirePaymentWay ?? false;
+
+  return z
+    .object({
+      addressId: z.string().trim().min(1, messages.addressRequired),
+      paymentMethod: z.enum(["bankTransfer", "whatsapp"]),
+      paymentWayId: z.string().optional(),
+      transferHolderName: z.string().optional(),
+      transferDate: z.string().optional(),
+      receipt: z.custom<File | undefined>().optional(),
+    })
+    .superRefine((values, ctx) => {
+      if (values.paymentMethod === "whatsapp") return;
+
+      if (requirePaymentWay && !values.paymentWayId?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["paymentWayId"],
+          message: messages.paymentWayRequired,
+        });
+      }
+
+      const holder = values.transferHolderName?.trim() ?? "";
+      if (!holder) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["transferHolderName"],
+          message: messages.holderNameRequired,
+        });
+      } else if (holder.length > 150) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["transferHolderName"],
+          message: messages.holderNameMax,
+        });
+      }
+
+      const date = values.transferDate?.trim() ?? "";
+      if (!date) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["transferDate"],
+          message: messages.transferDateRequired,
+        });
+      } else if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["transferDate"],
+          message: messages.transferDateInvalid,
+        });
+      } else if (date > todayYmd()) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["transferDate"],
+          message: messages.transferDateFuture,
+        });
+      }
+
+      const file = values.receipt;
+      if (!(file instanceof File)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["receipt"],
+          message: messages.receiptRequired,
+        });
+        return;
+      }
+      if (!RECEIPT_MIME_TYPES.has(file.type)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["receipt"],
+          message: messages.receiptInvalidType,
+        });
+      } else if (file.size > RECEIPT_MAX_BYTES) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["receipt"],
+          message: messages.receiptTooLarge,
+        });
+      }
+    });
 }
 
 export type CheckoutFormValues = z.infer<

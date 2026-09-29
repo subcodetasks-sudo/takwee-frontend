@@ -14,6 +14,7 @@ import {
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { Link } from "@/i18n/routing";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -28,9 +29,17 @@ import { Check as CheckIcon } from "@/components/animate-ui/icons/check";
 import { ProductPrice } from "@/features/product";
 import { OrderReceiptDialog } from "@/features/orders";
 import type { OrderSummary } from "@/features/orders/types";
+import { useSettings } from "@/features/settings";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
 import { readCheckoutOrder } from "../utils/checkout-session";
+import {
+  buildWhatsappOrderText,
+  formatOrderAmount,
+  resolveOrderWhatsappTarget,
+  withWhatsappText,
+} from "../utils/whatsapp-order";
 
 function formatDate(locale: string, dateStr: string) {
   try {
@@ -69,8 +78,14 @@ const itemVariants: Variants = {
 
 export function CheckoutConfirmationView() {
   const t = useTranslations("CheckoutPage.confirmation");
-  const tPayment = useTranslations("CheckoutPage.payment.methods");
+  const tPayment = useTranslations("CheckoutPage.payment");
   const locale = useLocale();
+  const { contactPhone, contactWhatsapp } = useSettings();
+  const whatsappTarget = resolveOrderWhatsappTarget([
+    contactPhone,
+    contactWhatsapp,
+  ]);
+  const { currencyConfig } = useCurrency();
   const [order, setOrder] = useState<OrderSummary | null | undefined>(undefined);
   const { copied, copy } = useCopyToClipboard();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -137,21 +152,49 @@ export function CheckoutConfirmationView() {
   }
 
   const PaymentIcon =
-    order.payment?.method === "cashOnDelivery"
-      ? Banknote
-      : order.payment?.method === "bankTransfer"
-        ? Building2
-        : CreditCard;
+    order.payment?.method === "whatsapp"
+      ? SiWhatsapp
+      : order.payment?.method === "cashOnDelivery"
+        ? Banknote
+        : order.payment?.method === "bankTransfer"
+          ? Building2
+          : CreditCard;
 
   const paymentLabel =
-    order.payment?.method === "card" && order.payment.brand && order.payment.last4
+    order.payment?.label ||
+    (order.payment?.method === "card" && order.payment.brand && order.payment.last4
       ? t("paymentCard", {
           brand: order.payment.brand,
           last4: order.payment.last4,
         })
       : order.payment?.method
-        ? tPayment(`${order.payment.method}.label`)
-        : null;
+        ? tPayment(`methods.${order.payment.method}.label`)
+        : null);
+
+  const whatsappOrderHref =
+    order.payment?.method === "whatsapp" && whatsappTarget.href
+      ? withWhatsappText(
+          whatsappTarget.href,
+          buildWhatsappOrderText({
+            intro: tPayment("whatsappMessage.intro"),
+            orderLine: tPayment("whatsappMessage.order", { number: order.number }),
+            itemLines: order.items.map((item) =>
+              tPayment("whatsappMessage.item", {
+                name: item.name,
+                quantity: item.quantity,
+              }),
+            ),
+            totalLine: tPayment("whatsappMessage.total", {
+              total: formatOrderAmount(
+                order.totalTRY,
+                currencyConfig.symbol,
+                currencyConfig.rateAgainstTRY,
+                locale,
+              ),
+            }),
+          }),
+        )
+      : null;
 
   const itemsSubtotalTRY = order.items.reduce(
     (sum, item) => sum + (item.priceTRY ?? 0) * item.quantity,
@@ -483,6 +526,20 @@ export function CheckoutConfirmationView() {
                   <PaymentIcon className="size-3.5 text-muted-foreground" />
                   <span>{paymentLabel}</span>
                 </div>
+              ) : null}
+              {whatsappOrderHref ? (
+                <a
+                  href={whatsappOrderHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "h-9 w-fit gap-2 rounded-xl",
+                  )}
+                >
+                  <SiWhatsapp className="size-3.5" aria-hidden />
+                  {t("continueOnWhatsapp")}
+                </a>
               ) : null}
             </div>
 

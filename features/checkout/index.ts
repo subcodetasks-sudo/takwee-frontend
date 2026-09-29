@@ -11,6 +11,8 @@ export * from "./schemas";
 export * from "./api/checkout";
 export * from "./api/actions";
 export * from "./hooks/useCheckout";
+export * from "./hooks/usePaymentWays";
+export * from "./api/get-payment-ways";
 export * from "./utils/checkout-session";
 export * from "./utils/map-address-to-shipping";
 export * from "./utils/map-checkout";
