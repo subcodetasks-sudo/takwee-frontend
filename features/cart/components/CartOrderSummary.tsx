@@ -11,6 +11,8 @@ import {
 import { Link } from "@/i18n/routing";
 import { buttonVariants } from "@/components/ui/button";
 import { ProductPrice } from "@/features/product";
+import { CheckoutAuthDialog } from "./CheckoutAuthDialog";
+import { useCheckoutAuthGate } from "../hooks/useCheckoutAuthGate";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +31,7 @@ export function CartOrderSummary({
   itemCount,
 }: CartOrderSummaryProps) {
   const t = useTranslations("CartPage.summary");
+  const { open, setOpen, onCheckoutClick } = useCheckoutAuthGate();
 
   // 10% estimated merchandise VAT
   const estimatedTaxTRY = Math.round(subtotalTRY * 0.1);
@@ -104,6 +107,7 @@ export function CartOrderSummary({
       <div className="pt-0.5 sm:pt-2">
         <Link
           href="/checkout"
+          onClick={onCheckoutClick}
           className={cn(
             buttonVariants({ variant: "default", size: "lg" }),
             "group w-full h-11 sm:h-12 rounded-xl text-sm sm:text-base font-medium shadow-xs hover:shadow-md transition-all gap-2 flex items-center justify-center",
@@ -115,6 +119,7 @@ export function CartOrderSummary({
             aria-hidden
           />
         </Link>
+        <CheckoutAuthDialog open={open} onOpenChange={setOpen} />
       </div>
 
       {/* Boutique Trust Guarantees */}

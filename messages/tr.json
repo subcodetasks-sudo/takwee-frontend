@@ -1357,6 +1357,12 @@
       "updated": "Çanta güncellendi",
       "stockLimit": "Stokta yalnızca {count, plural, one {# adet} other {# adet}} mevcut",
       "stockLimitReached": "Stokta daha fazla ürün yok"
+    },
+    "authDialog": {
+      "title": "Devam etmek için giriş yapın",
+      "description": "Ödeme, giriş yapıldıktan sonra kullanılabilir. Alışverişe devam edilebilir veya teslimat bilgilerini gözden geçirip siparişi tamamlamak için giriş yapılabilir.",
+      "cancel": "Alışverişe devam et",
+      "signIn": "Giriş yap"
     }
   },
   "CheckoutPage": {

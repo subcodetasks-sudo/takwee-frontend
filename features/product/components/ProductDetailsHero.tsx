@@ -8,7 +8,12 @@ import { ArrowRight, Check, Minus, Plus, Sparkles, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { getMaxSelectableQuantity, useCart } from "@/features/cart";
+import {
+  CheckoutAuthDialog,
+  getMaxSelectableQuantity,
+  useCart,
+  useCheckoutAuthGate,
+} from "@/features/cart";
 import { StaggerContainer, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import {
@@ -55,6 +60,11 @@ export function ProductDetailsHero({
   const tColors = useTranslations("ProductCard.colors");
 
   const { isInCart: isCartInCart, getItemQuantity, isHydrated } = useCart();
+  const {
+    open: authDialogOpen,
+    setOpen: setAuthDialogOpen,
+    onCheckoutClick,
+  } = useCheckoutAuthGate();
   const context = useProductDetails();
   const { data: sizeGuide } = useAbayaSizeGuide();
 
@@ -680,6 +690,7 @@ export function ProductDetailsHero({
                   >
                     <Link
                       href="/checkout"
+                      onClick={onCheckoutClick}
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),
                         "group min-h-11 w-full rounded-xl border-primary bg-transparent px-4 sm:px-6 text-sm font-semibold text-primary shadow-xs hover:bg-primary/5 hover:text-primary hover:shadow-md transition-all gap-2 flex items-center justify-center sm:min-w-44",
@@ -694,6 +705,10 @@ export function ProductDetailsHero({
                   </motion.div>
                 ) : null}
               </AnimatePresence>
+              <CheckoutAuthDialog
+                open={authDialogOpen}
+                onOpenChange={setAuthDialogOpen}
+              />
             </div>
           </div>
         </StaggerItem>

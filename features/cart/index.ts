@@ -3,6 +3,8 @@ export * from "./components/CartHeader";
 export * from "./components/CartEmptyState";
 export * from "./components/CartItemRow";
 export * from "./components/CartOrderSummary";
+export * from "./components/CheckoutAuthDialog";
+export * from "./hooks/useCheckoutAuthGate";
 export * from "./components/CartScrollToSummaryButton";
 export * from "./context/CartProvider";
 export * from "./context/CartFlyProvider";

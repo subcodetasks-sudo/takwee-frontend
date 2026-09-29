@@ -1357,6 +1357,12 @@
       "updated": "Cart updated",
       "stockLimit": "Only {count, plural, one {# item} other {# items}} available in stock",
       "stockLimitReached": "No more units available in stock"
+    },
+    "authDialog": {
+      "title": "Sign in to continue",
+      "description": "Checkout is available after signing in. Continue browsing, or sign in to review delivery details and place the order.",
+      "cancel": "Continue shopping",
+      "signIn": "Sign in"
     }
   },
   "CheckoutPage": {
