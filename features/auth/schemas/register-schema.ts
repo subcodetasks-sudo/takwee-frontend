@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { addPasswordStrengthIssues } from "@/lib/password-rules";
 
 /** Letters (any script), spaces, apostrophes, and hyphens — no digits or other symbols. */
 const NAME_LETTERS_ONLY = /^[\p{L}\s'.-]+$/u;
@@ -10,7 +11,7 @@ export type RegisterFormErrorMessages = {
   emailRequired: string;
   emailInvalid: string;
   passwordRequired: string;
-  passwordMinLength: string;
+  passwordStrength: string;
   confirmPasswordRequired: string;
   passwordMismatch: string;
   termsRequired: string;
@@ -30,16 +31,22 @@ export function createRegisterSchema(messages: RegisterFormErrorMessages) {
         .trim()
         .min(1, messages.emailRequired)
         .email(messages.emailInvalid),
-      password: z
-        .string()
-        .min(1, messages.passwordRequired)
-        .min(8, messages.passwordMinLength),
+      password: z.string().min(1, messages.passwordRequired),
       confirmPassword: z.string().min(1, messages.confirmPasswordRequired),
       acceptTerms: z.boolean().refine((val) => val === true, {
         message: messages.termsRequired,
       }),
     })
     .superRefine((data, ctx) => {
+      if (data.password) {
+        addPasswordStrengthIssues(
+          data.password,
+          ctx,
+          messages.passwordStrength,
+          ["password"],
+        );
+      }
+
       if (
         data.confirmPassword &&
         data.password &&

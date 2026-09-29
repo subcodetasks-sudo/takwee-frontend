@@ -345,7 +345,7 @@
       },
       "password": {
         "title": "Şifre",
-        "subtitle": "Hesabınızı korumak için güçlü bir şifre seçin.",
+        "subtitle": "En az 8 karakter, büyük ve küçük harf, bir rakam ve bir sembol kullanın.",
         "current": "Mevcut şifre",
         "new": "Yeni şifre",
         "confirm": "Yeni şifreyi onayla",
@@ -357,7 +357,7 @@
         "errors": {
           "currentRequired": "Mevcut şifre zorunludur",
           "newRequired": "Yeni şifre zorunludur",
-          "newMinLength": "Şifre en az 8 karakter olmalıdır",
+          "newStrength": "Lütfen en az 8 karakter kullanın; büyük ve küçük harf, bir rakam ve bir sembol ekleyin.",
           "confirmRequired": "Yeni şifreyi onaylayın",
           "mismatch": "Şifreler eşleşmiyor",
           "sameAsCurrent": "Yeni şifre mevcut şifreden farklı olmalıdır"
@@ -1126,7 +1126,7 @@
       "email": "E-posta adresi",
       "emailPlaceholder": "name@example.com",
       "password": "Şifre",
-      "passwordPlaceholder": "Bir şifre oluşturun (en az 8 karakter)",
+      "passwordPlaceholder": "En az 8 karakter, büyük-küçük harf, rakam ve sembol",
       "confirmPassword": "Şifreyi onayla",
       "confirmPasswordPlaceholder": "Şifrenizi tekrar girin",
       "showPassword": "Şifreyi göster",
@@ -1148,7 +1148,7 @@
         "emailRequired": "E-posta adresi gereklidir",
         "emailInvalid": "Geçerli bir e-posta adresi girin",
         "passwordRequired": "Şifre gereklidir",
-        "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+        "passwordStrength": "Lütfen en az 8 karakter kullanın; büyük ve küçük harf, bir rakam ve bir sembol ekleyin.",
         "confirmPasswordRequired": "Lütfen şifrenizi onaylayın",
         "passwordMismatch": "Şifreler eşleşmiyor",
         "termsRequired": "Kullanım Koşulları ve Gizlilik Politikası’nı kabul etmelisiniz"
@@ -1213,10 +1213,10 @@
       "metaTitle": "Şifreyi sıfırlayın",
       "metaDescription": "Takween hesabınız için yeni bir şifre belirleyin.",
       "title": "Şifreyi sıfırlayın",
-      "subtitle": "Hesabınız için yeni bir şifre belirleyin. En az 8 karakter kullanın.",
+      "subtitle": "En az 8 karakter, büyük ve küçük harf, bir rakam ve bir sembol içeren yeni bir şifre belirleyin.",
       "invalidSubtitle": "Bu sıfırlama bağlantısı eksik veya artık geçerli değil.",
       "password": "Yeni şifre",
-      "passwordPlaceholder": "Yeni bir şifre girin (en az 8 karakter)",
+      "passwordPlaceholder": "En az 8 karakter, büyük-küçük harf, rakam ve sembol",
       "confirmPassword": "Yeni şifreyi onayla",
       "confirmPasswordPlaceholder": "Yeni şifrenizi tekrar girin",
       "showPassword": "Şifreyi göster",
@@ -1232,7 +1232,7 @@
       "signIn": "Giriş yapın",
       "errors": {
         "passwordRequired": "Şifre gereklidir",
-        "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+        "passwordStrength": "Lütfen en az 8 karakter kullanın; büyük ve küçük harf, bir rakam ve bir sembol ekleyin.",
         "confirmPasswordRequired": "Lütfen şifrenizi onaylayın",
         "passwordMismatch": "Şifreler eşleşmiyor"
       }

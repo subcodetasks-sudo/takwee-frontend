@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { addPasswordStrengthIssues } from "@/lib/password-rules";
 
 export type ResetPasswordFormErrorMessages = {
   passwordRequired: string;
-  passwordMinLength: string;
+  passwordStrength: string;
   confirmPasswordRequired: string;
   passwordMismatch: string;
 };
@@ -12,13 +13,19 @@ export function createResetPasswordSchema(
 ) {
   return z
     .object({
-      password: z
-        .string()
-        .min(1, messages.passwordRequired)
-        .min(8, messages.passwordMinLength),
+      password: z.string().min(1, messages.passwordRequired),
       confirmPassword: z.string().min(1, messages.confirmPasswordRequired),
     })
     .superRefine((data, ctx) => {
+      if (data.password) {
+        addPasswordStrengthIssues(
+          data.password,
+          ctx,
+          messages.passwordStrength,
+          ["password"],
+        );
+      }
+
       if (
         data.confirmPassword &&
         data.password &&

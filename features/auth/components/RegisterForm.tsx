@@ -40,7 +40,7 @@ export function RegisterForm() {
         emailRequired: t("errors.emailRequired"),
         emailInvalid: t("errors.emailInvalid"),
         passwordRequired: t("errors.passwordRequired"),
-        passwordMinLength: t("errors.passwordMinLength"),
+        passwordStrength: t("errors.passwordStrength"),
         confirmPasswordRequired: t("errors.confirmPasswordRequired"),
         passwordMismatch: t("errors.passwordMismatch"),
         termsRequired: t("errors.termsRequired"),

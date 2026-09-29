@@ -345,7 +345,7 @@
       },
       "password": {
         "title": "Password",
-        "subtitle": "Choose a strong password to protect the account.",
+        "subtitle": "Use at least 8 characters, with upper and lower case, a number, and a symbol.",
         "current": "Current password",
         "new": "New password",
         "confirm": "Confirm new password",
@@ -357,7 +357,7 @@
         "errors": {
           "currentRequired": "Current password is required",
           "newRequired": "New password is required",
-          "newMinLength": "Password must be at least 8 characters",
+          "newStrength": "Please use at least 8 characters, including uppercase and lowercase letters, a number, and a symbol.",
           "confirmRequired": "Confirm the new password",
           "mismatch": "Passwords do not match",
           "sameAsCurrent": "New password must differ from the current one"
@@ -1126,7 +1126,7 @@
       "email": "Email address",
       "emailPlaceholder": "name@example.com",
       "password": "Password",
-      "passwordPlaceholder": "Create a password (min. 8 characters)",
+      "passwordPlaceholder": "8+ characters, mixed case, a number, and a symbol",
       "confirmPassword": "Confirm password",
       "confirmPasswordPlaceholder": "Re-enter your password",
       "showPassword": "Show password",
@@ -1148,7 +1148,7 @@
         "emailRequired": "Email address is required",
         "emailInvalid": "Enter a valid email address",
         "passwordRequired": "Password is required",
-        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordStrength": "Please use at least 8 characters, including uppercase and lowercase letters, a number, and a symbol.",
         "confirmPasswordRequired": "Please confirm your password",
         "passwordMismatch": "Passwords do not match",
         "termsRequired": "You must agree to the Terms of Service and Privacy Policy"
@@ -1213,10 +1213,10 @@
       "metaTitle": "Reset password",
       "metaDescription": "Choose a new password for your Takween account.",
       "title": "Reset password",
-      "subtitle": "Choose a new password for your account. Use at least 8 characters.",
+      "subtitle": "Choose a new password with at least 8 characters, upper and lower case, a number, and a symbol.",
       "invalidSubtitle": "This reset link is missing or no longer valid.",
       "password": "New password",
-      "passwordPlaceholder": "Enter a new password (min. 8 characters)",
+      "passwordPlaceholder": "8+ characters, mixed case, a number, and a symbol",
       "confirmPassword": "Confirm new password",
       "confirmPasswordPlaceholder": "Re-enter your new password",
       "showPassword": "Show password",
@@ -1232,7 +1232,7 @@
       "signIn": "Sign in",
       "errors": {
         "passwordRequired": "Password is required",
-        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordStrength": "Please use at least 8 characters, including uppercase and lowercase letters, a number, and a symbol.",
         "confirmPasswordRequired": "Please confirm your password",
         "passwordMismatch": "Passwords do not match"
       }

@@ -39,7 +39,7 @@ export function ResetPasswordForm({ token }: Props) {
     () =>
       createResetPasswordSchema({
         passwordRequired: t("errors.passwordRequired"),
-        passwordMinLength: t("errors.passwordMinLength"),
+        passwordStrength: t("errors.passwordStrength"),
         confirmPasswordRequired: t("errors.confirmPasswordRequired"),
         passwordMismatch: t("errors.passwordMismatch"),
       }),

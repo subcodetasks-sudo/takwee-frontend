@@ -39,7 +39,7 @@ export function PasswordForm() {
       createPasswordFormSchema({
         currentRequired: t("errors.currentRequired"),
         newRequired: t("errors.newRequired"),
-        newMinLength: t("errors.newMinLength"),
+        newStrength: t("errors.newStrength"),
         confirmRequired: t("errors.confirmRequired"),
         mismatch: t("errors.mismatch"),
         sameAsCurrent: t("errors.sameAsCurrent"),
