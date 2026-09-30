@@ -163,18 +163,12 @@ export function HeroCarousel() {
                         fill
                         priority={isInitialSlide}
                         sizes="100vw"
-                        className="object-cover object-center"
+                        className={cn(
+                          "object-cover object-center",
+                          !isRtl && "-scale-x-100",
+                        )}
                       />
                     ) : null}
-                    <div
-                      className={cn(
-                        "absolute inset-0 pointer-events-none",
-                        isRtl
-                          ? "bg-gradient-to-l from-background/70 via-background/35 to-transparent/10 md:from-background/60 md:via-background/25 md:to-transparent/5"
-                          : "bg-gradient-to-r from-background/70 via-background/35 to-transparent/10 md:from-background/60 md:via-background/25 md:to-transparent/5",
-                      )}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/50 pointer-events-none" />
                   </motion.div>
 
                   <div className="container relative z-10 mx-auto px-6 sm:px-10 lg:px-16 py-20">

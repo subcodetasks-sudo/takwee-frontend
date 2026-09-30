@@ -987,8 +987,8 @@
     "brandDescription": "Zahmetsiz bir duruş, mimari kesimler ve zamansız doğal lüks arayan modern kadınlar için tasarlandı.",
     "newsletter": {
       "badge": "Özel Ayrıcalıklar",
-      "title": "El yapımı Çemberine Katılın",
-      "description": "Yeni sezon koleksiyonlarına, özel stil önerilerine ve sınırlı sayıda üretilen el yapımı parçalara öncelikli erişim sağlayın.",
+      "title": "Abone olun, hiçbir fırsatı kaçırmayın!",
+      "description": "E-posta adresinizi şimdi kaydedin; en yeni özel tekliflerden, öne çıkan indirimlerden ve yeni ürünlerden piyasaya çıkar çıkmaz ilk siz haberdar olun.",
       "guest": {
         "signupCta": "Hesap oluştur",
         "loginCta": "Giriş yapın",
@@ -1292,30 +1292,30 @@
     "backToShop": "Mağazaya Dön",
     "itemCount": "{count, plural, =0 {Ürün yok} one {# ürün} other {# ürün}}",
     "empty": {
-      "eyebrow": "Çantanız Boş",
-      "title": "Seçimlerinizi bekleyen zarif bir alan",
-      "description": "Henüz çantanıza bir el yapımı parça veya özel tasarım eklemediniz. Saf el yapımı koleksiyonlarımızı ve zarif silüetlerimizi keşfedin.",
-      "cta": "Butiği Keşfet",
-      "curatedTitle": "Popüler Koleksiyonlar",
+      "eyebrow": "Alışveriş Çantası Boş",
+      "title": "Çantanız favori ürünlerinizi bekliyor!",
+      "description": "Henüz herhangi bir ürün eklemediniz. En yüksek kalite ve detay standartlarıyla üretilen yenilikçi 3D baskı tasarım ve dekorasyon koleksiyonumuzu keşfedin.",
+      "cta": "Ürünleri Keşfet",
+      "curatedTitle": "Öne Çıkan Kategoriler",
       "features": {
         "shipping": {
-          "title": "Özel Teslimat",
-          "description": "Tüm Körfez bölgesine hızlı ve güvenilir teslimat"
+          "title": "Hızlı Teslimat",
+          "description": "Tüm adreslere hızlı ve güvenli gönderim"
         },
         "packaging": {
-          "title": "Lüks Mağaza Paketleme",
-          "description": "Hediye edilmeye hazır, zarif kutu ve sunum deneyimi"
+          "title": "Özel ve Güvenli Paketleme",
+          "description": "Ürünleri korumak için özenle paketlenmiş ve hediyeye hazır sunum"
         },
         "craft": {
-          "title": "Doğal Elyaf & Usta İşçilik",
-          "description": "Kusursuz terzilikle işlenmiş doğal ve kaliteli dokular"
+          "title": "Yüksek Hassasiyetli Üretim",
+          "description": "Uzun ömürlü, dayanıklı ve kaliteli malzemelerle hassas 3D baskı"
         }
       },
       "quickLinks": {
         "newIn": "Yeni Gelenler",
-        "linen": "Doğal Elyaf",
-        "casual": "Günlük Şal",
-        "formal": "Özel Davet"
+        "decorations": "Dekorasyon & Figürler",
+        "organizers": "Düzenleyiciler & Aksesuarlar",
+        "customGifts": "Hediyeler & Özel Tasarımlar"
       }
     },
     "actions": {
@@ -1392,7 +1392,7 @@
     },
     "payment": {
       "title": "Ödeme",
-      "subtitle": "Havale için bir hesap seçin veya bu siparişi WhatsApp üzerinden tamamlayın.",
+      "subtitle": "Havale için bir hesap seçin ve dekontu yükleyin.",
       "empty": "Şu anda kullanılabilir bir havale hesabı yok.",
       "loadError": "Ödeme hesapları yüklenemedi. Lütfen yeniden deneyin.",
       "accountFallback": "Hesap {index}",
@@ -1419,6 +1419,30 @@
       "whatsappDetails": {
         "title": "Atölye WhatsApp",
         "phone": "Telefon numarası"
+      },
+      "whatsappAssistance": {
+        "badge": "Alternatif sipariş",
+        "title": "Ödemeyi tamamlamakta zorluk mu var?",
+        "subtitle": "Mevcut hesaplarla ödemeyi tamamlamak mümkün değilse, siparişi doğrudan WhatsApp üzerinden atölyeye iletebilirsiniz. Mesajda ürünler, toplam ve teslimat bilgileri yer alır.",
+        "button": "WhatsApp ile siparişi tamamlayın"
+      },
+      "whatsappDraft": {
+        "greeting": "Merhaba {name}",
+        "intro": "Bu siparişi WhatsApp üzerinden tamamlamak istiyorum.",
+        "detailsTitle": "Sipariş detayları",
+        "color": "Renk: {value}",
+        "size": "Beden: {value}",
+        "quantity": "Adet: {value}",
+        "price": "Fiyat: {value}",
+        "total": "Toplam: {total}",
+        "customerTitle": "Teslimat bilgileri",
+        "name": "İsim: {value}",
+        "nameMissing": "İsim: (Lütfen isim belirtiniz)",
+        "phone": "Telefon: {value}",
+        "phoneMissing": "Telefon: (Lütfen telefon numarası belirtiniz)",
+        "address": "Teslimat adresi: {value}",
+        "addressMissing": "Teslimat adresi: (Lütfen adresi belirtiniz)",
+        "closing": "Teşekkürler, atölyenin sipariş onayını bekliyorum."
       },
       "bankDetails": {
         "title": "Mağaza banka bilgileri",
@@ -1482,6 +1506,9 @@
         "apply": "Uygula",
         "applied": "Uygulandı",
         "remove": "Kupon kodunu kaldır"
+      },
+      "whatsappOrder": {
+        "button": "Veya WhatsApp ile siparişi tamamlayın"
       }
     },
     "toasts": {

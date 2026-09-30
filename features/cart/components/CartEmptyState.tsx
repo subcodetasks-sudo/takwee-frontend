@@ -6,6 +6,7 @@ import { motion, type Variants } from "motion/react";
 import { Link } from "@/i18n/routing";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCategories } from "@/features/categories";
 
 const LUXURY_EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -113,13 +114,7 @@ const perkCardVariants: Variants = {
 
 export function CartEmptyState() {
   const t = useTranslations("CartPage");
-
-  const quickLinks = [
-    { href: "/shop/new-in", label: t("empty.quickLinks.newIn") },
-    { href: "/shop/linen", label: t("empty.quickLinks.linen") },
-    { href: "/shop/casual", label: t("empty.quickLinks.casual") },
-    { href: "/shop/formal", label: t("empty.quickLinks.formal") },
-  ];
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
 
   const perks = [
     {
@@ -240,33 +235,46 @@ export function CartEmptyState() {
           </motion.div>
         </motion.div>
 
-        {/* Curated Collection Discovery Pills */}
-        <motion.div
-          variants={pillsContainerVariants}
-          className="mt-8 flex flex-col items-center gap-2.5"
-        >
-          <span className="text-[11px] font-medium tracking-wide uppercase text-muted-foreground/80">
-            {t("empty.curatedTitle")}
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {quickLinks.map((item) => (
-              <motion.div
-                key={item.href}
-                variants={pillVariants}
-                whileHover={{ y: -2, scale: 1.025 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Link
-                  href={item.href}
-                  className="inline-flex items-center rounded-full border border-border/80 bg-background/80 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-2xs backdrop-blur-xs transition-colors hover:border-primary-300 hover:bg-muted/70 dark:hover:border-primary-700"
+        {/* Curated Collection Discovery Pills (from useCategories) */}
+        {(categories.length > 0 || isCategoriesLoading) && (
+          <motion.div
+            variants={pillsContainerVariants}
+            className="mt-8 flex flex-col items-center gap-2.5"
+          >
+            <span className="text-[11px] font-medium tracking-wide uppercase text-muted-foreground/80">
+              {t("empty.curatedTitle")}
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {isCategoriesLoading && categories.length === 0 ? (
+                <div
+                  className="flex flex-wrap items-center justify-center gap-2"
+                  aria-hidden="true"
                 >
-                  {item.label}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                  <div className="h-7 w-24 rounded-full bg-muted/60 animate-pulse" />
+                  <div className="h-7 w-28 rounded-full bg-muted/60 animate-pulse" />
+                  <div className="h-7 w-20 rounded-full bg-muted/60 animate-pulse" />
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <motion.div
+                    key={category.id}
+                    variants={pillVariants}
+                    whileHover={{ y: -2, scale: 1.025 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link
+                      href={category.href}
+                      className="inline-flex items-center rounded-full border border-border/80 bg-background/80 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-2xs backdrop-blur-xs transition-colors hover:border-primary-300 hover:bg-muted/70 dark:hover:border-primary-700"
+                    >
+                      {category.name}
+                    </Link>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Feature Value Props / Boutique Perks */}

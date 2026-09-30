@@ -208,7 +208,7 @@ Public store settings are loaded from **`GET /api/v1/settings`** (key/value list
 - [`proxy.ts`](proxy.ts) — `default_language` drives next-intl `defaultLocale` for unprefixed routes (soft-fail to `ar`)
 - [`CurrencyProvider`](hooks/useCurrency.tsx) / [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — only list API-supported currencies; default when no localStorage pick
 - [`Header`](components/common/Header.tsx) / [`Footer`](components/common/Footer.tsx) — app name, logo, contact (email, phone, WhatsApp, address, map), working hours, social URLs (fallbacks to local assets / i18n when null). Footer **Client Care** / **Workshop** / legal links come from [`usePages`](features/content/hooks/usePages.ts) (`GET /api/v1/pages`), not from settings.
-- Checkout payments — [`GET /api/v1/payment-ways`](features/checkout/api/get-payment-ways.ts) lists transfer accounts (name, logo, account name, account number). [`CheckoutPaymentSection`](features/checkout/components/CheckoutPaymentSection.tsx) lets the shopper pick an account and upload a receipt (`payment_method: bank_transfer`, `payment_way_id`). **Complete order on WhatsApp** uses the store phone `contact_phone` (then `contact_whatsapp`, then a WhatsApp payment way) and sends `payment_method: whatsapp`, then opens a prefilled `wa.me` chat. Legacy settings keys `bank_name`, `bank_account_holder`, `bank_iban`, `bank_account_number`, `bank_transfer_instructions` still show when the payment-ways list is empty.
+- Checkout payments — [`GET /api/v1/payment-ways`](features/checkout/api/get-payment-ways.ts) lists transfer accounts (name, logo, account name, account number). [`CheckoutPaymentSection`](features/checkout/components/CheckoutPaymentSection.tsx) lets the shopper pick an account and upload a receipt (`payment_method: bank_transfer`, `payment_way_id`). WhatsApp is not a selectable payment way: a hint sits at the end of the payment section, and [`CheckoutOrderSummary`](features/checkout/components/CheckoutOrderSummary.tsx) offers a WhatsApp button under place order. That button opens a prefilled `wa.me` chat (store `contact_phone`, then `contact_whatsapp`, then a WhatsApp payment-way number) and does not place the order. Legacy settings keys `bank_name`, `bank_account_holder`, `bank_iban`, `bank_account_number`, `bank_transfer_instructions` still show when the payment-ways list is empty.
 
 ---
 
@@ -226,7 +226,7 @@ Public storefront currencies, symbols, and exchange rates are loaded from **`GET
 
 **Consumers:**
 - Locale layout (`app/[locale]/layout.tsx`) — RSC prefetch with `getCurrencies(locale)` passed as `initialCurrencies` to `<CurrencyProvider>`
-- [`CurrencyProvider`](hooks/useCurrency.tsx) — dynamically merges live API exchange rates and symbols with default fallbacks; computes active currency config and supported currencies
+- [`CurrencyProvider`](hooks/useCurrency.tsx) — rates, symbols, and the selectable list come only from `GET /api/v1/currencies`; settings `supported_currencies` may narrow that list when it overlaps the endpoint
 - [`ProductPrice`](features/product/components/ProductPrice.tsx) — converts base TRY product amounts using the dynamic `rateAgainstTRY` and renders appropriate icon / textual symbol
 - [`CurrencyDropdown`](components/common/CurrencyDropdown.tsx) — lists all active supported currencies with dynamic symbols and icons
 

@@ -6,7 +6,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { gooeyToast } from "@/components/ui/goey-toaster";
 import { AddressDialog, useAddresses } from "@/features/addresses";
-import type { AddressFormData } from "@/features/addresses/types";
+import type { Address, AddressFormData } from "@/features/addresses/types";
+import { useAuth } from "@/features/auth";
 import { useCart } from "@/features/cart";
 import type { CartItem } from "@/features/cart/types";
 import { useSettings } from "@/features/settings";
@@ -21,7 +22,8 @@ import {
 import { saveCheckoutOrder } from "../utils/checkout-session";
 import { mapAddressToShipping } from "../utils/map-address-to-shipping";
 import {
-  buildWhatsappOrderText,
+  buildWhatsappCartText,
+  formatDeliveryAddress,
   formatOrderAmount,
   resolveOrderWhatsappTarget,
   withWhatsappText,
@@ -38,6 +40,33 @@ function todayYmd(): string {
   const m = String(now.getMonth() + 1).padStart(2, "0");
   const d = String(now.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function draftCustomerLines(
+  t: ReturnType<typeof useTranslations>,
+  address: Address | null,
+  userName?: string | null,
+  userMobile?: string | null,
+): string[] {
+  const name = address?.fullName?.trim() || userName?.trim();
+  const phone = address?.phone
+    ? [address.phoneCountryCode?.trim(), address.phone.trim()]
+        .filter(Boolean)
+        .join(" ")
+    : userMobile?.trim();
+  const formattedAddress = formatDeliveryAddress(address);
+
+  return [
+    name
+      ? t("payment.whatsappDraft.name", { value: name })
+      : t("payment.whatsappDraft.nameMissing"),
+    phone
+      ? t("payment.whatsappDraft.phone", { value: phone })
+      : t("payment.whatsappDraft.phoneMissing"),
+    formattedAddress
+      ? t("payment.whatsappDraft.address", { value: formattedAddress })
+      : t("payment.whatsappDraft.addressMissing"),
+  ];
 }
 
 function productLineName(
@@ -58,7 +87,8 @@ export function CheckoutView() {
   const locale = useLocale();
   const router = useRouter();
   const { items, itemCount, subtotalTRY, isHydrated } = useCart();
-  const { contactPhone, contactWhatsapp } = useSettings();
+  const { user } = useAuth();
+  const { appName, contactPhone, contactWhatsapp } = useSettings();
   const { currencyConfig } = useCurrency();
   const { paymentWays } = usePaymentWays();
   const { addresses, isLoading: isAddressesLoading, addAddress, isAdding } =
@@ -187,9 +217,8 @@ export function CheckoutView() {
     }
   };
 
-  const onSubmit = handleSubmit(async (values) => {
-    const address = addresses.find((a) => a.id === values.addressId);
-    if (!address || items.length === 0) return;
+  const handleOrderViaWhatsApp = () => {
+    if (items.length === 0) return;
 
     const apiWhatsapp = paymentWays.find((way) => way.kind === "whatsapp");
     const whatsappTarget = resolveOrderWhatsappTarget([
@@ -197,20 +226,72 @@ export function CheckoutView() {
       contactWhatsapp,
       apiWhatsapp?.accountNumber,
     ]).href;
-    const isWhatsapp = values.paymentMethod === "whatsapp";
 
-    if (isWhatsapp && !whatsappTarget) {
+    if (!whatsappTarget) {
       gooeyToast.error(t("payment.whatsappUnavailable"));
       return;
     }
 
-    const whatsappPopup = isWhatsapp ? window.open("about:blank", "_blank") : null;
+    const address =
+      addresses.find((entry) => entry.id === selectedAddressId) ?? null;
+    const amountTRY = preview?.pricing.total ?? subtotalTRY;
+    const text = buildWhatsappCartText({
+      greeting: t("payment.whatsappDraft.greeting", { name: appName }),
+      intro: t("payment.whatsappDraft.intro"),
+      detailsTitle: t("payment.whatsappDraft.detailsTitle"),
+      items: items.map((item) => {
+        const color = item.product.colors.find(
+          (entry) => entry.id === item.selectedColorId,
+        );
+        const colorName =
+          color?.name?.trim() ||
+          (color?.nameKey && tProducts.has(color.nameKey)
+            ? tProducts(color.nameKey)
+            : "");
+        const lineTotal = formatOrderAmount(
+          item.product.priceTRY * item.quantity,
+          currencyConfig.symbol,
+          currencyConfig.rateAgainstTRY,
+          locale,
+        );
+        const meta = [
+          colorName
+            ? t("payment.whatsappDraft.color", { value: colorName })
+            : "",
+          item.selectedSize
+            ? t("payment.whatsappDraft.size", { value: item.selectedSize })
+            : "",
+          t("payment.whatsappDraft.quantity", { value: item.quantity }),
+          t("payment.whatsappDraft.price", { value: lineTotal }),
+        ].filter(Boolean);
+
+        return { name: productLineName(item, tProducts), meta };
+      }),
+      totalLine: t("payment.whatsappDraft.total", {
+        total: formatOrderAmount(
+          amountTRY,
+          currencyConfig.symbol,
+          currencyConfig.rateAgainstTRY,
+          locale,
+        ),
+      }),
+      customerTitle: t("payment.whatsappDraft.customerTitle"),
+      customerLines: draftCustomerLines(t, address, user?.name, user?.mobile),
+      closing: t("payment.whatsappDraft.closing"),
+    });
+
+    window.open(withWhatsappText(whatsappTarget, text), "_blank", "noopener,noreferrer");
+  };
+
+  const onSubmit = handleSubmit(async (values) => {
+    const address = addresses.find((a) => a.id === values.addressId);
+    if (!address || items.length === 0) return;
 
     const checkoutPromise = (async () => {
       const { order } = await placeOrder({
         items,
         addressId: values.addressId,
-        paymentMethod: values.paymentMethod,
+        paymentMethod: "bankTransfer",
         paymentWayId: values.paymentWayId,
         couponCode: couponCode || undefined,
         shippingAddress: mapAddressToShipping(address),
@@ -219,16 +300,6 @@ export function CheckoutView() {
 
       // Cart must clear once the order exists to avoid duplicate checkouts.
       clearCartAfterCheckout();
-
-      if (isWhatsapp) {
-        return {
-          ...order,
-          payment: {
-            ...order.payment,
-            method: "whatsapp" as const,
-          },
-        };
-      }
 
       if (!(values.receipt instanceof File) || !values.transferHolderName || !values.transferDate) {
         throw new Error(t("payment.errors.receiptRequired"));
@@ -272,32 +343,10 @@ export function CheckoutView() {
 
     try {
       const order = await checkoutPromise;
-      if (isWhatsapp && whatsappPopup && whatsappTarget) {
-        const amountTRY = preview?.pricing.total ?? order.totalTRY ?? subtotalTRY;
-        const text = buildWhatsappOrderText({
-          intro: t("payment.whatsappMessage.intro"),
-          orderLine: t("payment.whatsappMessage.order", { number: order.number }),
-          itemLines: items.map((item) =>
-            t("payment.whatsappMessage.item", {
-              name: productLineName(item, tProducts),
-              quantity: item.quantity,
-            }),
-          ),
-          totalLine: t("payment.whatsappMessage.total", {
-            total: formatOrderAmount(
-              amountTRY,
-              currencyConfig.symbol,
-              currencyConfig.rateAgainstTRY,
-              locale,
-            ),
-          }),
-        });
-        whatsappPopup.location.href = withWhatsappText(whatsappTarget, text);
-      }
       saveCheckoutOrder(order);
       router.push("/checkout/confirmation");
     } catch {
-      whatsappPopup?.close();
+      // The toast already reports the failure.
     }
   });
 
@@ -370,6 +419,7 @@ export function CheckoutView() {
                 register={register}
                 setValue={setValue}
                 errors={errors}
+                onOrderViaWhatsApp={handleOrderViaWhatsApp}
               />
             </div>
 
@@ -385,6 +435,7 @@ export function CheckoutView() {
                 onRemoveCoupon={handleRemoveCoupon}
                 isApplyingCoupon={isApplyingCoupon || isRemovingCoupon}
                 isSubmitting={isPlacingOrder}
+                onOrderViaWhatsApp={handleOrderViaWhatsApp}
               />
             </aside>
           </div>

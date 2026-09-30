@@ -26,7 +26,7 @@ interface CurrencyOption {
   icon: IconType;
 }
 
-const CURRENCY_ICONS: Record<CurrencyCode, IconType> = {
+const CURRENCY_ICONS: Partial<Record<string, IconType>> = {
   TRY: TbCurrencyLira,
   SAR: TbCurrencyRiyal,
   AED: TbCurrencyDirham,

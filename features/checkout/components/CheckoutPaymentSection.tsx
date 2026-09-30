@@ -28,7 +28,6 @@ import { cn } from "@/lib/utils";
 import { usePaymentWays } from "../hooks/usePaymentWays";
 import type { CheckoutFormValues } from "../schemas";
 import type { PaymentWay } from "../types";
-import { WHATSAPP_CHECKOUT_ID } from "../utils/map-payment-ways";
 import { resolveOrderWhatsappTarget } from "../utils/whatsapp-order";
 
 interface CheckoutPaymentSectionProps {
@@ -36,6 +35,7 @@ interface CheckoutPaymentSectionProps {
   register: UseFormRegister<CheckoutFormValues>;
   setValue: UseFormSetValue<CheckoutFormValues>;
   errors: FieldErrors<CheckoutFormValues>;
+  onOrderViaWhatsApp?: () => void;
 }
 
 export function CheckoutPaymentSection({
@@ -43,6 +43,7 @@ export function CheckoutPaymentSection({
   register,
   setValue,
   errors,
+  onOrderViaWhatsApp,
 }: CheckoutPaymentSectionProps) {
   const t = useTranslations("CheckoutPage.payment");
   const { settings, contactPhone, contactWhatsapp } = useSettings();
@@ -52,7 +53,6 @@ export function CheckoutPaymentSection({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const didInitSelection = useRef(false);
 
-  const paymentMethod = useWatch({ control, name: "paymentMethod" });
   const paymentWayId = useWatch({ control, name: "paymentWayId" });
 
   const transferWays = paymentWays.filter((way) => way.kind === "transfer");
@@ -62,11 +62,9 @@ export function CheckoutPaymentSection({
     contactWhatsapp,
     apiWhatsappWay?.accountNumber,
   ]);
-  const showWhatsapp = Boolean(whatsappTarget.href);
 
   const selectedTransfer =
     transferWays.find((way) => way.id === paymentWayId) ?? null;
-  const isWhatsapp = paymentMethod === "whatsapp";
 
   const legacyBankRows = [
     {
@@ -95,36 +93,19 @@ export function CheckoutPaymentSection({
   const showLegacyBank =
     !isLoading &&
     transferWays.length === 0 &&
-    !isWhatsapp &&
     (legacyBankRows.length > 0 || Boolean(instructions));
 
   useEffect(() => {
     if (isLoading || didInitSelection.current) return;
     didInitSelection.current = true;
-    if (paymentMethod === "whatsapp" || paymentWayId) return;
+    if (paymentWayId) return;
 
     const firstTransfer = transferWays[0];
-    if (firstTransfer) {
-      setValue("paymentMethod", "bankTransfer", { shouldValidate: false });
-      setValue("paymentWayId", firstTransfer.id, { shouldValidate: false });
-      return;
-    }
+    if (!firstTransfer) return;
 
-    if (showWhatsapp) {
-      setValue("paymentMethod", "whatsapp", { shouldValidate: false });
-      setValue("paymentWayId", apiWhatsappWay?.id ?? WHATSAPP_CHECKOUT_ID, {
-        shouldValidate: false,
-      });
-    }
-  }, [
-    apiWhatsappWay?.id,
-    isLoading,
-    paymentMethod,
-    paymentWayId,
-    setValue,
-    showWhatsapp,
-    transferWays,
-  ]);
+    setValue("paymentMethod", "bankTransfer", { shouldValidate: false });
+    setValue("paymentWayId", firstTransfer.id, { shouldValidate: false });
+  }, [isLoading, paymentWayId, setValue, transferWays]);
 
   useEffect(() => {
     return () => {
@@ -168,18 +149,6 @@ export function CheckoutPaymentSection({
     });
   };
 
-  const selectWhatsapp = () => {
-    setValue("paymentMethod", "whatsapp", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    setValue("paymentWayId", apiWhatsappWay?.id ?? WHATSAPP_CHECKOUT_ID, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    setValue("receipt", undefined, { shouldValidate: false });
-  };
-
   const accountRows = selectedTransfer
     ? [
         {
@@ -215,8 +184,7 @@ export function CheckoutPaymentSection({
         ) : (
           <>
             {transferWays.map((way, index) => {
-              const selected =
-                !isWhatsapp && paymentWayId === way.id;
+              const selected = paymentWayId === way.id;
               const label =
                 way.name || t("accountFallback", { index: index + 1 });
               return (
@@ -262,33 +230,6 @@ export function CheckoutPaymentSection({
                 </button>
               );
             })}
-
-            {showWhatsapp ? (
-              <button
-                type="button"
-                role="radio"
-                aria-checked={isWhatsapp}
-                onClick={selectWhatsapp}
-                className={cn(
-                  "flex w-full items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-4 text-start transition-colors",
-                  isWhatsapp
-                    ? "border-primary/50 bg-primary/5"
-                    : "border-border/80 bg-background/40 hover:border-primary/30",
-                )}
-              >
-                <span className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-success-muted text-success">
-                  <SiWhatsapp className="size-4" aria-hidden />
-                </span>
-                <span className="min-w-0 space-y-0.5">
-                  <span className="block text-sm font-semibold text-foreground">
-                    {apiWhatsappWay?.name || t("methods.whatsapp.label")}
-                  </span>
-                  <span className="block text-xs leading-relaxed text-muted-foreground">
-                    {t("methods.whatsapp.description")}
-                  </span>
-                </span>
-              </button>
-            ) : null}
           </>
         )}
       </div>
@@ -306,7 +247,6 @@ export function CheckoutPaymentSection({
       {!isLoading &&
       !isError &&
       transferWays.length === 0 &&
-      !showWhatsapp &&
       !showLegacyBank ? (
         <p className="text-xs text-muted-foreground">{t("empty")}</p>
       ) : null}
@@ -340,30 +280,7 @@ export function CheckoutPaymentSection({
         </div>
       ) : null}
 
-      {isWhatsapp ? (
-        <>
-          {whatsappTarget.phone ? (
-            <AccountDetails
-              title={t("whatsappDetails.title")}
-              rows={[
-                {
-                  key: "phone",
-                  label: t("whatsappDetails.phone"),
-                  value: whatsappTarget.phone,
-                  dir: "ltr",
-                },
-              ]}
-              onCopy={handleCopy}
-              copyAria={(field) => t("bankDetails.copyAria", { field })}
-            />
-          ) : null}
-          <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-            {t("methods.whatsapp.note")}
-          </p>
-        </>
-      ) : (
-        <>
-          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <div className="space-y-1.5 sm:col-span-2">
               <Label htmlFor="transferHolderName">{t("form.holderName")}</Label>
               <Input
@@ -508,9 +425,48 @@ export function CheckoutPaymentSection({
                 {errors.receipt.message}
               </p>
             ) : null}
+      </div>
+
+      <div className="relative overflow-hidden rounded-2xl border border-success/30 bg-success-muted/70 p-3 sm:p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div className="space-y-1 sm:space-y-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span className="flex size-6 sm:size-7 items-center justify-center rounded-lg bg-success text-success-foreground">
+                <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
+              </span>
+              <span className="text-[11px] font-semibold text-success sm:text-xs">
+                {t("whatsappAssistance.badge")}
+              </span>
+              {whatsappTarget.phone ? (
+                <span
+                  dir="ltr"
+                  className="rounded-md border border-success/30 bg-success/10 px-1.5 py-0.5 font-mono text-[10px] text-success sm:text-[11px]"
+                >
+                  {whatsappTarget.phone}
+                </span>
+              ) : null}
+            </div>
+            <h3 className="text-xs font-semibold text-foreground sm:text-sm">
+              {t("whatsappAssistance.title")}
+            </h3>
+            <p className="max-w-xl text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+              {t("whatsappAssistance.subtitle")}
+            </p>
           </div>
-        </>
-      )}
+
+          {onOrderViaWhatsApp ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onOrderViaWhatsApp}
+              className="h-9 shrink-0 gap-2 rounded-xl border-success/40 bg-success px-3.5 text-xs font-semibold text-success-foreground hover:bg-success/90 hover:text-success-foreground sm:h-10 sm:px-4"
+            >
+              <SiWhatsapp className="size-3.5 sm:size-4" aria-hidden />
+              <span>{t("whatsappAssistance.button")}</span>
+            </Button>
+          ) : null}
+        </div>
+      </div>
     </section>
   );
 }

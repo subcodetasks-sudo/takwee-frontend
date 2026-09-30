@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, ShieldCheck, Tag, Check, X } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface CheckoutOrderSummaryProps {
   onRemoveCoupon?: () => void | Promise<void>;
   isApplyingCoupon?: boolean;
   isSubmitting?: boolean;
+  onOrderViaWhatsApp?: () => void;
 }
 
 export function CheckoutOrderSummary({
@@ -41,6 +43,7 @@ export function CheckoutOrderSummary({
   onRemoveCoupon,
   isApplyingCoupon = false,
   isSubmitting = false,
+  onOrderViaWhatsApp,
 }: CheckoutOrderSummaryProps) {
   const t = useTranslations("CheckoutPage.summary");
 
@@ -284,6 +287,21 @@ export function CheckoutOrderSummary({
           <span>{t("placeOrder")}</span>
         )}
       </button>
+
+      {onOrderViaWhatsApp ? (
+        <button
+          type="button"
+          onClick={onOrderViaWhatsApp}
+          disabled={items.length === 0}
+          className={cn(
+            buttonVariants({ variant: "outline", size: "lg" }),
+            "w-full h-11 sm:h-12 rounded-xl text-xs sm:text-sm font-semibold transition-all gap-2 border-success/40 text-success hover:bg-success/10 hover:border-success/60",
+          )}
+        >
+          <SiWhatsapp className="size-4 shrink-0" aria-hidden />
+          <span>{t("whatsappOrder.button")}</span>
+        </button>
+      ) : null}
 
       <div className="flex items-center gap-2.5 text-[11px] sm:text-xs text-muted-foreground">
         <ShieldCheck className="size-4 shrink-0 text-primary-700 dark:text-primary-400" />

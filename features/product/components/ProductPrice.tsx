@@ -8,11 +8,11 @@ import {
   TbCurrencyRiyal,
 } from "react-icons/tb";
 import type { IconType } from "react-icons";
-import { useCurrency, type CurrencyCode } from "@/hooks/useCurrency";
+import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "../utils/format-price";
 
-const CURRENCY_ICONS: Record<CurrencyCode, IconType> = {
+const CURRENCY_ICONS: Partial<Record<string, IconType>> = {
   TRY: TbCurrencyLira,
   SAR: TbCurrencyRiyal,
   AED: TbCurrencyDirham,

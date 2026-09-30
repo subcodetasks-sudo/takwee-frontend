@@ -4,6 +4,7 @@ import type { ContentPage } from "../types";
 import { fetchPageBySlug } from "./get-pages";
 import { mapApiPageToContentPage } from "../utils/map-pages";
 import { getMockContentPage } from "../utils/mock-content";
+import { normalizeContentSlug } from "../utils/normalize-slug";
 
 /**
  * Fetches a boutique content page by slug + locale.
@@ -19,8 +20,10 @@ export async function getContentPage(
   slug: string,
   locale: Locale,
 ): Promise<ContentPage | null> {
+  const normalizedSlug = normalizeContentSlug(slug);
+
   try {
-    const apiPage = await fetchPageBySlug(slug, locale);
+    const apiPage = await fetchPageBySlug(normalizedSlug, locale);
     if (apiPage) {
       return mapApiPageToContentPage(apiPage);
     }
@@ -38,5 +41,5 @@ export async function getContentPage(
     }
   }
 
-  return getMockContentPage(slug, locale);
+  return getMockContentPage(normalizedSlug, locale);
 }

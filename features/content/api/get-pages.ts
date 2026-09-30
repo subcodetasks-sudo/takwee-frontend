@@ -2,6 +2,7 @@ import { asArray } from "@/lib/as-array";
 import { ApiError, getApiBaseUrl, http } from "@/lib/api-client";
 import type { ApiPage, ApiPageResponse, ApiPagesResponse, StorefrontPageLink } from "../types";
 import { mapPageToLink } from "../utils/map-pages";
+import { normalizeContentSlug } from "../utils/normalize-slug";
 
 const PAGES_PATH = "/api/v1/pages";
 
@@ -54,9 +55,11 @@ export async function fetchPageBySlug(
     );
   }
 
+  const normalizedSlug = normalizeContentSlug(slug);
+
   try {
     const json = await http.get<ApiPageResponse>(
-      `${PAGES_PATH}/${encodeURIComponent(slug)}`,
+      `${PAGES_PATH}/${encodeURIComponent(normalizedSlug)}`,
       {
         headers: {
           ...(locale ? { "Accept-Language": locale } : {}),
@@ -65,8 +68,10 @@ export async function fetchPageBySlug(
           revalidate: 60,
           tags: [
             "pages",
-            `pages:${slug}`,
-            locale ? `pages:${slug}:${locale}` : `pages:${slug}:default`,
+            `pages:${normalizedSlug}`,
+            locale
+              ? `pages:${normalizedSlug}:${locale}`
+              : `pages:${normalizedSlug}:default`,
           ],
         },
       },

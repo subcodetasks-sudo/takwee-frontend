@@ -16,6 +16,50 @@ export function resolveOrderWhatsappTarget(
   return { href: null, phone: null };
 }
 
+export function formatDeliveryAddress(
+  address: {
+    countryName?: string | null;
+    stateOrProvince?: string | null;
+    city?: string | null;
+    district?: string | null;
+    streetAddress?: string | null;
+    apartmentOrSuite?: string | null;
+  } | null,
+): string | null {
+  if (!address) return null;
+  const parts = [
+    address.streetAddress,
+    address.apartmentOrSuite,
+    address.district,
+    address.city,
+    address.stateOrProvince,
+    address.countryName,
+  ]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part));
+  return parts.length > 0 ? parts.join(" - ") : null;
+}
+
+/** Prefilled cart message for the WhatsApp order button (no placed order yet). */
+export function buildWhatsappCartText(parts: {
+  greeting: string;
+  intro: string;
+  detailsTitle: string;
+  items: { name: string; meta: string[] }[];
+  totalLine: string;
+  customerTitle: string;
+  customerLines: string[];
+  closing: string;
+}): string {
+  const lines: string[] = [parts.greeting, parts.intro, "", parts.detailsTitle];
+  parts.items.forEach((item, index) => {
+    lines.push(`${index + 1}. ${item.name}`);
+    for (const meta of item.meta) lines.push(`   • ${meta}`);
+  });
+  lines.push("", parts.totalLine, "", parts.customerTitle, ...parts.customerLines, "", parts.closing);
+  return lines.join("\n");
+}
+
 export function buildWhatsappOrderText(parts: {
   intro: string;
   orderLine: string;
