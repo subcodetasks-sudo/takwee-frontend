@@ -41,14 +41,22 @@ export function OrdersList() {
       const numberLower = o.number.toLowerCase();
       const idLower = o.id.toLowerCase();
       const numberDigits = o.number.replace(/\D/g, "");
+      const trackingNumberLower = o.tracking?.trackingNumber?.toLowerCase() || "";
+      const trackingDigits = trackingNumberLower.replace(/\D/g, "");
+      const carrierLower = o.tracking?.carrier?.toLowerCase() || "";
 
       // Match by order number (e.g. "LL-2048", "2048")
       if (numberLower.includes(clean)) return true;
       // Match by internal ID (e.g. "ord-1", "1")
       if (idLower.includes(clean)) return true;
-      // Match digits-only (e.g. searching "2048" matches "LL-2048")
-      if (numericQuery && numberDigits && numberDigits.includes(numericQuery)) {
-        return true;
+      // Match by tracking number (e.g. "DHL-1001", "ARM-99482103")
+      if (trackingNumberLower && trackingNumberLower.includes(clean)) return true;
+      // Match by carrier name (e.g. "DHL", "Aramex")
+      if (carrierLower && carrierLower.includes(clean)) return true;
+      // Match digits-only (e.g. searching "1001" or "2048")
+      if (numericQuery) {
+        if (numberDigits && numberDigits.includes(numericQuery)) return true;
+        if (trackingDigits && trackingDigits.includes(numericQuery)) return true;
       }
       // Also match items inside the order
       if (o.items.some((item) => item.name?.toLowerCase().includes(clean))) {

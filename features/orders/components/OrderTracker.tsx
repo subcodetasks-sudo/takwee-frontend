@@ -6,6 +6,7 @@ import {
   Check,
   CheckCircle2,
   Clock,
+  ExternalLink,
   PackageCheck,
   ShieldCheck,
   Sparkles,
@@ -112,6 +113,23 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
 
           {tracking?.trackingNumber && (
             <div className="flex items-center gap-1.5 sm:gap-2">
+              {tracking.trackingUrl ? (
+                <a
+                  href={tracking.trackingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex max-w-full items-center gap-1 rounded-md border border-border/60 bg-background/90 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-all hover:border-primary/40 hover:bg-background hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:gap-1.5 sm:px-2 sm:text-[11px]"
+                  title={t("tracker.openCarrierTracking")}
+                >
+                  <bdi className="truncate">{tracking.trackingNumber}</bdi>
+                  <ExternalLink className="size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100 sm:size-3" />
+                </a>
+              ) : (
+                <span className="inline-flex max-w-full items-center rounded-md border border-border/60 bg-background/90 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:px-2 sm:text-[11px]">
+                  <bdi className="truncate">{tracking.trackingNumber}</bdi>
+                </span>
+              )}
+
               <TooltipProvider delay={100}>
                 <Tooltip
                   open={copied || tooltipOpen}
@@ -123,7 +141,7 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                         <button
                           type="button"
                           onClick={handleCopyTracking}
-                          className="group inline-flex max-w-full items-center gap-1 rounded-md border border-border/60 bg-background/90 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-all hover:border-border hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:gap-1.5 sm:px-2 sm:text-[11px]"
+                          className="inline-flex size-5 items-center justify-center rounded-md border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:size-6"
                           aria-label={
                             copied
                               ? t("tracker.trackingCopied")
@@ -132,7 +150,6 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                         />
                       }
                     >
-                      <bdi className="truncate">{tracking.trackingNumber}</bdi>
                       {copied ? (
                         <CheckIcon
                           size={12}
@@ -143,7 +160,7 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
                       ) : (
                         <Copy
                           size={12}
-                          className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100"
+                          className="shrink-0 opacity-60 transition-opacity hover:opacity-100"
                           aria-hidden
                         />
                       )}
@@ -247,54 +264,72 @@ export function OrderTracker({ tracking, status, className }: OrderTrackerProps)
             </span>
           )}
           {tracking?.trackingNumber && (
-            <TooltipProvider delay={100}>
-              <Tooltip
-                open={copied || tooltipOpen}
-                onOpenChange={setTooltipOpen}
-              >
-                <AnimateIcon animateOnHover className="inline-flex">
-                  <TooltipTrigger
-                    render={
-                      <button
-                        type="button"
-                        onClick={handleCopyTracking}
-                        className="group inline-flex max-w-full items-center gap-1 rounded-md border border-border/60 bg-background/80 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-all hover:border-border hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:gap-1.5 sm:px-2 sm:text-[11px]"
-                        aria-label={
-                          copied
-                            ? t("tracker.trackingCopied")
-                            : t("tracker.copyTrackingNumber")
-                        }
-                      />
-                    }
-                  >
-                    <bdi className="truncate">{tracking.trackingNumber}</bdi>
-                    {copied ? (
-                      <CheckIcon
-                        size={12}
-                        animate
-                        className="shrink-0 text-success"
-                        aria-hidden
-                      />
-                    ) : (
-                      <Copy
-                        size={12}
-                        className="shrink-0 opacity-60 transition-opacity group-hover:opacity-100"
-                        aria-hidden
-                      />
-                    )}
-                  </TooltipTrigger>
-                </AnimateIcon>
-                <TooltipContent
-                  side="top"
-                  sideOffset={6}
-                  className="text-xs font-medium"
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {tracking.trackingUrl ? (
+                <a
+                  href={tracking.trackingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex max-w-full items-center gap-1 rounded-md border border-border/60 bg-background/80 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-all hover:border-primary/40 hover:bg-background hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:gap-1.5 sm:px-2 sm:text-[11px]"
+                  title={t("tracker.openCarrierTracking")}
                 >
-                  {copied
-                    ? t("tracker.trackingCopied")
-                    : t("tracker.copyTrackingNumber")}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                  <bdi className="truncate">{tracking.trackingNumber}</bdi>
+                  <ExternalLink className="size-2.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100 sm:size-3" />
+                </a>
+              ) : (
+                <span className="inline-flex max-w-full items-center rounded-md border border-border/60 bg-background/80 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:px-2 sm:text-[11px]">
+                  <bdi className="truncate">{tracking.trackingNumber}</bdi>
+                </span>
+              )}
+
+              <TooltipProvider delay={100}>
+                <Tooltip
+                  open={copied || tooltipOpen}
+                  onOpenChange={setTooltipOpen}
+                >
+                  <AnimateIcon animateOnHover className="inline-flex">
+                    <TooltipTrigger
+                      render={
+                        <button
+                          type="button"
+                          onClick={handleCopyTracking}
+                          className="inline-flex size-5 items-center justify-center rounded-md border border-border/60 bg-background/80 text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:size-6"
+                          aria-label={
+                            copied
+                              ? t("tracker.trackingCopied")
+                              : t("tracker.copyTrackingNumber")
+                          }
+                        />
+                      }
+                    >
+                      {copied ? (
+                        <CheckIcon
+                          size={12}
+                          animate
+                          className="shrink-0 text-success"
+                          aria-hidden
+                        />
+                      ) : (
+                        <Copy
+                          size={12}
+                          className="shrink-0 opacity-60 transition-opacity hover:opacity-100"
+                          aria-hidden
+                        />
+                      )}
+                    </TooltipTrigger>
+                  </AnimateIcon>
+                  <TooltipContent
+                    side="top"
+                    sideOffset={6}
+                    className="text-xs font-medium"
+                  >
+                    {copied
+                      ? t("tracker.trackingCopied")
+                      : t("tracker.copyTrackingNumber")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           )}
         </div>
       </div>

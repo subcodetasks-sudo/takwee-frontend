@@ -28,17 +28,31 @@ export type TrackingStepKey =
 
 export interface OrderTrackingStep {
   key: TrackingStepKey;
+  label?: string;
   date?: string;
   completed: boolean;
   current: boolean;
 }
 
+export interface OrderTrackingEvent {
+  id: number;
+  status: string;
+  title: string;
+  description?: string;
+  location?: string;
+  eventDate?: string;
+  date?: string;
+}
+
 export interface OrderTrackingInfo {
+  orderNumber?: string;
   carrier: string;
   trackingNumber: string;
   estimatedDelivery?: string;
+  currentStatus?: string;
   currentStep: number;
   steps: OrderTrackingStep[];
+  events?: OrderTrackingEvent[];
   trackingUrl?: string;
 }
 

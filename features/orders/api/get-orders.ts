@@ -31,7 +31,9 @@ export type OrderApiStatusFilter =
 
 function requireApiAndToken(token: string) {
   if (!getApiBaseUrl()) {
-    throw new Error("API_BASE_URL / NEXT_PUBLIC_API_BASE_URL is not configured");
+    throw new Error(
+      "API_BASE_URL / NEXT_PUBLIC_API_BASE_URL is not configured",
+    );
   }
   if (!token) {
     throw new Error("Authentication required");

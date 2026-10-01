@@ -111,15 +111,35 @@ export function Footer() {
     label: category.name,
   }));
 
-  const servicesLinks = supportPages.map((page) => ({
-    href: page.href,
-    label: page.title,
-  }));
+  const hasFaqPage = supportPages.some(
+    (page) => page.slug === "faq" || page.slug === "faqs",
+  );
 
-  const atelierLinks = aboutPages.map((page) => ({
-    href: page.href,
-    label: page.title,
-  }));
+  const servicesLinks = [
+    ...supportPages.map((page) => ({
+      href: page.href,
+      label: page.title,
+    })),
+    ...(!hasFaqPage
+      ? [
+          {
+            href: "/faq" as const,
+            label: t("links.faq"),
+          },
+        ]
+      : []),
+  ];
+
+  const atelierLinks = [
+    ...aboutPages.map((page) => ({
+      href: page.href,
+      label: page.title,
+    })),
+    {
+      href: "/blogs" as const,
+      label: t("blog"),
+    },
+  ];
 
   const moreLinks = otherPages.map((page) => ({
     href: page.href,

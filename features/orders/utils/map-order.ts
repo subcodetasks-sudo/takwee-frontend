@@ -90,6 +90,7 @@ function mapTrackingSteps(
 
   return steps.map((st) => ({
     key: STEP_KEY_MAP[st.status] || "pending",
+    label: st.label || undefined,
     date: st.date || undefined,
     completed: Boolean(st.completed),
     current: Boolean(st.current),
@@ -129,6 +130,7 @@ export function mapTracking(
     carrier: shipment?.carrier?.trim() || "",
     trackingNumber: shipment?.tracking_number?.trim() || "",
     estimatedDelivery: shipment?.estimated_delivery_date || undefined,
+    currentStatus: tracking?.current_status,
     currentStep: currentStepFromSteps(steps),
     steps,
     trackingUrl: shipment?.tracking_url || undefined,
@@ -141,12 +143,25 @@ export function mapOrderTrackingData(
 ): OrderTrackingInfo {
   const steps = mapTrackingSteps(data.steps ?? []);
 
+  const events: OrderTrackingInfo["events"] = (data.events ?? []).map((ev) => ({
+    id: ev.id,
+    status: ev.status,
+    title: ev.title,
+    description: ev.description?.trim() || undefined,
+    location: ev.location?.trim() || undefined,
+    eventDate: ev.event_date || undefined,
+    date: ev.date || undefined,
+  }));
+
   return {
+    orderNumber: data.order_number,
     carrier: data.carrier?.trim() || "",
     trackingNumber: data.tracking_number?.trim() || "",
     estimatedDelivery: data.estimated_delivery_date || undefined,
+    currentStatus: data.current_status,
     currentStep: currentStepFromSteps(steps),
     steps,
+    events,
     trackingUrl: data.tracking_url || undefined,
   };
 }
@@ -277,7 +292,10 @@ export function mapOrderListItem(item: ApiOrderListItem): OrderSummary {
       : [];
 
   const hasTracking = Boolean(
-    item.carrier || item.tracking_number || item.estimated_delivery_date,
+    item.carrier ||
+      item.tracking_number ||
+      item.tracking_url ||
+      item.estimated_delivery_date,
   );
 
   const getStepNumber = (st: OrderStatus): number => {
@@ -301,8 +319,10 @@ export function mapOrderListItem(item: ApiOrderListItem): OrderSummary {
 
   const tracking: OrderTrackingInfo | undefined = hasTracking
     ? {
+        orderNumber: item.order_number,
         carrier: item.carrier?.trim() || "",
         trackingNumber: item.tracking_number?.trim() || "",
+        trackingUrl: item.tracking_url || undefined,
         estimatedDelivery: item.estimated_delivery_date || undefined,
         currentStep: stepNumber,
         steps: mapTrackingSteps([], item.date).map((step, idx) => {

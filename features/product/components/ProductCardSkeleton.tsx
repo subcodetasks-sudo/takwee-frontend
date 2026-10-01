@@ -14,11 +14,11 @@ export function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
       aria-hidden="true"
     >
       {/* Image container skeleton */}
-      <div className="relative aspect-3/4 w-full overflow-hidden bg-muted/60 animate-pulse">
+      <div className="relative aspect-square w-full overflow-hidden bg-muted/60 animate-pulse">
         {/* Wishlist icon placeholder */}
-        <div className="absolute left-2 top-2 sm:left-3 sm:top-3 size-7 sm:size-9 rounded-full bg-background/80 shadow-xs" />
+        <div className="absolute end-2 top-2 sm:end-3 sm:top-3 size-7 sm:size-9 rounded-full bg-background/80 shadow-xs" />
         {/* Badge placeholder */}
-        <div className="absolute right-2 top-2 sm:right-3 sm:top-3 h-5 w-12 sm:h-6 sm:w-16 rounded sm:rounded-md bg-background/80 shadow-xs" />
+        <div className="absolute start-2 top-2 sm:start-3 sm:top-3 h-5 w-12 sm:h-6 sm:w-16 rounded sm:rounded-md bg-background/80 shadow-xs" />
       </div>
 
       {/* Details area skeleton */}

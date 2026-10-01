@@ -60,8 +60,7 @@ export function Header() {
   const showFavoriteCount = isWishlistHydrated && favoriteItemCount > 0;
   const showCartCount = isCartHydrated && cartItemCount > 0;
 
-  // Desktop: hide category nav. Mobile: hide main bar. Same slide as before.
-  const hideMainBar = hidden && !isDesktopNav;
+  // Desktop: hide category nav on scroll. Mobile: stays pinned with no scroll animations.
   const hideCategoryNav = hidden && isDesktopNav;
 
   // Home + all-products stay static; remaining tabs come from GET /api/v1/categories.
@@ -74,6 +73,7 @@ export function Header() {
         href: category.href,
         label: category.name,
       })),
+      { id: "blogs", href: "/blogs" as const, label: t("blog") },
     ],
     [categories, t],
   );
@@ -82,6 +82,7 @@ export function Header() {
     const exploreLinks = [
       { label: t("home"), href: "/", ariaLabel: t("home") },
       { label: t("allAbayas"), href: "/shop", ariaLabel: t("allAbayas") },
+      { label: t("blog"), href: "/blogs", ariaLabel: t("blog") },
       ...(isAuthLoading
         ? []
         : [
@@ -125,6 +126,11 @@ export function Header() {
   }, []);
 
   useEffect(() => {
+    if (!isDesktopNav) {
+      setHidden(false);
+      return;
+    }
+
     let previousScrollY = window.scrollY;
 
     const handleScroll = () => {
@@ -151,7 +157,7 @@ export function Header() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isMenuOpen, isMobileSearchOpen]);
+  }, [isDesktopNav, isMenuOpen, isMobileSearchOpen]);
 
   return (
     <header
@@ -177,14 +183,8 @@ export function Header() {
         </div>
       ) : null}
 
-      {/* Mobile: main bar slides under TextLoop (old animation). Desktop: stays pinned. */}
-      <motion.div
-        className="relative z-10 w-full border-b border-border/70 bg-background/95 backdrop-blur-md"
-        initial={false}
-        animate={{ y: hideMainBar ? "-100%" : "0%" }}
-        transition={slideTransition}
-        style={{ pointerEvents: hideMainBar ? "none" : "auto" }}
-      >
+      {/* Main bar stays pinned without scroll animation on mobile screens */}
+      <div className="relative z-10 w-full border-b border-border/70 bg-background/95 backdrop-blur-md">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between gap-2 sm:h-18 sm:gap-6 md:h-20">
             <div className="flex items-center min-[1117px]:hidden">
@@ -417,7 +417,7 @@ export function Header() {
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Desktop: category nav slides away with the same old translateY animation */}
       <motion.nav

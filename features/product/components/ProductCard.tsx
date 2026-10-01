@@ -39,7 +39,6 @@ import { ProductPrice } from "./ProductPrice";
 import { Check } from "@/components/animate-ui/icons/check";
 
 const COLOR_IMAGE_EASE = [0.21, 0.47, 0.32, 0.98] as const;
-const LOW_STOCK_THRESHOLD = 5;
 
 interface ProductCardProps {
   product: Product;
@@ -171,7 +170,7 @@ export function ProductCard({
     >
       <div
         className={cn(
-          "relative aspect-3/4 w-full overflow-hidden",
+          "relative aspect-square w-full overflow-hidden",
           !product.inStock && "after:absolute after:inset-0 after:z-10 after:bg-background/35 after:pointer-events-none",
         )}
       >
@@ -192,75 +191,84 @@ export function ProductCard({
             />
           </motion.div>
         </AnimatePresence>
+        {/* Top-End: Wishlist button */}
         <AnimateIcon animateOnTap>
-        <TooltipProvider delay={100}>
-          <Tooltip>
-            <TooltipTrigger
-              type="button"
-              onClick={handleToggleWishlist}
-              aria-label={
-                isWishlisted ? t("removeFromWishlist") : t("addToWishlist")
-              }
-              aria-pressed={isWishlisted}
-              className={cn(
-                "absolute left-2 top-2 sm:left-3 sm:top-3 z-20",
-                "flex size-7 sm:size-9 items-center justify-center rounded-full",
-                "bg-background/90 text-foreground backdrop-blur-sm",
-                "ring-1 ring-border/70 shadow-sm",
-                "transition-colors duration-200 outline-none cursor-pointer",
-                "hover:bg-background hover:text-error",
-                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                isWishlisted && "text-primary",
-              )}
-            >
-              <Heart
+          <TooltipProvider delay={100}>
+            <Tooltip>
+              <TooltipTrigger
+                type="button"
+                onClick={handleToggleWishlist}
+                aria-label={
+                  isWishlisted ? t("removeFromWishlist") : t("addToWishlist")
+                }
+                aria-pressed={isWishlisted}
                 className={cn(
-                  "size-3.5 sm:size-4.5 transition-colors",
-                  isWishlisted && "fill-error stroke-error",
+                  "absolute end-2 top-2 sm:end-3 sm:top-3 z-20",
+                  "flex size-7 sm:size-9 items-center justify-center rounded-full",
+                  "bg-background/90 text-foreground backdrop-blur-sm",
+                  "ring-1 ring-border/70 shadow-sm",
+                  "transition-colors duration-200 outline-none cursor-pointer",
+                  "hover:bg-background hover:text-error",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isWishlisted && "text-primary",
                 )}
-              />
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              sideOffset={6}
-              className="text-xs font-medium"
-            >
-              {isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              >
+                <Heart
+                  className={cn(
+                    "size-3.5 sm:size-4.5 transition-colors",
+                    isWishlisted && "fill-error stroke-error",
+                  )}
+                />
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={6}
+                className="text-xs font-medium"
+              >
+                {isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </AnimateIcon>
 
-        {isOnSale ? (
-          <Badge
-            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 inline-flex h-5 sm:h-6 items-center justify-center rounded sm:rounded-md border-0 px-2 sm:px-2.5 py-0 text-[10px] sm:text-xs font-bold leading-none tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
-          >
-            <span className="inline-flex items-center leading-none">
-              {discountPercent > 0 ? `-${discountPercent}%` : t("sale")}
+        {/* Top-Start: Badges Stack (Sale, Custom Badge, Out of Stock, Low Stock) */}
+        <div className="absolute start-2 top-2 sm:start-3 sm:top-3 z-20 flex flex-col items-start gap-1 sm:gap-1.5 pointer-events-none">
+          {isOnSale ? (
+            <Badge
+              className="inline-flex h-5 sm:h-6 items-center justify-center rounded sm:rounded-md border-0 px-2 sm:px-2.5 py-0 text-[10px] sm:text-xs font-bold leading-none tracking-wider sm:tracking-widest uppercase shadow-sm bg-error text-error-foreground"
+            >
+              <span className="inline-flex items-center leading-none" dir="ltr">
+                {discountPercent > 0 ? `-${discountPercent}%` : t("sale")}
+              </span>
+            </Badge>
+          ) : product.badge ? (
+            <Badge
+              className="h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase shadow-sm bg-background/95 text-foreground backdrop-blur-sm ring-1 ring-border"
+            >
+              {t(product.badge)}
+            </Badge>
+          ) : null}
+
+          {/* Out of stock badge only */}
+          {!product.inStock && (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded sm:rounded-md px-1.5 py-0.5 sm:px-2 sm:py-0.5",
+                "text-[9px] font-bold uppercase tracking-wide sm:text-[10px]",
+                "shadow-xs ring-1 backdrop-blur-md bg-error-muted/95 text-error ring-error/25",
+              )}
+              aria-label={t("outOfStock")}
+            >
+              <span
+                className="size-1.5 shrink-0 rounded-full sm:size-2 bg-error"
+                aria-hidden
+              />
+              <span className="truncate">{t("outOfStock")}</span>
             </span>
-          </Badge>
-        ) : product.badge ? (
-          <Badge
-            className="absolute right-2 top-2 sm:right-3 sm:top-3 z-20 h-5 sm:h-6 rounded sm:rounded-md border-0 px-2 sm:px-2.5 text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase shadow-sm bg-background/95 text-foreground backdrop-blur-sm ring-1 ring-border"
-          >
-            {t(product.badge)}
-          </Badge>
-        ) : null}
+          )}
+        </div>
 
-        {/* Stock status — bottom end; in-cart stays bottom start */}
-        <ProductCardStockBadge
-          inStock={product.inStock}
-          stockQuantity={product.stockQuantity}
-          inStockLabel={t("inStock")}
-          outOfStockLabel={t("outOfStock")}
-          lowStockLabel={
-            typeof product.stockQuantity === "number"
-              ? t("lowStock", { count: product.stockQuantity })
-              : ""
-          }
-        />
-
-        {/* In-cart indicator badge on image */}
+        {/* Bottom-Start: In-cart indicator badge */}
         <AnimatePresence>
           {inCart ? (
             <motion.div
@@ -467,140 +475,7 @@ export function ProductCard({
   );
 }
 
-interface ProductCardStockBadgeProps {
-  inStock: boolean;
-  stockQuantity?: number;
-  inStockLabel: string;
-  outOfStockLabel: string;
-  lowStockLabel: string;
-}
 
-function ProductCardStockBadge({
-  inStock,
-  stockQuantity,
-  inStockLabel,
-  outOfStockLabel,
-  lowStockLabel,
-}: ProductCardStockBadgeProps) {
-  const primaryLabelRef = useRef<HTMLSpanElement>(null);
-  const secondaryLabelRef = useRef<HTMLSpanElement>(null);
-  const [labelWidths, setLabelWidths] = useState<{
-    primary: number;
-    secondary: number;
-  } | null>(null);
-
-  const isLowStock =
-    inStock &&
-    typeof stockQuantity === "number" &&
-    stockQuantity > 0 &&
-    stockQuantity <= LOW_STOCK_THRESHOLD;
-
-  useLayoutEffect(() => {
-    if (!isLowStock) {
-      setLabelWidths(null);
-      return;
-    }
-
-    const measure = () => {
-      const primary = primaryLabelRef.current?.offsetWidth ?? 0;
-      const secondary = secondaryLabelRef.current?.offsetWidth ?? 0;
-      if (primary <= 0 || secondary <= 0) return;
-      setLabelWidths({ primary, secondary });
-    };
-
-    measure();
-
-    // Re-measure after fonts settle (avoids width jump on first paint).
-    if (typeof document !== "undefined" && "fonts" in document) {
-      void document.fonts.ready.then(measure);
-    }
-  }, [isLowStock, inStockLabel, lowStockLabel]);
-
-  const ariaLabel = !inStock
-    ? outOfStockLabel
-    : isLowStock
-      ? `${inStockLabel}. ${lowStockLabel}`
-      : inStockLabel;
-
-  return (
-    <div className="absolute end-2 bottom-2 z-20 pointer-events-none sm:end-3 sm:bottom-3">
-      <span
-        className={cn(
-          "inline-flex max-w-30 items-center gap-1 rounded px-1.5 py-0.5 sm:max-w-none sm:gap-1.5 sm:rounded-md sm:px-2.5 sm:py-1",
-          "text-[9px] font-bold uppercase tracking-wide sm:text-[11px]",
-          "shadow-xs ring-1 backdrop-blur-md",
-          !inStock
-            ? "bg-error-muted/95 text-error ring-error/25"
-            : isLowStock
-              ? "bg-warning-muted/95 text-warning ring-warning/30"
-              : "bg-success-muted/95 text-success ring-success/25",
-        )}
-        aria-label={ariaLabel}
-      >
-        <span
-          className={cn(
-            "size-1.5 shrink-0 rounded-full sm:size-2",
-            !inStock
-              ? "bg-error"
-              : isLowStock
-                ? "bg-warning animate-pulse shadow-[0_0_0_3px] shadow-warning/25"
-                : "bg-success animate-pulse shadow-[0_0_0_3px] shadow-success/25",
-          )}
-          aria-hidden
-        />
-
-        {isLowStock ? (
-          <span className="relative inline-flex leading-none">
-            {/* Off-flow probes — measure natural glyph widths once */}
-            <span
-              className="pointer-events-none absolute -z-10 whitespace-nowrap opacity-0"
-              aria-hidden
-            >
-              <span ref={primaryLabelRef} className="inline-block">
-                {inStockLabel}
-              </span>
-              <span ref={secondaryLabelRef} className="inline-block">
-                {lowStockLabel}
-              </span>
-            </span>
-
-            <span
-              className={cn(
-                "h-[1.25em] overflow-hidden leading-none",
-                labelWidths && "animate-stock-badge-width",
-              )}
-              style={
-                labelWidths
-                  ? ({
-                      "--stock-badge-w1": `${labelWidths.primary}px`,
-                      "--stock-badge-w2": `${labelWidths.secondary}px`,
-                      width: labelWidths.primary,
-                    } as CSSProperties)
-                  : undefined
-              }
-            >
-              <span
-                className="animate-stock-badge-swipe flex w-max flex-col gap-[0.6em]"
-                style={{ "--stock-badge-step": "1.85em" } as CSSProperties}
-              >
-                <span className="flex h-[1.25em] items-center overflow-hidden whitespace-nowrap leading-none">
-                  {inStockLabel}
-                </span>
-                <span className="flex h-[1.25em] items-center overflow-hidden whitespace-nowrap leading-none">
-                  {lowStockLabel}
-                </span>
-              </span>
-            </span>
-          </span>
-        ) : (
-          <span className="truncate">
-            {inStock ? inStockLabel : outOfStockLabel}
-          </span>
-        )}
-      </span>
-    </div>
-  );
-}
 
 interface ProductImageCarouselProps {
   images: string[];
@@ -654,7 +529,7 @@ function ProductImageCarousel({
 
   if (images.length === 0) {
     return (
-      <div className="relative aspect-3/4 w-full bg-muted" aria-hidden />
+      <div className="relative aspect-square w-full bg-muted" aria-hidden />
     );
   }
 
@@ -662,7 +537,7 @@ function ProductImageCarousel({
     return (
       <Link
         href={href}
-        className="relative block aspect-3/4 w-full overflow-hidden"
+        className="relative block aspect-square w-full overflow-hidden"
       >
         <Image
           src={images[0]}
@@ -690,7 +565,7 @@ function ProductImageCarousel({
           <CarouselItem key={`${src}-${index}`} className="pl-0">
             <Link
               href={href}
-              className="relative block aspect-3/4 w-full overflow-hidden"
+              className="relative block aspect-square w-full overflow-hidden"
             >
               <Image
                 src={src}
@@ -712,7 +587,7 @@ function ProductImageCarousel({
             onClick={() => scrollTo(index)}
             aria-label={t("goToImage", { index: index + 1 })}
             className={cn(
-              "h-1.5 rounded-full pointer-events-auto transition-all duration-300",
+              "h-1.5 rounded-full pointer-events-auto transition-all duration-300 cursor-pointer",
               current === index
                 ? "w-5 bg-primary shadow-sm"
                 : "w-1.5 bg-background/70 hover:bg-background",

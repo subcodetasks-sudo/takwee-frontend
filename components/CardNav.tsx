@@ -59,7 +59,7 @@ export default function CardNav({
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [panelTop, setPanelTop] = useState(0);
+  const [panelTop, setPanelTop] = useState(56);
   const portalReady = useSyncExternalStore(
     subscribeToNothing,
     () => true,
@@ -68,11 +68,15 @@ export default function CardNav({
 
   const triggerWrapRef = useRef<HTMLDivElement | null>(null);
 
-  const syncPanelTop = () => {
-    const header = triggerWrapRef.current?.closest("header");
+  const syncPanelTop = React.useCallback(() => {
+    const header =
+      triggerWrapRef.current?.closest("header") ??
+      document.querySelector("header");
     if (!header) return;
-    setPanelTop(header.getBoundingClientRect().bottom);
-  };
+    const rect = header.getBoundingClientRect();
+    const bottom = rect.bottom > 0 ? rect.bottom : header.offsetHeight || 56;
+    setPanelTop(bottom);
+  }, []);
 
   useLayoutEffect(() => {
     syncPanelTop();
@@ -84,16 +88,7 @@ export default function CardNav({
       window.removeEventListener("resize", syncPanelTop);
       window.removeEventListener("scroll", syncPanelTop);
     };
-  }, [isOpen]);
-
-  useLayoutEffect(() => {
-    if (!isOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [isOpen]);
+  }, [isOpen, syncPanelTop]);
 
   const setOpen = (next: boolean) => {
     if (next === isOpen) return;
@@ -126,7 +121,7 @@ export default function CardNav({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-x-0 bottom-0 z-50 bg-foreground/25 backdrop-blur-[2px] min-[1117px]:hidden"
+              className="fixed inset-x-0 bottom-0 z-40 bg-foreground/25 backdrop-blur-[2px] min-[1117px]:hidden touch-none"
               style={{ top: panelTop }}
               aria-label={t("closeMenu")}
               onClick={closeMenu}
@@ -138,14 +133,14 @@ export default function CardNav({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={panelTransition}
-              className="fixed inset-x-0 z-80 px-4 sm:px-6 min-[1117px]:hidden"
+              className="fixed inset-x-0 z-50 px-4 sm:px-6 min-[1117px]:hidden"
               style={{ top: panelTop + 8 }}
               role="dialog"
               aria-modal="true"
               aria-label={t("menu")}
             >
               <div
-                className="mx-auto flex h-fit w-full max-w-lg flex-col gap-2 overflow-y-auto rounded-xl border border-border bg-card p-2 shadow-lg"
+                className="mx-auto flex h-fit w-full max-w-lg flex-col gap-2 overflow-y-auto overscroll-contain rounded-xl border border-border bg-card p-2 shadow-lg"
                 style={{
                   maxHeight: `calc(100dvh - ${panelTop + 24}px)`,
                 }}

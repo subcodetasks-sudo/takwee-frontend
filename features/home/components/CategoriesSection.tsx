@@ -29,19 +29,18 @@ function CategoryButton({
         delay: index * 0.06,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className="w-full"
+      className="w-full flex justify-center"
     >
       <Link
         href={category.href}
         className={cn(
-          "group flex flex-col overflow-hidden rounded-xl sm:rounded-2xl bg-card",
-          "ring-1 ring-border/60 transition-shadow duration-300",
-          "hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "group flex flex-col items-center gap-2.5 sm:gap-3 w-full max-w-[135px] sm:max-w-[160px] md:max-w-[185px] lg:max-w-[210px] text-center",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-2xl p-1",
         )}
       >
-        <div className="relative aspect-square w-full overflow-hidden bg-muted">
+        <div className="relative aspect-square w-full overflow-hidden rounded-full bg-muted ring-1 ring-border/60 transition-all duration-300 group-hover:ring-2 group-hover:ring-primary/60 group-hover:shadow-lg">
           {!imageLoaded && (
-            <div className="absolute inset-0 z-10 bg-muted/70 animate-pulse" />
+            <div className="absolute inset-0 z-10 rounded-full bg-muted/70 animate-pulse" />
           )}
           {category.image ? (
             <Image
@@ -49,16 +48,16 @@ function CategoryButton({
               alt={category.name}
               fill
               onLoad={() => setImageLoaded(true)}
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
+              sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 220px"
               className={cn(
-                "object-cover object-center transition-all duration-500 ease-out group-hover:scale-105",
+                "object-cover object-center transition-all duration-500 ease-out group-hover:scale-110",
                 imageLoaded ? "opacity-100" : "opacity-0",
               )}
             />
           ) : null}
         </div>
-        <div className="px-2.5 py-2.5 text-center">
-          <h3 className="text-xs sm:text-sm font-medium tracking-tight text-foreground line-clamp-2">
+        <div className="px-1 text-center">
+          <h3 className="text-xs sm:text-sm md:text-base font-medium tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary line-clamp-2">
             {category.name}
           </h3>
         </div>
@@ -78,19 +77,15 @@ export function CategoriesSection() {
   if (isCategoriesLoading) {
     return (
       <section
-        className="page-shell relative w-full overflow-hidden bg-background py-8 sm:py-10"
+        className="page-shell relative w-full overflow-hidden bg-background py-8 sm:py-12"
         aria-busy="true"
         aria-label={t("loading")}
       >
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6 lg:gap-6 list-none p-0 m-0">
+        <ul className="grid grid-cols-3 gap-4 sm:gap-6 lg:grid-cols-6 lg:gap-8 list-none p-0 m-0">
           {Array.from({ length: 6 }).map((_, index) => (
-            <li key={index} className="w-full">
-              <div className="overflow-hidden rounded-xl sm:rounded-2xl bg-muted/50 ring-1 ring-border/40">
-                <div className="aspect-square w-full animate-pulse bg-muted/60" />
-                <div className="px-2.5 py-2.5">
-                  <div className="mx-auto h-3.5 w-16 rounded bg-muted animate-pulse" />
-                </div>
-              </div>
+            <li key={index} className="w-full flex flex-col items-center gap-2.5 sm:gap-3">
+              <div className="aspect-square w-full max-w-[135px] sm:max-w-[160px] md:max-w-[185px] lg:max-w-[210px] rounded-full animate-pulse bg-muted/60 ring-1 ring-border/40" />
+              <div className="mx-auto h-3.5 sm:h-4 w-16 sm:w-20 rounded bg-muted animate-pulse" />
             </li>
           ))}
         </ul>
@@ -106,34 +101,34 @@ export function CategoriesSection() {
   const getGridColsClass = (count: number) => {
     switch (count) {
       case 1:
-        return "grid-cols-1 max-w-xs mx-auto";
+        return "grid-cols-1 max-w-[210px] mx-auto";
       case 2:
-        return "grid-cols-2 max-w-xl mx-auto sm:gap-6";
+        return "grid-cols-2 max-w-sm sm:max-w-md mx-auto gap-6 sm:gap-8";
       case 3:
-        return "grid-cols-2 sm:grid-cols-3";
+        return "grid-cols-3 max-w-md sm:max-w-2xl mx-auto";
       case 4:
-        return "grid-cols-2 sm:grid-cols-4";
+        return "grid-cols-2 sm:grid-cols-4 max-w-4xl mx-auto";
       case 5:
-        return "grid-cols-2 sm:grid-cols-3 md:grid-cols-5";
+        return "grid-cols-3 sm:grid-cols-5";
       default:
-        return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
+        return "grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6";
     }
   };
 
   const gridCols = getGridColsClass(categories.length);
 
   return (
-    <section className="page-shell relative w-full overflow-hidden bg-background py-8 sm:py-10">
-      <ul className={cn("grid gap-3 sm:gap-4 lg:gap-6 list-none p-0 m-0", gridCols)}>
+    <section className="page-shell relative w-full overflow-hidden bg-background py-8 sm:py-12">
+      <ul
+        className={cn(
+          "grid gap-4 sm:gap-6 lg:gap-8 list-none p-0 m-0",
+          gridCols,
+        )}
+      >
         {categories.map((category, index) => (
-          <CategoryButton
-            key={category.id}
-            category={category}
-            index={index}
-          />
+          <CategoryButton key={category.id} category={category} index={index} />
         ))}
       </ul>
     </section>
   );
 }
-

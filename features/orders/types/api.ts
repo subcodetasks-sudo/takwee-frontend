@@ -15,6 +15,7 @@ export interface ApiOrderListItem {
   main_product_image?: string | null;
   tracking_number?: string | null;
   carrier?: string | null;
+  tracking_url?: string | null;
   estimated_delivery_date?: string | null;
   can_cancel?: boolean;
   /** Present when status is cancelled */

@@ -303,6 +303,28 @@ Authenticated in-app notifications use client `http` + bearer token from `useAut
 
 ---
 
+## 4g. FAQs (`features/faqs`)
+
+Public FAQ list and details are loaded from **`GET /api/v1/faqs`** and **`GET /api/v1/faqs/{id}`** (public, not paginated; ordered by `sort_order`).
+
+| Layer | Path | Role |
+|---|---|---|
+| Client API | [`features/faqs/api/get-faqs.ts`](features/faqs/api/get-faqs.ts) | `fetchFaqs` / `fetchFaqById` via `http` |
+| Hook | [`features/faqs/hooks/useFaqs.ts`](features/faqs/hooks/useFaqs.ts) | React Query — keys `["faqs", locale]` / `["faq", id, locale]` |
+| Mapper | [`features/faqs/utils/map-faq.ts`](features/faqs/utils/map-faq.ts) | API DTO → `FaqItem` (`id`, `question`, `answer` as plain text, `sortOrder`) |
+| Types | [`features/faqs/types/`](features/faqs/types/) | API DTOs (`types/api.ts`) + storefront view models (`FaqItem`) |
+| UI | [`FaqView`](features/faqs/components/FaqView.tsx) | Hero search bar + accordion question/answer list + concierge contact CTA |
+
+**Endpoints:**
+- `GET /api/v1/faqs` — list of active FAQs (`question`, plain-text `answer`, `sort_order`)
+- `GET /api/v1/faqs/{id}` — single FAQ by numeric ID
+
+**Routes:**
+- `/faq` & `/faqs` — [`app/[locale]/(root)/faq/page.tsx`](app/[locale]/(root)/faq/page.tsx)
+- Content page integration — [`getContentPage`](features/content/api/get-content-page.ts) populates FAQ block from live endpoint when slug is `faq` / `faqs`
+
+---
+
 ## 5. Images & Media (`lib/images`)
 
 Product and CMS media are hosted on the **same origin as the API** (`API_BASE_URL` / `NEXT_PUBLIC_API_BASE_URL`).
