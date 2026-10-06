@@ -770,6 +770,23 @@ export function Footer() {
                   ))}
                 </div>
               ) : null}
+              <span className="text-border hidden sm:inline" aria-hidden>
+                |
+              </span>
+              <span>
+                {t.rich("poweredBy", {
+                  company: (chunks) => (
+                    <a
+                      href="https://www.subcodeco.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                })}
+              </span>
             </div>
 
             {/* Back to Top Floating/Inline Action */}

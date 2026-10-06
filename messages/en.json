@@ -1092,7 +1092,8 @@
     },
     "backToTop": "Back to top",
     "allRightsReserved": "All rights reserved.",
-    "paymentSecure": "Encrypted & Secure Checkout"
+    "paymentSecure": "Encrypted & Secure Checkout",
+    "poweredBy": "Powered by <company>Subcode</company>"
   },
   "ContentPage": {
     "lastUpdated": "Last updated: {date}",

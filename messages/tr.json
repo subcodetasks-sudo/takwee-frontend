@@ -1092,7 +1092,8 @@
     },
     "backToTop": "Yukarı Çık",
     "allRightsReserved": "Tüm hakları saklıdır.",
-    "paymentSecure": "Güvenli ve Şifreli Ödeme"
+    "paymentSecure": "Güvenli ve Şifreli Ödeme",
+    "poweredBy": "<company>Subcode</company> tarafından geliştirilmiştir"
   },
   "ContentPage": {
     "lastUpdated": "Son güncelleme: {date}",

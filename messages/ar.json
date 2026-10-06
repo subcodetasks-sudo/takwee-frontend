@@ -1092,7 +1092,8 @@
     },
     "backToTop": "العودة للأعلى",
     "allRightsReserved": "جميع الحقوق محفوظة.",
-    "paymentSecure": "دفع إلكتروني آمن ومشفّر"
+    "paymentSecure": "دفع إلكتروني آمن ومشفّر",
+    "poweredBy": "تطوير بواسطة <company>Subcode</company>"
   },
   "ContentPage": {
     "lastUpdated": "آخر تحديث: {date}",
